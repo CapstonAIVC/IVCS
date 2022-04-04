@@ -12,6 +12,7 @@ import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import java.net.URISyntaxException
+import java.net.URL
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,6 +20,7 @@ class MainActivity : AppCompatActivity() {
         val Consts = Consts()
     }
     lateinit var mSocket : Socket
+    lateinit var btSend : Button
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,24 +29,28 @@ class MainActivity : AppCompatActivity() {
 
         checkPermissions()
 
-        var btSend : Button = findViewById(R.id.btSend)
+        setSocket()
+    }
+
+    fun setBt(){
+        btSend= findViewById(R.id.btSend)
         btSend.setOnClickListener {
             Log.e("clicked","dsf")
             mSocket.emit("test","android send")
         }
-
-        setSocket()
     }
 
     fun setSocket(){
         try {
-            mSocket = IO.socket(Consts.tmp)
+//            mSocket = IO.socket(Consts.localhost)
+            mSocket = IO.socket("http://10.0.2.2:3000")
             mSocket.connect()
-            Log.e("Connected", "OK")
+            Log.e("Connected?", mSocket.connected().toString())
+            mSocket.on("test") { Log.e("Listen", "test") }
+            setBt()
         } catch (e: URISyntaxException) {
-            Log.e("ERR", e.toString())
+            Log.e("ERR_setsocket", e.toString())
         }
-        mSocket.on("test") { Log.e("Listen", "test") }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -59,6 +65,9 @@ class MainActivity : AppCompatActivity() {
 //            } else {
 //                requestPermission(this, new String[] {permission}, 101);
 //            }
+        }
+        else{
+            Log.e("permission"," Permission granted")
         }
     }
 

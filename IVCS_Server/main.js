@@ -1,23 +1,25 @@
-const socketio = require("socket.io");
-const express = require("express");
-const http = require("http");
+const express = require('express');
+const app=express();
+const server=require('http').createServer(app);
+const io=require('socket.io')(server);
 
-var app = require('express')();
-var server = require('http').createServer(app);
-var io = require('socket.io')(server);
+app.engine('html', require('ejs').renderFile);
+app.set('view engine', 'html');
+app.use(express.static(__dirname + "/"))
 
-io.on("connection", (socket) => {
-    io.emit('test', 'testtest')
-    socket.emit("test","test socket.emit")
+app.get("/client", (req, res) => {
+    res.render("client",{})
+})
 
-    socket.on("test", (obj) =>{
-        console.log(obj + "is came")
-        print("!23123")
+// socket
+io.on('connection',function(socket){
+    console.log("New Client!");
+
+    socket.on("test", (data) => {
+        console.log(data)
     })
 });
 
-io.on("test", (socket) => {
-    print("sdfsdfs")
-})
-
-server.listen(3000, () => console.log("### 서버 시작 ###"));
+server.listen(3000,()=>{
+    console.log('Socket IO server listening on port ');
+});

@@ -1,0 +1,9 @@
+<p> Hello!!</p>
+
+<script src ="/socket.io/socket.io.js"></script>
+<script>
+    var test = io.connect("http://localhost:3000")
+    test.on('test', (data) => {
+        console.log(data)
+    })
+</script>
