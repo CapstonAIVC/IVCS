@@ -6,52 +6,44 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import com.example.ivcs_android.databinding.ActivityMainBinding
+import com.example.ivcs_android.model.Consts
+import com.example.ivcs_android.model.Msocket
+import com.example.ivcs_android.view.SetView
 import io.socket.client.IO
 import io.socket.client.Socket
-import io.socket.emitter.Emitter
 import java.net.URISyntaxException
-import java.net.URL
 
 class MainActivity : AppCompatActivity() {
 
     companion object{
         val Consts = Consts()
     }
-    lateinit var mSocket : Socket
     lateinit var btSend : Button
+    lateinit var mBinding : ActivityMainBinding
+
+    lateinit var setView : SetView
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        mBinding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(mBinding.root)
 
         checkPermissions()
-
-        setSocket()
     }
 
-    fun setBt(){
-        btSend= findViewById(R.id.btSend)
-        btSend.setOnClickListener {
-            Log.e("clicked","dsf")
-            mSocket.emit("test","android send")
-        }
+    fun init(){
+        Msocket()
+        Msocket.instance.setSocket()
+
+        setView = SetView(this, mBinding)
+        setView.setViews()
     }
 
-    fun setSocket(){
-        try {
-//            mSocket = IO.socket(Consts.localhost)
-            mSocket = IO.socket("http://10.0.2.2:3000")
-            mSocket.connect()
-            Log.e("Connected?", mSocket.connected().toString())
-            mSocket.on("test") { Log.e("Listen", "test") }
-            setBt()
-        } catch (e: URISyntaxException) {
-            Log.e("ERR_setsocket", e.toString())
-        }
-    }
 
     @RequiresApi(Build.VERSION_CODES.M)
     fun checkPermissions() {
@@ -60,14 +52,27 @@ class MainActivity : AppCompatActivity() {
         if (permissionCheck == PackageManager.PERMISSION_DENIED) {
             var p : Array<String> = arrayOf(android.Manifest.permission.INTERNET)
             requestPermissions(p,101)
-//            if (shouldShowRequestPermissionRationale()) {
-//                //권한 설명 필요
-//            } else {
-//                requestPermission(this, new String[] {permission}, 101);
-//            }
         }
         else{
             Log.e("permission"," Permission granted")
+            init()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+//        if (grantResults.isNotEmpty()) {
+//            for (grant in grantResults) {
+//                if (grant != PackageManager.PERMISSION_GRANTED)
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                        checkPermissions()
+//                    }
+//            }
+//        }
+//        else{
+//        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            checkPermissions()
         }
     }
 

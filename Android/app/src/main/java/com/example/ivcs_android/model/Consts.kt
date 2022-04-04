@@ -1,4 +1,4 @@
-package com.example.ivcs_android
+package com.example.ivcs_android.model
 
 class Consts {
     val localhost = "http://10.0.2.2:3000"
