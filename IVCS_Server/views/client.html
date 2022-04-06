@@ -1,4 +1,4 @@
-<p> Hello!!</p>
+<!-- <p> Hello!!</p>
 
 <script src ="/socket.io/socket.io.js"></script>
 <script>
@@ -6,4 +6,29 @@
     test.on('test', (data) => {
         console.log(data)
     })
+</script> -->
+
+<script>
+    var socket = io.connect('http://localhost:3000');
 </script>
+
+<head>
+    <meta charset="utf-8">
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+ 
+<body>
+    <div id="camera">
+        <form action="">
+            <select name="camera" >
+            <option value="none">=== 선택 ===</option>
+            <option value="[수도권제1순환선] 성남">[수도권제1순환선] 성남</option>
+            </select>
+            <button>선택</button>
+        </form>
+    </div>
+
+    <div id="video">
+        <p>Video Div</p>
+    </div>
+</body>
