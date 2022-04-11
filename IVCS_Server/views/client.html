@@ -1,39 +1,32 @@
-<!-- <p> Hello!!</p>
-
-<script src ="/socket.io/socket.io.js"></script>
-<script>
-    var test = io.connect("http://localhost:3000")
-    test.on('test', (data) => {
-        console.log(data)
-    })
-</script> -->
-
-<!-- <script>
-    var socket = io.connect('http://localhost:3000');
-</script> -->
-
 <head>
     <meta charset="utf-8">
     <script defer src="/socket.io/socket.io.js"></script>
     <script defer src="/views/javascripts/socket.js"></script>
-    <!-- <script>
-        var path = window.location.pathname;
-        console.log(path)
-    </script> -->
+    <!-- <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
+    <link href="https://vjs.zencdn.net/7.18.1/video-js.css" rel="stylesheet" />
+    <!-- Video.js base CSS -->
+    <script src="https://vjs.zencdn.net/7.18.1/video.min.js"></script>
 </head>
  
 <body>
+    <h1>지능형 교통 체계 구축을 위한 실시간 교통량 분석</h1>
+    <hr class="one" width="1440">
     <div id="camera">
         <form action="">
             <select name="camera_id" >
                 <option value="none">=== 선택 ===</option>
                 <option value="[수도권제1순환선] 성남">[수도권제1순환선] 성남</option>
+                <option value="[수도권제1순환선] 성남요금소">[수도권제1순환선] 성남요금소</option>
             </select>
             <button>선택</button>
         </form>
     </div>
-
-    <div id="video">
-        <p>Video Div</p>
+    <div id="video_div" method="post">
+        <video autoplay="true" id="hlsPlayEx" muted="muted" class="video-js">
+            <!-- <source id="video" src="http://cctvsec.ktict.co.kr:8081/openapix025/2/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NC83LzIwMjIgMzo0ODowMCBBTSZoYXNoX3ZhbHVlPWwxcm9LK00yYUhwNENadmN0QWZscVE9PSZ2YWxpZG1pbnV0ZXM9MTU2MCZpZD05NDY0M2RiOTRkNzQ0YTJhODUwY2RmOTY2Mzk2NTE2NC0xNjQ5MzA2ODgwMzkwLTImY2hlY2tpcD10cnVl" type="application/x-mpegURL"> -->
+            <!-- <source id="video" src="http://cctvsec.ktict.co.kr:8081/openapix025/2/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NC83LzIwMjIgMzo1NDo0MSBBTSZoYXNoX3ZhbHVlPVZYWFZpcXpnWWR6emRQVXlLU211U2c9PSZ2YWxpZG1pbnV0ZXM9MTU2MCZpZD05NDY0M2RiOTRkNzQ0YTJhODUwY2RmOTY2Mzk2NTE2NC0xNjQ5MzA3MjgxMTc3LTImY2hlY2tpcD10cnVl" type="application/x-mpegURL"> -->
+            <source id="video" src="" playtype="video/mp4">
+        </video>
     </div>
 </body>
