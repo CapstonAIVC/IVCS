@@ -23,12 +23,9 @@ class StreamingActivity : AppCompatActivity() {
         mBinding = ActivityStreamingBinding.inflate(layoutInflater)
         setContentView(mBinding.root)
 
-        setTexttureView()
-        initStreamingActivity()
-    }
-
-    fun setTexttureView(){
         mBinding.textureView.layoutParams.height = resources.displayMetrics.heightPixels/4
+        mBinding.cctvList.layoutParams.height = resources.displayMetrics.heightPixels/4
+        initStreamingActivity()
     }
     private fun initStreamingActivity(){
         setStreamingViews = SetStreamingViews(this, mBinding)
@@ -37,7 +34,7 @@ class StreamingActivity : AppCompatActivity() {
         mStreaming = Streaming(this,mBinding)
         mStreaming.initializePlayer()
 
-        streamingBind = StreamingBind(mStreaming)
+        streamingBind = StreamingBind(mStreaming, mBinding)
         streamingBind.initStreamingBind()
     }
 

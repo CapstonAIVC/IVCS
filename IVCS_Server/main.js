@@ -15,7 +15,7 @@ app.get("/client", (req, res) => {
 })
 
 app.get("/getUrl", (req, res) => {
-    res.json({"name" : "[수도권제1순환선] 성남"})
+    res.json({"name" : ["[수도권제1순환선] 성남", "testname"]})
 })
 
 // socket

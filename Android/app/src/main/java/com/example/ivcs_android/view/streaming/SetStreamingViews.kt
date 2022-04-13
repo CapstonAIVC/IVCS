@@ -4,12 +4,17 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import android.widget.ArrayAdapter
+import android.widget.Switch
 import android.widget.Toast
 import com.example.ivcs_android.databinding.ActivityStreamingBinding
 import com.example.ivcs_android.model.Consts
+import com.example.ivcs_android.model.Datas
 import com.example.ivcs_android.viewModel.Msocket
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
+import okhttp3.*
+import org.json.JSONObject
+import java.io.IOException
 
 class SetStreamingViews(context: Context, mBinding: ActivityStreamingBinding) {
 
@@ -19,13 +24,49 @@ class SetStreamingViews(context: Context, mBinding: ActivityStreamingBinding) {
 
     fun setViews(){
         setListView()
+        setSwitchs()
     }
 
     fun setListView(){
-        var mAdapter = ArrayAdapter<String>(context,android.R.layout.simple_list_item_1,arrForListView)
-        mBinding.cctvList.adapter = mAdapter
+        setNames()
         mBinding.cctvList.setOnItemClickListener { adapterView, view, i, l ->
-            Log.e("listview", arrForListView[i] + " is clicked")
+            if(Msocket.instance.mSocket.connected()) {
+                Msocket.instance.mSocket.emit("hls_req_test",arrForListView[i])
+            }
+            else{
+                Msocket.instance.setSocket()
+                Toast.makeText(context,"서버와 재연결 시도",Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun setNames(){
+        val url = Consts.localhost+Consts.getUrl
+        val client = OkHttpClient()
+        val request = Request.Builder().url(url).build()
+
+        client.newCall(request).enqueue(object: Callback {
+            override fun onFailure(call: Call, e: IOException){
+                Log.e("getNamesFailed",e.message.toString())
+            }
+            override fun onResponse(call: Call, response: Response) {
+                var jsonArr = JSONObject(response.body!!.string()).getJSONArray("name")
+                arrForListView = Array(jsonArr.length()) {""}
+                for( i in 0 until jsonArr.length()){
+                    arrForListView[i] = jsonArr.getString(i)
+                }
+                var mAdapter = ArrayAdapter<String>(context,android.R.layout.simple_list_item_1,arrForListView)
+                mBinding.cctvList.adapter = mAdapter
+            }
+        })
+    }
+
+    fun setSwitchs(){
+        mBinding.countingSwitch.setOnClickListener {
+            Datas.instance.countSwitchSubject.onNext( (it as Switch).isChecked )
+        }
+        mBinding.densitySwitch.setOnClickListener {
+            Datas.instance.densitySwitchSubject.onNext( (it as Switch).isChecked )
         }
     }
 

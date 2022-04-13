@@ -74,7 +74,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/textView"
+                    android:id="@+id/textViewCounting"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -83,11 +83,11 @@
                     android:textSize="34sp" />
 
                 <ImageView
-                    android:id="@+id/imageView"
+                    android:id="@+id/imageViewDensity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    app:srcCompat="@android:drawable/divider_horizontal_dark" />
+                    app:srcCompat="@drawable/ic_launcher_background" />
             </LinearLayout>
 
             <ListView
