@@ -6,4 +6,19 @@
     android:layout_height="match_parent"
     tools:context=".AnalysisActivity">
 
+    <HorizontalScrollView
+        android:id="@+id/scrollHoriz"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SpeakableTextPresentCheck">
+
+        <im.dacer.androidcharts.LineView
+            android:id="@+id/lineView"
+            android:layout_width="wrap_content"
+            android:layout_height="300dp" />
+
+    </HorizontalScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,7 +2,10 @@ package com.example.ivcs_android.view.streaming
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
+import com.example.ivcs_android.StartActivity
 import com.example.ivcs_android.databinding.ActivityStreamingBinding
+import com.example.ivcs_android.model.Datas
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.source.MediaSource
@@ -24,10 +27,17 @@ class Streaming(context: Context, mBinding: ActivityStreamingBinding) {
 
     fun setPlayerURL(url : String){
         player!!.stop()
-        Log.e("arr","setPlayerUrl")
-        player!!.setMediaSource( getMediaSource(url) )
-        player!!.prepare()
-        player!!.playWhenReady = true
+        try {
+            player!!.setMediaSource( getMediaSource(url) )
+            player!!.prepare()
+            player!!.playWhenReady = true
+        }catch( e : Exception ) {
+            Toast.makeText(StartActivity.appContext,"5초후에 시도해주세요",Toast.LENGTH_SHORT).show()
+            Datas.instance.setInfo()
+        }
+//        player!!.setMediaSource( getMediaSource(url) )
+//        player!!.prepare()
+//        player!!.playWhenReady = true
     }
 
     private fun getMediaSource(urlStr : String) : MediaSource{
@@ -36,8 +46,6 @@ class Streaming(context: Context, mBinding: ActivityStreamingBinding) {
         var mHttpDataSFac = DefaultHttpDataSource.Factory()
         var mediaSource = HlsMediaSource.Factory(mHttpDataSFac).createMediaSource(mediaItem)
 
-//        return mediaSource.createMediaSource(mediaItem)
-        Log.e("미디어소스",mediaSource.initialTimeline.toString())
         return mediaSource
     }
     fun releasePlayer(){

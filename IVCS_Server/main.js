@@ -23,7 +23,7 @@ app.get("/getUrl", (req, res) => {
         console.log(data);
         getUrl_result.stderr.on('data', function(data) { console.log(data.toString()); });
         
-        console.log(data.toString().split("\n")[0]);
+        // console.log(data.toString().split("\n")[0]);
         res.send(data.toString().split("\n")[0]);
 
     });
@@ -41,8 +41,10 @@ io.on('connection',function(socket){
     socket.on("end", (data) => {
         console.log(data)
     })
-    socket.on("changeCCTV", (data) => {
+    socket.on("req_counting", (data) => {
         console.log(data)
+        var random = Math.random()
+        socket.emit("res_counting", random.toString())
     })
     // socket.on("hls_req", (data)=>{
     //     console.log("get camera id : ", data);

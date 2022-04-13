@@ -23,14 +23,9 @@ class Msocket {
             Log.e("ERR_setsocket", e.toString())
         }
 
-        mSocket.on("cctv") {
-            Log.e("Listen", "cctv")
-        }
-
-        mSocket.on("hls_res_test") {
-//            Datas.instance.changeUrlSubject.onNext(it[0].toString())
-            Datas.instance.linkArrSubject.onNext(it[0].toString())
-            Log.e("hls 주소", it[0].toString())
+        mSocket.on("res_counting") {
+            Log.e("Listen", "res_counting")
+            Datas.instance.changeCountText.onNext( "차량 수: "+it[0].toString() )
         }
     }
 

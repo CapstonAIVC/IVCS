@@ -1,53 +1,69 @@
 package com.example.ivcs_android
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.ivcs_android.databinding.ActivityStartBinding
+import com.example.ivcs_android.model.Consts
+import com.example.ivcs_android.model.Datas
 import com.example.ivcs_android.viewModel.Msocket
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.kotlin.subscribeBy
+import okhttp3.*
+import org.json.JSONObject
+import java.io.IOException
+import java.util.concurrent.TimeUnit
 
 class StartActivity : AppCompatActivity() {
 
-    var permissionGranted = false
+    companion object{
+        lateinit var appContext : Context
+    }
     lateinit var startBinding : ActivityStartBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         startBinding = ActivityStartBinding.inflate(layoutInflater)
         setContentView(startBinding.root)
+        appContext = applicationContext
 
         checkPermissions()
+    }
+
+    fun setWithInternet(){
         Msocket.instance.setSocket()
-        setBts()
+        Datas.instance.setInfo()
     }
 
     fun setBts(){
         startBinding.btGoToStreaming.setOnClickListener {
-            if(permissionGranted){
-                if(Msocket.instance.mSocket == null) Msocket.instance.setSocket()
-                val intent = Intent(applicationContext,StreamingActivity::class.java)
-                startActivity(intent)
+            if(Msocket.instance.mSocket == null) Msocket.instance.setSocket()
+            val intent = Intent(applicationContext,StreamingActivity::class.java)
+            if(Datas.instance.arrForUrl.isEmpty()){
+                Datas.instance.setInfo()
+                Toast.makeText(this,"cctv정보 로딩",Toast.LENGTH_SHORT).show()
+                Observable.just(0)
+                    .delay(2L,TimeUnit.SECONDS)
+                    .subscribe {
+                        startActivity(intent)
+                    }
             }
-            else{
-                Log.e("btGotoStreaming","permission not granted")
-                checkPermissions()
+            else {
+                startActivity(intent)
             }
         }
         startBinding.btGoToAnalysis.setOnClickListener {
-            if(permissionGranted){
-                if(Msocket.instance.mSocket == null) Msocket.instance.setSocket()
-                val intent = Intent(applicationContext,AnalysisActivity::class.java)
-                startActivity(intent)
-            }
-            else{
-                checkPermissions()
-            }
+            if(Msocket.instance.mSocket == null) Msocket.instance.setSocket()
+            val intent = Intent(applicationContext,AnalysisActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -68,13 +84,15 @@ class StartActivity : AppCompatActivity() {
         }
         //거절된 퍼미션이 있다면...
         if(rejectedPermissionList.isNotEmpty()){
-            permissionGranted = false
             //권한 요청!
             val array = arrayOfNulls<String>(rejectedPermissionList.size)
             ActivityCompat.requestPermissions(this, rejectedPermissionList.toArray(array), 100)
+
+            checkPermissions()
         }
         else{
-            permissionGranted = true
+            setWithInternet()
+            setBts()
         }
     }
 }
