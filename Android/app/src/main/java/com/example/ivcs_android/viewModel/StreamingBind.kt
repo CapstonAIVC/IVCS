@@ -16,7 +16,7 @@ class StreamingBind(streaming : Streaming, mBinding : ActivityStreamingBinding) 
     var streaming = streaming
     var mBinding = mBinding
 
-    lateinit var countData : Disposable
+    var countData : Disposable = Disposable.empty()
 
     fun initStreamingBind(){
         bindForUrl()
