@@ -11,10 +11,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@videojs/http-streaming": "^2.14.1",
     "ejs": "^3.1.6",
     "express": "^4.17.3",
+    "hls.js": "^1.1.5",
     "http": "^0.0.1-security",
+    "main.js": "0.0.1",
     "socket.io": "^4.4.1",
-    "socketio": "^1.0.0"
+    "socketio": "^1.0.0",
+    "video.js": "^7.18.1",
+    "videojs-contrib-hls": "^5.15.0"
   }
 }
