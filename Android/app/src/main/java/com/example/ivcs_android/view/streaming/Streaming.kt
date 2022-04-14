@@ -33,7 +33,7 @@ class Streaming(context: Context, mBinding: ActivityStreamingBinding) {
             player!!.prepare()
             player!!.playWhenReady = true
         }catch( e : Exception ) {
-            Toast.makeText(StartActivity.appContext,"url을 갱신해주세요",Toast.LENGTH_SHORT).show()
+            Toast.makeText(StartActivity.appContext,"url을 위해 다시 클릭해주세요",Toast.LENGTH_SHORT).show()
             Datas.instance.arrForListView = Array<String>(0){""}
             (mContext as StreamingActivity).finish()
         }

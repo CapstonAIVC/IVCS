@@ -1,6 +1,7 @@
 package com.example.ivcs_android.viewModel
 
 import android.R
+import android.app.Activity
 import android.content.Context
 import android.util.Log
 import android.widget.ArrayAdapter
@@ -27,6 +28,7 @@ class AnalysisBind(context: Context, mBinding: ActivityAnalysisBinding) {
         Datas.instance.analysisTypeChange
             .subscribe(
                 {
+                    Msocket.instance.checkSocket(context as Activity)
                     var str = "{\"cctvname\":\"${Datas.instance.analName}\",\"type\":\"${Datas.instance.analType}\"}"
                     Msocket.instance.mSocket.emit("req_analysis", str )
                 },

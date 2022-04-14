@@ -1,6 +1,8 @@
 package com.example.ivcs_android.viewModel
 
+import android.app.Activity
 import android.util.Log
+import android.widget.Toast
 import com.example.ivcs_android.model.Consts
 import com.example.ivcs_android.model.Datas
 import io.socket.client.IO
@@ -31,6 +33,13 @@ class Msocket {
         mSocket.on("res_analysis") {
             Log.e("Listen", "res_analysis")
             Datas.instance.analysisDataChange.onNext(it[0].toString())
+        }
+    }
+
+    fun checkSocket(activity : Activity){
+        if(!Msocket.instance.mSocket.connected()){
+            Toast.makeText(activity.applicationContext,"소켓 연결 해제됨", Toast.LENGTH_SHORT).show()
+            activity.finish()
         }
     }
 

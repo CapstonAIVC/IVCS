@@ -45,31 +45,31 @@ class StartActivity : AppCompatActivity() {
 
     fun setBts(){
         startBinding.btGoToStreaming.setOnClickListener {
-            if(!Msocket.instance.mSocket.connected()) Msocket.instance.setSocket()
-            val intent = Intent(applicationContext,StreamingActivity::class.java)
-            if(Datas.instance.arrForUrl.isEmpty()){
-//                Datas.instance.setInfo()
-                Toast.makeText(this,"서버 연결 불안정",Toast.LENGTH_SHORT).show()
-//                Observable.just(0)
-//                    .delay(2L,TimeUnit.SECONDS)
-//                    .subscribe {
-//                        startActivity(intent)
-//                    }
-            }
-            else {
+            if(checkInternetResources()) {
+                val intent = Intent(applicationContext, StreamingActivity::class.java)
                 startActivity(intent)
             }
         }
         startBinding.btGoToAnalysis.setOnClickListener {
-            if(!Msocket.instance.mSocket.connected()) Msocket.instance.setSocket()
-            val intent = Intent(applicationContext,AnalysisActivity::class.java)
-            if(Datas.instance.arrForUrl.isEmpty()){
-                Toast.makeText(this,"서버 연결 불안정",Toast.LENGTH_SHORT).show()
-            }
-            else {
+            if(checkInternetResources()) {
+                val intent = Intent(applicationContext, AnalysisActivity::class.java)
                 startActivity(intent)
             }
         }
+    }
+
+    private fun checkInternetResources() : Boolean{
+        if(!Msocket.instance.mSocket.connected()){
+            Msocket.instance.setSocket()
+            Toast.makeText(this,"소켓 연결중, 잠시 후 시도",Toast.LENGTH_SHORT).show()
+            return false
+        }
+        else if (Datas.instance.arrForUrl.isEmpty()) {
+            Datas.instance.setInfo()
+            Toast.makeText(this, "서버 정보 요청중", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        return true
     }
 
     //퍼미션 체크 및 권한 요청 함수

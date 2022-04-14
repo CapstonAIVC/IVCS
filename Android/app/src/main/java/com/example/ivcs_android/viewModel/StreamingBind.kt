@@ -1,7 +1,10 @@
 package com.example.ivcs_android.viewModel
 
+import android.app.Activity
 import android.util.Log
 import android.view.View
+import android.widget.Toast
+import com.example.ivcs_android.StreamingActivity
 import com.example.ivcs_android.databinding.ActivityStreamingBinding
 import com.example.ivcs_android.model.Datas
 import com.example.ivcs_android.view.streaming.Streaming
@@ -44,6 +47,7 @@ class StreamingBind(streaming : Streaming, mBinding : ActivityStreamingBinding) 
                         mBinding.textViewCounting.visibility = View.VISIBLE
                         countData = Observable.interval(1,TimeUnit.SECONDS)
                             .subscribe {
+                                Msocket.instance.checkSocket( streaming.mContext as Activity )
                                 Msocket.instance.mSocket.emit("req_counting",Datas.instance.cctvName)
                             }
                     }
@@ -79,4 +83,6 @@ class StreamingBind(streaming : Streaming, mBinding : ActivityStreamingBinding) 
                 { Log.e("bindForUrlErr",it.message.toString())}
             )
     }
+
+
 }
