@@ -45,25 +45,30 @@ class StartActivity : AppCompatActivity() {
 
     fun setBts(){
         startBinding.btGoToStreaming.setOnClickListener {
-            if(Msocket.instance.mSocket == null) Msocket.instance.setSocket()
+            if(!Msocket.instance.mSocket.connected()) Msocket.instance.setSocket()
             val intent = Intent(applicationContext,StreamingActivity::class.java)
             if(Datas.instance.arrForUrl.isEmpty()){
-                Datas.instance.setInfo()
-                Toast.makeText(this,"cctv정보 로딩",Toast.LENGTH_SHORT).show()
-                Observable.just(0)
-                    .delay(2L,TimeUnit.SECONDS)
-                    .subscribe {
-                        startActivity(intent)
-                    }
+//                Datas.instance.setInfo()
+                Toast.makeText(this,"서버 연결 불안정",Toast.LENGTH_SHORT).show()
+//                Observable.just(0)
+//                    .delay(2L,TimeUnit.SECONDS)
+//                    .subscribe {
+//                        startActivity(intent)
+//                    }
             }
             else {
                 startActivity(intent)
             }
         }
         startBinding.btGoToAnalysis.setOnClickListener {
-            if(Msocket.instance.mSocket == null) Msocket.instance.setSocket()
+            if(!Msocket.instance.mSocket.connected()) Msocket.instance.setSocket()
             val intent = Intent(applicationContext,AnalysisActivity::class.java)
-            startActivity(intent)
+            if(Datas.instance.arrForUrl.isEmpty()){
+                Toast.makeText(this,"서버 연결 불안정",Toast.LENGTH_SHORT).show()
+            }
+            else {
+                startActivity(intent)
+            }
         }
     }
 

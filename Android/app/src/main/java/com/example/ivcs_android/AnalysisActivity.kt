@@ -1,36 +1,41 @@
 package com.example.ivcs_android
 
+import android.R
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.ArrayAdapter
 import com.example.ivcs_android.databinding.ActivityAnalysisBinding
+import com.example.ivcs_android.model.Datas
+import com.example.ivcs_android.view.analysis.SetAnalysisViews
+import com.example.ivcs_android.viewModel.AnalysisBind
 import im.dacer.androidcharts.LineView
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
 
 class AnalysisActivity : AppCompatActivity() {
 
-    lateinit var analisysBinding : ActivityAnalysisBinding
-    lateinit var lineView : LineView
-    var bottomArr = ArrayList<String>()
-    var dataArr = ArrayList<ArrayList<Int>>()
+    lateinit var analysisBinding : ActivityAnalysisBinding
+    lateinit var analysisBind : AnalysisBind
+    lateinit var setAnalysisViews : SetAnalysisViews
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        analisysBinding = ActivityAnalysisBinding.inflate(layoutInflater)
-        setContentView(analisysBinding.root)
+        analysisBinding = ActivityAnalysisBinding.inflate(layoutInflater)
+        setContentView(analysisBinding.root)
 
-        //test//
-        dataArr.add( arrayListOf(1,4,7,5,3,6,8,4,30,7,40) )
-        for(i in 0..10){
-            bottomArr.add(i.toString())
-        }
-        setLineView()
-    }
+        // lineView 속성 세팅
+        analysisBinding.lineView.layoutParams.height = resources.displayMetrics.heightPixels/2
+        analysisBinding.lineView.setDrawDotLine(false)
+        analysisBinding.lineView.setShowPopup(LineView.SHOW_POPUPS_All)
 
-    fun setLineView(){
-        lineView = analisysBinding.lineView
-        lineView.layoutParams.height = resources.displayMetrics.heightPixels/2
-        lineView.setDrawDotLine(false)
-        lineView.setShowPopup(LineView.SHOW_POPUPS_All)
-        lineView.setBottomTextList(bottomArr)
-        lineView.setDataList(dataArr); //or lineView.setFloatDataList(floatDataLists)
+        analysisBind = AnalysisBind(this, analysisBinding)
+        analysisBind.bindForAnalysis()
+
+        setAnalysisViews = SetAnalysisViews(this,analysisBinding)
+        setAnalysisViews.setViews()
+
+        // 처음 세팅
+        Datas.instance.analName = Datas.instance.arrForListView[0]
+        analysisBinding.rBtDay.performClick()
     }
 }

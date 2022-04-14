@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import com.example.ivcs_android.StartActivity
+import com.example.ivcs_android.StreamingActivity
 import com.example.ivcs_android.databinding.ActivityStreamingBinding
 import com.example.ivcs_android.model.Datas
 import com.google.android.exoplayer2.ExoPlayer
@@ -32,8 +33,9 @@ class Streaming(context: Context, mBinding: ActivityStreamingBinding) {
             player!!.prepare()
             player!!.playWhenReady = true
         }catch( e : Exception ) {
-            Toast.makeText(StartActivity.appContext,"5초후에 시도해주세요",Toast.LENGTH_SHORT).show()
-            Datas.instance.setInfo()
+            Toast.makeText(StartActivity.appContext,"url을 갱신해주세요",Toast.LENGTH_SHORT).show()
+            Datas.instance.arrForListView = Array<String>(0){""}
+            (mContext as StreamingActivity).finish()
         }
 //        player!!.setMediaSource( getMediaSource(url) )
 //        player!!.prepare()

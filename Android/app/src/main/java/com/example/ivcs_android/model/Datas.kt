@@ -14,17 +14,23 @@ class Datas {
         var instance = Datas()
     }
 
-    // 스트리밍 링크 정보
+    // 스트리밍 관련
     var arrForListView : Array<String> = Array<String>(0){""}
     var arrForUrl : Array<String> = Array<String>(0){""}
     var cctvName = ""
-
+    // url 변경 관련
     var changeUrlSubject : PublishSubject<String> = PublishSubject.create()
 
+    // 교통량 측정 관련
     var countSwitchSubject : BehaviorSubject<Boolean> = BehaviorSubject.createDefault(false)
     var densitySwitchSubject : BehaviorSubject<Boolean> = BehaviorSubject.createDefault(false)
-
     var changeCountText : BehaviorSubject<String> = BehaviorSubject.createDefault("차량 수: ")
+
+    // analysis 관련
+    var analysisTypeChange : PublishSubject<Boolean> = PublishSubject.create()
+    var analName = ""
+    var analType = Consts.day
+    var analysisDataChange : PublishSubject<String> = PublishSubject.create()
 
     fun setInfo(){
         val url = Consts.localhost+Consts.getUrl

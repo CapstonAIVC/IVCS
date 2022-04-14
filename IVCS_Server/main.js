@@ -1,3 +1,4 @@
+const { json } = require('express');
 const express = require('express');
 const { url } = require('inspector');
 const app=express();
@@ -35,16 +36,23 @@ io.on('connection',function(socket){
     const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     console.log('새로운 클라이언트 접속', ip, socket.id, req.ip);
 
-    socket.on("start", (data) => {
-        console.log(data)
-    })
-    socket.on("end", (data) => {
-        console.log(data)
-    })
     socket.on("req_counting", (data) => {
+        // 임시 기능
         console.log(data)
         var random = Math.random()
         socket.emit("res_counting", random.toString())
+    })
+    socket.on("req_analysis", (data) => {
+        // 임시 기능
+        var obj = JSON.parse(data.toString())
+        var cctvname = obj.cctvname
+        var type = obj.type
+        var testdata = Array()
+        for (i=0;i<12;i++){
+            testdata.push( parseInt(Math.random()*10) )
+        }
+        console.log(testdata)
+        socket.emit("res_analysis", { "data": testdata, "type": type.toString() })
     })
     // socket.on("hls_req", (data)=>{
     //     console.log("get camera id : ", data);

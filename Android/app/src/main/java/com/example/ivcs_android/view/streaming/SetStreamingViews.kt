@@ -27,20 +27,11 @@ class SetStreamingViews(context: Context, mBinding: ActivityStreamingBinding) {
     }
 
     fun setListView(){
-        mBinding.cctvList.setOnItemClickListener { adapterView, view, i, l ->
+        mBinding.cctvList.setOnItemClickListener { _, _, i, _ ->
             Datas.instance.cctvName = Datas.instance.arrForListView[i]
             Datas.instance.changeUrlSubject.onNext(Datas.instance.arrForUrl[i])
         }
-        setAdapter()
     }
-
-    fun setAdapter(){
-        var mAdapter = ArrayAdapter<String>(context,android.R.layout.simple_list_item_1,Datas.instance.arrForListView)
-        Observable.just(mAdapter)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {mBinding.cctvList.adapter = mAdapter}
-    }
-
 
     fun setSwitchs(){
         mBinding.countingSwitch.setOnClickListener {

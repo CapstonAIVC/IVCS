@@ -27,6 +27,11 @@ class Msocket {
             Log.e("Listen", "res_counting")
             Datas.instance.changeCountText.onNext( "차량 수: "+it[0].toString() )
         }
+
+        mSocket.on("res_analysis") {
+            Log.e("Listen", "res_analysis")
+            Datas.instance.analysisDataChange.onNext(it[0].toString())
+        }
     }
 
 }
