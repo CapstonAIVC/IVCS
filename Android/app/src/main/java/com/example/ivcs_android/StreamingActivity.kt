@@ -55,6 +55,7 @@ class StreamingActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         mStreaming.releasePlayer()
+        Datas.instance.countSwitchSubject.onNext(false)
     }
 
 }
