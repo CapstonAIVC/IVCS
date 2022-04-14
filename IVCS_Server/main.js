@@ -44,6 +44,9 @@ io.on('connection',function(socket){
     socket.on("changeCCTV", (data) => {
         console.log(data)
     })
+    socket.on("modelOutput", (data) => {
+        console.log(data)
+    })
     // socket.on("hls_req", (data)=>{
     //     console.log("get camera id : ", data);
 
