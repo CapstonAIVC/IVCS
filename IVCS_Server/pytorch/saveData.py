@@ -1,28 +1,36 @@
-# from flask import Flask
-# from flask_socketio import SocketIO
-import eventlet
-import socketio
+from datetime import datetime
+from pytz import timezone
+import os
+
+import requests
+import json
+
+from flask import Flask
+from flask_socketio import SocketIO
+
+app = Flask(__name__)
+socketio = SocketIO(app)
+
+HOST = 'localhost'
+PORT = 5000
+ROOT_PATH = './'
+
+response = requests.get('http://localhost:3000/getUrl')
+total_info = eval(json.loads(response.text))
+cctvname = total_info['cctvname']
+data = {'cctv'}
+
+def get_time():
+    time = datetime.now(timezone("Asia/Seoul"))
+
+@socketio.on('model_output')
+def get_data(output):
+    # print('received data: ' + output)
 
 
-sio = socketio.Server()
-app = socketio.WSGIApp(sio)
-
-@sio.event
-def connect(sid, environ):
-    print('connect ', sid)
-    my_message(sid, {'Test': 'Message'})
+@socketio.on('req_data')
+def send_data(cctv_time):
 
 
-@sio.event
-def my_message(sid, data):
-    sio.send(data)
-    print('Send message ', data)
-
-
-@sio.event
-def disconnect(sid):
-    print('disconnect ', sid)
-
-
-if __name__ == '__main__':
-    eventlet.wsgi.server(eventlet.listen(('', 5000)), app)
+if __name__ == "__main__":
+    socketio.run(app, debug=True, host=HOST, port=PORT)
