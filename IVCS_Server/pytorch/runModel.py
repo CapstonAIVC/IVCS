@@ -20,8 +20,13 @@ def setmodel():
     model.eval()  # set model to evaluation mode
 
     return model
-    
 
+r"""
+    Address 서버와의 Connection & Function
+    connect() : 서버와 연결
+    connect_error() : 연결 실패시 에러 발생
+    disconnect() : 서버와의 연결 종료
+"""
 sio = socketio.Client()
 sio.connect('http://localhost:3000')
 
@@ -37,14 +42,36 @@ def connect_error(data):
 def disconnect():
     print("Address Server disconnected")
 
-if __name__ == '__main__':
-    model = setmodel()
-    num = 1
 
-    response = requests.get('http://localhost:3000/getUrl')
-    total_info = eval(json.loads(response.text))
-    cctvname = total_info['cctvname']
-    cctvurl = total_info['cctvurl']
+r"""
+    데이터 저장 서버와의 Connection & Function
+    connect() : 서버와 연결
+    connect_error() : 연결 실패시 에러 발생
+    disconnect() : 서버와의 연결 종료
+"""
+sio_saveData = socketio.Client()
+sio_saveData.connect('http://localhost:5000')
+
+@sio_saveData.event
+def connect():
+    print("Address Server connected")
+
+@sio_saveData.event
+def connect_error(data):
+    print("The connection failed!")
+
+@sio_saveData.event
+def disconnect():
+    print("Address Server disconnected")
+
+if __name__ == '__main__':
+#     model = setmodel()
+#     num = 1
+
+#     response = requests.get('http://localhost:3000/getUrl')
+#     total_info = eval(json.loads(response.text))
+#     cctvname = total_info['cctvname']
+#     cctvurl = total_info['cctvurl']
 
     # while True:
     #     print(num)
@@ -59,3 +86,5 @@ if __name__ == '__main__':
     #     # sio.emit('modelOutput', {"cctvname": "테스트이름", "time":"20xx-0x-xx", "count":str(count_pred[4][0].item())})
     #     sio.emit('modelOutput', str(count_pred[4][0].item()))
     #     print("done")
+
+    sio_saveData.emit('model_output', "plz")
