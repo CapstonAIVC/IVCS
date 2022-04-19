@@ -1,11 +1,40 @@
-# from msvcrt import setmode
-import cv2
 import time
-import socketio
 from model import FCN_rLSTM
 import torch
 import requests
 import json
+import cv2
+import sys
+from threading import Thread
+
+
+cctvname = []
+cctvurl = []
+streamingList = []
+
+class ThreadedCamera(object):
+    def __init__(self, src=0):
+        self.capture = cv2.VideoCapture(src)
+        self.capture.set(cv2.CAP_PROP_BUFFERSIZE, 2)
+
+        # FPS = 1/X
+        # X = desired FPS
+        self.FPS = 1/self.capture.get(cv2.CAP_PROP_FPS)
+        self.FPS_MS = int(self.FPS * 1000)
+
+        # Start frame retrieval thread
+        self.thread = Thread(target=self.update, args=())
+        self.thread.daemon = True
+        self.thread.start()
+
+    def update(self):
+        while True:
+            if self.capture.isOpened():
+                (self.status, self.frame) = self.capture.read()
+            time.sleep(self.FPS)
+
+    def get_frame(self):
+        return self.frame
 
 def setmodel():
     args = {"model_path":'./model/fcn_rlstm_only_wct.pth', "dataset":"WebCamT", "data_path":"./data/WebCamT/origin2_pickle",
@@ -20,42 +49,45 @@ def setmodel():
     model.eval()  # set model to evaluation mode
 
     return model
-    
 
-sio = socketio.Client()
-sio.connect('http://localhost:3000')
-
-@sio.event
-def connect():
-    print("Address Server connected")
-
-@sio.event
-def connect_error(data):
-    print("The connection failed!")
-
-@sio.event
-def disconnect():
-    print("Address Server disconnected")
-
-if __name__ == '__main__':
-    model = setmodel()
-    num = 1
-
+def setInfo():
     response = requests.get('http://localhost:3000/getUrl')
     total_info = eval(json.loads(response.text))
-    cctvname = total_info['cctvname']
-    cctvurl = total_info['cctvurl']
+    for name in total_info['cctvname']:
+        cctvname.append(name)
+    for url in total_info['cctvurl']:
+        cctvurl.append(url)
+    
+def setStreaming():
+    for url in cctvurl :
+        streamingList.append(ThreadedCamera(url))
+        # cap = cv2.VideoCapture(url)
+        # cap.set(cv2.CAP_PROP_FPS, 1)
+        # cap.set(cv2.CAP_PROP_POS_MSEC, 1000)
+        # cap.set(cv2.CAP_PROP_BUFFERSIZE, 2)
+        # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 160)
+        # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 120)
+        # streamingList.append(cap)
 
-    # while True:
-    #     print(num)
-    #     num += 1
 
-    #     # time.sleep(1)
 
-    #     X = torch.zeros([5,1,3,120,160])
-    #     mask = torch.zeros([5,1,120,160])
-    #     with torch.no_grad():
-    #         density_pred, count_pred = model(X, mask=mask)
-    #     # sio.emit('modelOutput', {"cctvname": "테스트이름", "time":"20xx-0x-xx", "count":str(count_pred[4][0].item())})
-    #     sio.emit('modelOutput', str(count_pred[4][0].item()))
-    #     print("done")
+if __name__ == '__main__':
+
+    setInfo()
+    setStreaming()
+    # model = setmodel()
+
+    seq = 1
+    while True:
+        time.sleep(1)
+
+        frame = streamingList[0].get_frame()
+        cv2.imwrite("./test/{}.jpg".format(seq), frame)
+        # X = torch.zeros([5,1,3,120,160])
+        # mask = torch.zeros([5,1,120,160])
+        # with torch.no_grad():
+        #     density_pred, count_pred = model(X, mask=mask)
+        # sio.emit('modelOutput', {"cctvname": "테스트이름", "time":"20xx-0x-xx", "count":str(count_pred[4][0].item())})
+        # sio.emit('modelOutput', str(count_pred[4][0].item()))
+        seq += 1
+        print("done")
