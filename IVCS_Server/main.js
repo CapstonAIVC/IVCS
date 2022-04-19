@@ -11,22 +11,24 @@ app.use(express.static(__dirname + "/"))
 // console.log(__dirname)
 // app.use("/", express.static('./'));
 
+information = ""
+
 app.get("/client", (req, res) => {
     res.render("client",{})
 })
 
 app.get("/getUrl", (req, res) => {
-    const getUrl_spawn = require('child_process').spawn;
-    const getUrl_result = getUrl_spawn('python3', ['./pytorch/getInfo.py', '1', api_key]);
-    getUrl_result.stdout.on('data', (data) => {
-        // const json_result = JSON.parse(data);
-        console.log(data);
-        getUrl_result.stderr.on('data', function(data) { console.log(data.toString()); });
+    // const getUrl_spawn = require('child_process').spawn;
+    // const getUrl_result = getUrl_spawn('python3', ['./pytorch/getInfo.py', '1', api_key]);
+    // getUrl_result.stdout.on('data', (data) => {
+    //     // const json_result = JSON.parse(data);
+    //     console.log(data);
+    //     getUrl_result.stderr.on('data', function(data) { console.log(data.toString()); });
         
-        console.log(data.toString().split("\n")[0]);
-        res.send(data.toString().split("\n")[0]);
-
-    });
+    //     console.log(data.toString().split("\n")[0]);
+        // res.send(data.toString().split("\n")[0]);
+    res.json(information);
+    // });
 })
 
 // socket
@@ -46,6 +48,8 @@ io.on('connection',function(socket){
     })
     socket.on("modelOutput", (data) => {
         console.log(data)
+        // socket.emit("live_res", {"cctvname":"test"data});
+        // sio.emit('modelOutput', {"cctvname": "테스트이름", "time":"20xx-0x-xx", "count":str(count_pred[4][0].item())})
     })
     // socket.on("hls_req", (data)=>{
     //     console.log("get camera id : ", data);
@@ -68,5 +72,17 @@ io.on('connection',function(socket){
 });
 
 server.listen(3000,()=>{
+    const getUrl_spawn = require('child_process').spawn;
+    const getUrl_result = getUrl_spawn('python3', ['./pytorch/getInfo.py', '1', api_key]);
+    getUrl_result.stdout.on('data', (data) => {
+        // const json_result = JSON.parse(data);
+        // console.log(data);
+        getUrl_result.stderr.on('data', function(data) { console.log(data.toString()); });
+        
+        // console.log(data.toString().split("\n")[0]);
+        // console.log(data.toString());
+        // res.send(data.toString().split("\n")[0]);
+        information = data.toString().split("\n")[0]
+    });
     console.log('Socket IO server listening on port ');
 });
