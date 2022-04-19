@@ -12,6 +12,23 @@ from torchvision import transforms
 import numpy as np
 from PIL import Image
 
+import socketio
+
+sio_saveData = socketio.Client()
+sio_saveData.connect('http://localhost:5000')
+
+@sio_saveData.event
+def connect():
+    print("Data API Server connected")
+
+@sio_saveData.event
+def connect_error(data):
+    print("The connection failed!")
+
+@sio_saveData.event
+def disconnect():
+    print("Data API Server disconnected")
+
 ## 모든 목록의 index는 같습니다.
 cctvname = []
 cctvurl = []
@@ -98,29 +115,6 @@ def addFramesByTensor(index):
 def popFrames():
     for i in range(0,len(streamingList)):
         tensorList[i].pop(0)
-
-
-
-r"""
-    데이터 저장 서버와의 Connection & Function
-    connect() : 서버와 연결
-    connect_error() : 연결 실패시 에러 발생
-    disconnect() : 서버와의 연결 종료
-"""
-sio_saveData = socketio.Client()
-sio_saveData.connect('http://localhost:5000')
-
-@sio_saveData.event
-def connect():
-    print("Address Server connected")
-
-@sio_saveData.event
-def connect_error(data):
-    print("The connection failed!")
-
-@sio_saveData.event
-def disconnect():
-    print("Address Server disconnected")
 
 if __name__ == '__main__':
 
