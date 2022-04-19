@@ -18,7 +18,7 @@ cctvurl = []
 streamingList = []
 ## tesorList의 각 원소는 tensor를 가지는 list이다.
 tensorList = []
-trans = transforms.Compose([transforms.Resize((160,120)), 
+trans = transforms.Compose([transforms.Resize((120,160)), 
                         transforms.ToTensor(),
                         # transforms.Normalize((0.5,0.5,0.5), (0.5,0.5,0.5))
                         ])
@@ -83,13 +83,6 @@ def setInfo():
 def setStreaming():
     for url in cctvurl :
         streamingList.append(ThreadedCamera(url))
-        # cap = cv2.VideoCapture(url)
-        # cap.set(cv2.CAP_PROP_FPS, 1)
-        # cap.set(cv2.CAP_PROP_POS_MSEC, 1000)
-        # cap.set(cv2.CAP_PROP_BUFFERSIZE, 2)
-        # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 160)
-        # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 120)
-        # streamingList.append(cap)
 
 def addFramesByTensor(index):
     for i in range(0,len(streamingList)):
@@ -139,7 +132,7 @@ if __name__ == '__main__':
                 density_pred, count_pred = model(X, mask=mask)
             print(cctvname[i] + "\'s predict is "+str(count_pred))
         
-        
+
         # sio.emit('modelOutput', {"cctvname": "테스트이름", "time":"20xx-0x-xx", "count":str(count_pred[4][0].item())})
         # sio.emit('modelOutput', str(count_pred[4][0].item()))
 
