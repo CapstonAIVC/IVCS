@@ -49,6 +49,7 @@ def get_data(output):
     for idx, cctv in enumerate(cctvname):
         # data[cctv].append([time_info, output[idx]])
         # tmp.append(output[idx])
+        data[cctv].append([time_info, output])
         tmp.append(output)
     latest = tmp
 
@@ -67,8 +68,7 @@ def make_cctv_dir():
     for cctv in cctvname:
         if not os.path.isdir(ROOT_PATH+'/'+cctv):
             os.mkdir(ROOT_PATH+'/'+cctv)
-            # data[cctv] = []
-            data.update({cctv:[]})
+        data.update({cctv:[]})
 
     print(data)
 
