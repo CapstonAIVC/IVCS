@@ -22,7 +22,7 @@ response = requests.get('http://localhost:3000/getUrl')
 total_info = eval(json.loads(response.text))
 cctvname = total_info['cctvname']
 data = {}
-newist = []
+latest = []
 
 time_tmp = -1 # 이전 시간 정보 저장
 
@@ -44,11 +44,11 @@ def get_data(output):
     for idx, cctv in enumerate(cctvname):
         data[cctv].append([time_info, output[idx]])
         tmp.append(output[idx])
-    newist = tmp
+    latest = tmp
 
 @socketio.on('request_counting')
 def startCounting( cctvIdx = 0 ):
-    socketio.emit('counting', newist[cctvIdx], request.sid)
+    socketio.emit('counting', latest[cctvIdx], request.sid)
 
 
 # @socketio.on('req_data')
