@@ -1,6 +1,7 @@
 from datetime import datetime
 from pytz import timezone
 import os
+import copy
 
 import requests
 import json
@@ -22,33 +23,54 @@ response = requests.get('http://localhost:3000/getUrl')
 total_info = eval(json.loads(response.text))
 cctvname = total_info['cctvname']
 data = {}
+latest = []
 
-time_tmp = -1 # 이전 시간 정보 저장
+# time_tmp = -1 # 이전 시간 정보 저장
+time_tmp = datetime.now(timezone("Asia/Seoul"))
 
 @socketio.on('model_output')
 def get_data(output):
+    global time_tmp, data, latest, cctvname
+    print(output)
     current_time = datetime.now(timezone("Asia/Seoul"))
 
     if time_tmp.hour != current_time.hour:
-        saveThread=SaveCSV(data, time_tmp)
-        saveThread.start()
-
         time_tmp = current_time
+        save_data = copy.deepcopy(data)
         data.clear()
+        saveThread=SaveCSV(save_data, time_tmp)
+        saveThread.start()
+        
+        
     
     time_info = str(current_time.minute) + '-' + str(current_time.second)
+
+    tmp = []
     for idx, cctv in enumerate(cctvname):
-        data[cctv].append([time_info, output[idx]])
+        # data[cctv].append([time_info, output[idx]])
+        # tmp.append(output[idx])
+        tmp.append(output)
+    latest = tmp
+
+@socketio.on('request_counting')
+def startCounting( cctvIdx = 0 ):
+    socketio.emit('counting', latest[cctvIdx], request.sid)
+
 
 # @socketio.on('req_data')
 # def send_data(cctv_time):
 
 # cctv ID에 따른 저장 경로 생성
 def make_cctv_dir():
+    global data, cctvname
+
     for cctv in cctvname:
         if not os.path.isdir(ROOT_PATH+'/'+cctv):
             os.mkdir(ROOT_PATH+'/'+cctv)
-            data[cctv] = []
+            # data[cctv] = []
+            data.update({cctv:[]})
+
+    print(data)
 
 class SaveCSV(threading.Thread):
     def __init__(self, data, time_info):
@@ -74,10 +96,9 @@ class SaveCSV(threading.Thread):
         
 
 if __name__ == "__main__":
-    if time_tmp == -1: time_tmp = datetime.now(timezone("Asia/Seoul"))
-
-    socketio.run(app, debug=True, host=HOST, port=PORT)
-
+    # if time_tmp == -1: time_tmp = datetime.now(timezone("Asia/Seoul"))
     if not os.path.isdir(ROOT_PATH):
         os.mkdir(ROOT_PATH)
     make_cctv_dir()
+
+    socketio.run(app, debug=True, host=HOST, port=PORT)

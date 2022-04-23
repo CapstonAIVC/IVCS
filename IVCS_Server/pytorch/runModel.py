@@ -135,6 +135,7 @@ if __name__ == '__main__':
         else:
             index += 1
 
+        result = []
         for i in range(len(tensorList)):
             ## queue 
             X = tensorList[i][index] ## 리스트 중 첫 프레임
@@ -146,7 +147,10 @@ if __name__ == '__main__':
             mask = torch.zeros([5,1,120,160])
             with torch.no_grad():
                 density_pred, count_pred = model(X, mask=mask)
-            print(cctvname[i] + "\'s predict is "+str(count_pred))
+            # print(cctvname[i] + "\'s predict is "+str(count_pred))
+            result.append(count_pred)
+
+        sio_saveData.emit('model_output', "plz")
         
 
         # sio.emit('modelOutput', {"cctvname": "테스트이름", "time":"20xx-0x-xx", "count":str(count_pred[4][0].item())})
