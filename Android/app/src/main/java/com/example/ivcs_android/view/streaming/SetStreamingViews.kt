@@ -28,7 +28,8 @@ class SetStreamingViews(context: Context, mBinding: ActivityStreamingBinding) {
 
     fun setListView(){
         mBinding.cctvList.setOnItemClickListener { _, _, i, _ ->
-            Datas.instance.cctvName = Datas.instance.arrForListView[i]
+//            Datas.instance.cctvName = Datas.instance.arrForListView[i]
+            Datas.instance.cctvIdx = i
             Datas.instance.changeUrlSubject.onNext(Datas.instance.arrForUrl[i])
         }
     }

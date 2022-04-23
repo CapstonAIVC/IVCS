@@ -18,6 +18,8 @@ class Datas {
     var arrForListView : Array<String> = Array<String>(0){""}
     var arrForUrl : Array<String> = Array<String>(0){""}
     var cctvName = ""
+    var cctvIdx = 0
+
     // url 변경 관련
     var changeUrlSubject : PublishSubject<String> = PublishSubject.create()
 
@@ -42,15 +44,16 @@ class Datas {
                 Log.e("getNamesFailed",e.message.toString())
             }
             override fun onResponse(call: Call, response: Response) {
-                var jsonObj = JSONObject(response.body!!.string())
-                var jsonArrCctvName = jsonObj.getJSONArray("cctvname")
-                var jsonArrUrl = jsonObj.getJSONArray("cctvurl")
-                arrForListView = Array(jsonArrCctvName.length()) {""}
-                arrForUrl = Array(jsonArrCctvName.length()) {""}
-                for( i in 0 until jsonArrCctvName.length()){
-                    arrForListView[i] = jsonArrCctvName.getString(i)
-                    arrForUrl[i] = jsonArrUrl.getString(i)
-                }
+                Log.e("debug", response.body.toString())
+//                var jsonObj = JSONObject(response.body!!.string())
+//                var jsonArrCctvName = jsonObj.getJSONArray("cctvname")
+//                var jsonArrUrl = jsonObj.getJSONArray("cctvurl")
+//                arrForListView = Array(jsonArrCctvName.length()) {""}
+//                arrForUrl = Array(jsonArrCctvName.length()) {""}
+//                for( i in 0 until jsonArrCctvName.length()){
+//                    arrForListView[i] = jsonArrCctvName.getString(i)
+//                    arrForUrl[i] = jsonArrUrl.getString(i)
+//                }
             }
         })
     }

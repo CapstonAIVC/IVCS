@@ -46,9 +46,12 @@ def get_data(output):
         tmp.append(output[idx])
     latest = tmp
 
-@socketio.on('request_counting')
+@socketio.on('req_counting')
 def startCounting( cctvIdx = 0 ):
-    socketio.emit('counting', latest[cctvIdx], request.sid)
+    if(latest.__len__() != 0):
+        socketio.emit('res_counting', latest[cctvIdx], request.sid)
+    else:
+        socketio.emit('res_counting', -1, request.sid)
 
 
 # @socketio.on('req_data')

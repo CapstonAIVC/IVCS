@@ -19,7 +19,7 @@ class Msocket {
 
     fun setSocket(){
         try {
-            mSocket = IO.socket(Consts.localhost)
+            mSocket = IO.socket(Consts.localhost_DataServer)
             mSocket.connect()
         } catch (e: URISyntaxException) {
             Log.e("ERR_setsocket", e.toString())
