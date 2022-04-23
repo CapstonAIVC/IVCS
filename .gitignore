@@ -443,4 +443,6 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+# DS Store file created by macOS
+*.DS_Store
 */.DS_Store
