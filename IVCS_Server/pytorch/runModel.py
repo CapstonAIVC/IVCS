@@ -150,7 +150,7 @@ if __name__ == '__main__':
             # print(cctvname[i] + "\'s predict is "+str(count_pred))
             result.append(count_pred)
 
-        sio_saveData.emit('model_output', result)
+        sio_saveData.emit('model_output', "plz")
         
 
         # sio.emit('modelOutput', {"cctvname": "테스트이름", "time":"20xx-0x-xx", "count":str(count_pred[4][0].item())})
