@@ -33,6 +33,8 @@ def disconnect():
 cctvname = []
 cctvurl = []
 streamingList = []
+TOTAL_CCTV_NUM = 5
+
 ## tesorList의 각 원소는 tensor를 가지는 list이다.
 tensorList = []
 trans = transforms.Compose([transforms.Resize((120,160)), 
@@ -96,13 +98,15 @@ def setInfo():
     for url in total_info['cctvurl']:
         cctvurl.append(url)
         tensorList.append([])
+    # # set TOTAL_CCTV_NUM (실제 구동할땐 주석풀기)
+    # TOTAL_CCTV_NUM = len(cctvname)
     
 def setStreaming():
     for url in cctvurl :
         streamingList.append(ThreadedCamera(url))
 
 def addFramesByTensor(index):
-    for i in range(0,len(streamingList)):
+    for i in range(0,TOTAL_CCTV_NUM):
         frame = streamingList[i].get_frame()
         pil = Image.fromarray(frame)
         ten = trans(pil)
@@ -113,7 +117,7 @@ def addFramesByTensor(index):
             tensorList[i][index] = ten
 
 def popFrames():
-    for i in range(0,len(streamingList)):
+    for i in range(0,TOTAL_CCTV_NUM):
         tensorList[i].pop(0)
 
 # if __name__ == '__main__':
@@ -177,7 +181,7 @@ if __name__ == '__main__':
     for i in range(4): mask = torch.cat((mask, mask_tmp), 0)
     mask = mask.unsqueeze(1)
 
-    for i in range(5):
+    for i in range(TOTAL_CCTV_NUM):
         addFramesByTensor(-1)
 
     ## index는 tensorList 안의 list에 이번에 교체할 위치이다.
@@ -190,7 +194,7 @@ if __name__ == '__main__':
             index += 1
 
         result = []
-        for i in range(len(tensorList)):
+        for i in range(TOTAL_CCTV_NUM):
             ## queue 
             X = tensorList[i][index] ## 리스트 중 첫 프레임
             for j in range(index+1, 5): ## 두번째부터 4까지
