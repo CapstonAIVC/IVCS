@@ -17,7 +17,7 @@ socketio = SocketIO(app)
 
 HOST = 'localhost'
 PORT = 5000
-ROOT_PATH = './'
+ROOT_PATH = './DATA'
 
 response = requests.get('http://localhost:3000/getUrl')
 total_info = eval(json.loads(response.text))
@@ -31,13 +31,14 @@ time_tmp = datetime.now(timezone("Asia/Seoul"))
 @socketio.on('model_output')
 def get_data(output):
     global time_tmp, data, latest, cctvname
+    output = json.loads(output)
     print(output)
     current_time = datetime.now(timezone("Asia/Seoul"))
 
     if time_tmp.hour != current_time.hour:
         time_tmp = current_time
         save_data = copy.deepcopy(data)
-        data.clear()
+        for cctv in data.keys(): data[cctv]=[]
         saveThread=SaveCSV(save_data, time_tmp)
         saveThread.start()
         
@@ -47,10 +48,10 @@ def get_data(output):
 
     tmp = []
     for idx, cctv in enumerate(cctvname):
-        # data[cctv].append([time_info, output[idx]])
-        # tmp.append(output[idx])
-        data[cctv].append([time_info, output])
-        tmp.append(output)
+        data[cctv].append([time_info, output[idx]])
+        tmp.append(output[idx])
+        # data[cctv].append([time_info, output])
+        # tmp.append(output)
     latest = tmp
 
 @socketio.on('request_counting')

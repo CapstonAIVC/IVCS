@@ -116,11 +116,66 @@ def popFrames():
     for i in range(0,len(streamingList)):
         tensorList[i].pop(0)
 
+# if __name__ == '__main__':
+
+#     setInfo()
+#     setStreaming()
+#     model = setmodel()
+
+#     # for i in range(5):
+#     #     addFramesByTensor(-1)
+
+#     ## index는 tensorList 안의 list에 이번에 교체할 위치이다.
+#     index = 0
+#     while True:
+#         time.sleep(1)
+#         addFramesByTensor(index)
+#         if index == 4:
+#             index = 0
+#         else:
+#             index += 1
+
+#         result = []
+#         for i in range(len(tensorList)):
+#             ## queue 
+#             X = tensorList[i][index] ## 리스트 중 첫 프레임
+#             for j in range(index+1, 5): ## 두번째부터 4까지
+#                 X = torch.cat((X,tensorList[i][j]), 0)
+#             for j in range(0, index): ## 0부터 index까지
+#                 X = torch.cat((X,tensorList[i][j]), 0)
+
+#             mask = torch.zeros([5,1,120,160])
+#             with torch.no_grad():
+#                 density_pred, count_pred = model(X, mask=mask)
+#             # print(cctvname[i] + "\'s predict is "+str(count_pred))
+#             result.append(count_pred.tolist()[-1])
+
+#         # print(result)
+#         # print(type(result))
+#         # result_json = json.dumps(result)
+#         # sio_saveData.emit('model_output', result_json)
+        
+
+#         # sio.emit('modelOutput', {"cctvname": "테스트이름", "time":"20xx-0x-xx", "count":str(count_pred[4][0].item())})
+#         # sio.emit('modelOutput', str(count_pred[4][0].item()))
+
+#         print("done\n\n")
+
+
+############################################################################################################
+# [경부선] 공세육교 24시간 데이터 수집을 위한 코드
 if __name__ == '__main__':
 
     setInfo()
     setStreaming()
     model = setmodel()
+
+    mask = Image.open('./our_mask.png').convert('L')
+    mask = np.array(mask)
+    mask = torch.Tensor(mask)
+    mask_tmp = torch.Tensor(mask)
+    for i in range(4): mask = torch.cat((mask, mask_tmp), 0)
+    mask = mask.unsqueeze(1)
 
     for i in range(5):
         addFramesByTensor(-1)
@@ -128,7 +183,6 @@ if __name__ == '__main__':
     ## index는 tensorList 안의 list에 이번에 교체할 위치이다.
     index = 0
     while True:
-        time.sleep(1)
         addFramesByTensor(index)
         if index == 4:
             index = 0
@@ -144,16 +198,13 @@ if __name__ == '__main__':
             for j in range(0, index): ## 0부터 index까지
                 X = torch.cat((X,tensorList[i][j]), 0)
 
-            mask = torch.zeros([5,1,120,160])
             with torch.no_grad():
                 density_pred, count_pred = model(X, mask=mask)
-            # print(cctvname[i] + "\'s predict is "+str(count_pred))
-            result.append(count_pred)
+            
+            result.append(count_pred.tolist()[0])
 
-        sio_saveData.emit('model_output', "plz")
-        
+        result_json = json.dumps(result)
+        sio_saveData.emit('model_output', result_json)
 
-        # sio.emit('modelOutput', {"cctvname": "테스트이름", "time":"20xx-0x-xx", "count":str(count_pred[4][0].item())})
-        # sio.emit('modelOutput', str(count_pred[4][0].item()))
-
-        print("done\n\n")
+        print(str(result[-1])+"\n")
+############################################################################################################
