@@ -132,7 +132,6 @@ def popFrames():
 #     ## index는 tensorList 안의 list에 이번에 교체할 위치이다.
 #     index = 0
 #     while True:
-#         time.sleep(1)
 #         addFramesByTensor(index)
 #         if index == 4:
 #             index = 0
@@ -140,7 +139,7 @@ def popFrames():
 #             index += 1
 
 #         result = []
-#         for i in range(len(tensorList)):
+#         for i in range(TOTAL_CCTV_NUM):
 #             ## queue 
 #             X = tensorList[i][index] ## 리스트 중 첫 프레임
 #             for j in range(index+1, 5): ## 두번째부터 4까지
