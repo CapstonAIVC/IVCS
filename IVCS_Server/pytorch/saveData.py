@@ -32,11 +32,12 @@ def get_data(output):
     current_time = datetime.now(timezone("Asia/Seoul"))
 
     if time_tmp.hour != current_time.hour:
+        time_tmp = current_time
         save_data = copy.deepcopy(data)
         data.clear()
         saveThread=SaveCSV(save_data, time_tmp)
         saveThread.start()
-        time_tmp = current_time
+        
         
     
     time_info = str(current_time.minute) + '-' + str(current_time.second)
