@@ -443,4 +443,10 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+# DS Store file created by macOS
+*.DS_Store
 */.DS_Store
+
+# All __pycache__ directories
+__pycache__/
+./IVCS_Server/pytorch/__pycache__/model.cpython-38.pyc

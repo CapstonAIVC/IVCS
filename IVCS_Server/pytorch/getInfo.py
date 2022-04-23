@@ -25,14 +25,24 @@ if __name__ == '__main__':
 
     flag=0 #for demo
 
-    for json_data in data['response']['data']:
-        cctvinfo_dict['cctvname'].append(json_data['cctvname'])
-        # print(json_data['cctvname'])
-        response=requests.get(json_data['cctvurl'])
-        cctvinfo_dict['cctvurl'].append(response.url)
-        flag+=1 #for demo
+    # for json_data in data['response']['data']:
+    #     cctvinfo_dict['cctvname'].append(json_data['cctvname'])
+    #     # print(json_data['cctvname'])
+    #     response=requests.get(json_data['cctvurl'])
+    #     cctvinfo_dict['cctvurl'].append(response.url)
+    #     flag+=1 #for demo
 
-        if flag==5: break #for demo
+    #     if flag==5: break #for demo
+
+    ####################################
+    # [경부선] 공세육교 24시간 데이터 수집을 위한 코드
+    cctvinfo_dict['cctvname'].append('[경부선] 공세육교')
+    for json_data in data['response']['data']:
+        if json_data['cctvname']=='[경부선] 공세육교':
+            response=requests.get(json_data['cctvurl'])
+            cctvinfo_dict['cctvurl'].append(response.url)
+            break
+    ####################################
 
     print(str(cctvinfo_dict))
 
