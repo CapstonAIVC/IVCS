@@ -449,4 +449,4 @@ dist
 
 # All __pycache__ directories
 __pycache__/
-./IVCS_Server/pytorch/__pycache__/model.cpython-38.pyc
+./IVCS_Server/pytorch/__pycache__/*
