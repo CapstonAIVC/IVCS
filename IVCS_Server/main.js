@@ -12,22 +12,14 @@ app.use(express.static(__dirname + "/"))
 // console.log(__dirname)
 // app.use("/", express.static('./'));
 
+information = ""
+
 app.get("/client", (req, res) => {
     res.render("client",{})
 })
 
 app.get("/getUrl", (req, res) => {
-    const getUrl_spawn = require('child_process').spawn;
-    const getUrl_result = getUrl_spawn('python3', ['./pytorch/getInfo.py', '1', api_key]);
-    getUrl_result.stdout.on('data', (data) => {
-        // const json_result = JSON.parse(data);
-        console.log(data);
-        getUrl_result.stderr.on('data', function(data) { console.log(data.toString()); });
-        
-        // console.log(data.toString().split("\n")[0]);
-        res.send(data.toString().split("\n")[0]);
-
-    });
+    res.json(information);
 })
 
 // socket
@@ -54,26 +46,20 @@ io.on('connection',function(socket){
         console.log(testdata)
         socket.emit("res_analysis", { "data": testdata, "type": type.toString() })
     })
-    // socket.on("hls_req", (data)=>{
-    //     console.log("get camera id : ", data);
-
-    //     // 1. child-process모듈의 spawn 취득
-    //     const spawn = require('child_process').spawn;
-    //     // 2. spawn을 통해 "python 파이썬파일.py" 명령어 실행
-    //     const result = spawn('python3', ['./pytorch/test.py', '1', data]);
-    //     // 3. stdout의 'data'이벤트리스너로 실행결과를 받는다.
-    //     result.stdout.on('data', (data) => {
-    //         const hls_url = data.toString();
-    //         console.log(hls_url);
-    //         // request한 socket에게만 emit
-    //         socket.emit("hls_res", hls_url);
-    //     });
-
-    //     // 4. 에러 발생 시, stderr의 'data'이벤트리스너로 실행결과를 받는다.
-    //     result.stderr.on('data', function(data) { console.log(data.toString()); });
-    // })
+    socket.on("modelOutput", (data) => {
+        console.log(data)
+        // socket.emit("live_res", {"cctvname":"test"data});
+        // sio.emit('modelOutput', {"cctvname": "테스트이름", "time":"20xx-0x-xx", "count":str(count_pred[4][0].item())})
+    })
 });
 
 server.listen(3000,()=>{
+    const getUrl_spawn = require('child_process').spawn;
+    const getUrl_result = getUrl_spawn('python3', ['./pytorch/getInfo.py', '1', api_key]);
+    getUrl_result.stdout.on('data', (data) => {
+        getUrl_result.stderr.on('data', function(data) { console.log(data.toString()); });
+        
+        information = data.toString().split("\n")[0]
+    });
     console.log('Socket IO server listening on port ');
 });

@@ -15,7 +15,7 @@ socket.on('hls_res', (hls_url) => {
 
     // videojs MP4 Dynamic Streaming
     // if (videojs.getPlayers()[`hlsPlayEx`]) {
-    //     // hls-video is the id of the video tag                        
+    //     // hls-video is the id of the video tag
     //     delete videojs.getPlayers()[`hlsPlayEx`];
     // }
     // videojs(`#hlsPlayEx`).src({
