@@ -22,6 +22,7 @@ response = requests.get('http://localhost:3000/getUrl')
 total_info = eval(json.loads(response.text))
 cctvname = total_info['cctvname']
 data = {}
+newist = []
 
 time_tmp = -1 # 이전 시간 정보 저장
 
@@ -30,6 +31,7 @@ def get_data(output):
     current_time = datetime.now(timezone("Asia/Seoul"))
 
     if time_tmp.hour != current_time.hour:
+        ## 전역변수인 data를 넘겨주고 아래에서 data를 clear하면 작업 도중에 data가 사라질 수 도 있을 것 같음 -> 복사해서 따로 주는것이 어떤지..
         saveThread=SaveCSV(data, time_tmp)
         saveThread.start()
 
@@ -37,8 +39,17 @@ def get_data(output):
         data.clear()
     
     time_info = str(current_time.minute) + '-' + str(current_time.second)
+
+    tmp = []
     for idx, cctv in enumerate(cctvname):
         data[cctv].append([time_info, output[idx]])
+        tmp.append(output[idx])
+    newist = tmp
+
+@socketio.on('request_counting')
+def startCounting( cctvIdx = 0 ):
+    socketio.emit('counting', newist[cctvIdx], request.sid)
+
 
 # @socketio.on('req_data')
 # def send_data(cctv_time):
