@@ -33,7 +33,7 @@ def disconnect():
 cctvname = []
 cctvurl = []
 streamingList = []
-TOTAL_CCTV_NUM = 5
+TOTAL_CCTV_NUM = 1
 
 ## tesorList의 각 원소는 tensor를 가지는 list이다.
 tensorList = []
@@ -181,7 +181,7 @@ if __name__ == '__main__':
     for i in range(4): mask = torch.cat((mask, mask_tmp), 0)
     mask = mask.unsqueeze(1)
 
-    for i in range(TOTAL_CCTV_NUM):
+    for i in range(5):
         addFramesByTensor(-1)
 
     ## index는 tensorList 안의 list에 이번에 교체할 위치이다.
