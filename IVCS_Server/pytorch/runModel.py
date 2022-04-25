@@ -1,11 +1,9 @@
 import time
-# from types import NoneType
 from model import FCN_rLSTM
 import torch
 import requests
 import json
 import cv2
-import sys
 from threading import Thread
 import torchvision
 from torchvision import transforms
@@ -206,8 +204,9 @@ if __name__ == '__main__':
             
             result.append(count_pred.tolist()[0])
 
+
         result_json = json.dumps(result)
         sio_saveData.emit('model_output', result_json)
 
-        print(str(result[-1])+"\n")
+        print(str(result[0])+"\n")
 ############################################################################################################

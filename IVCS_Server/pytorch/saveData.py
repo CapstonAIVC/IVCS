@@ -1,4 +1,5 @@
 from datetime import datetime
+from time import time
 from pytz import timezone
 import os
 import copy
@@ -58,9 +59,12 @@ def get_data(output):
 def startCounting( cctvIdx = 0 ):
     socketio.emit('counting', latest[cctvIdx], request.sid)
 
+@socketio.on('request_plot')
+def request_plot(cctvname):
+    current_time = datetime.now(timezone("Asia/Seoul"))
+    makeThread=MakePlot(current_time, cctvname)
+    makeThread.start()
 
-# @socketio.on('req_data')
-# def send_data(cctv_time):
 
 # cctv ID에 따른 저장 경로 생성
 def make_cctv_dir():
@@ -76,8 +80,8 @@ def make_cctv_dir():
 class SaveCSV(threading.Thread):
     def __init__(self, data, time_info):
         threading.Thread.__init__(self)
-        self.data=data
-        self.time=time_info
+        self.data = data
+        self.time = time_info
 
     def make_dir(self, cctv):
         year = self.time.year
@@ -93,7 +97,25 @@ class SaveCSV(threading.Thread):
             self.make_dir(cctv)
 
             df = pd.DataFrame( self.data[cctv], columns = ['Time', 'Count'] )
-            df.to_csv(ROOT_PATH+'/'+cctv+'/'+str(self.time.year)+'/'+str(self.time.month)+'/'+str(self.time.day)+'/'+str(self.time.hour)+'.csv', mode='w')
+
+            # 2자리 폴더명 & 파일명 생성을 위한 코드
+            if int(self.time.month) < 10: month = '0'+str(self.time.month)
+            else: month = str(self.time.month)
+            if int(self.time.day) < 10: day = '0'+str(self.time.day)
+            else: day = str(self.time.day)
+            if int(self.time.hour) < 10: hour = '0'+str(self.time.hour)
+            else: hour = str(self.time.hour)
+
+            df.to_csv(ROOT_PATH+'/'+cctv+'/'+str(self.time.year)+'/'+month+'/'+day+'/'+hour+'.csv', mode='w')
+
+class MakePlot(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self, time, cctvname)
+        self.time = time
+        self.cctvname = cctvname
+
+    def run(self):
+        dd
         
 
 if __name__ == "__main__":
