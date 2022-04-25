@@ -66,12 +66,15 @@ class AnalyizeData(threading.Thread):
         
     def run(self):
         csv_path_list = self.get_csv_path_list()
-        print("----------csv path list-------------")
-        for path in csv_path_list:
-            print(path)
+        # print("----------csv path list-------------")
+        # for path in csv_path_list:
+        #     print(path)
         df = self.get_dataframe(csv_path_list)
         # plot df into time series graph
         print(df.head())
+        plt.scatter(df['Time'], df['Count'])
+        plt.grid()
+        plt.savefig('./plz.png')
         
         
         
