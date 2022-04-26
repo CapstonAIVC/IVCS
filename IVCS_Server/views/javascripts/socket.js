@@ -29,10 +29,11 @@ function req_counting_flag() {
 }
 
 function analysis(){
-    console.log(measure_unit.value)
-    console.log(analysis_camera.value)
-    console.log(start_date.value+"-"+start_time.value)
-    console.log(end_date.value+"-"+end_time.value)
+    // console.log(measure_unit.value)
+    // console.log(analysis_camera.value)
+    // console.log(start_date.value+"-"+start_time.value)
+    // console.log(end_date.value+"-"+end_time.value)
+    socket_data.emit('req_plot', measure_unit.value, analysis_camera.value, start_date.value+"-"+start_time.value, end_date.value+"-"+end_time.value);
 }
 
 socket.on('hls_res', (hls_url) => {
@@ -71,4 +72,8 @@ socket.on('hls_res', (hls_url) => {
 
 socket_data.on('res_counting', (count) => {
     count_text.innerHTML = count;
+})
+
+socket_data.on('res_plot', (plot_img) => {
+    
 })
