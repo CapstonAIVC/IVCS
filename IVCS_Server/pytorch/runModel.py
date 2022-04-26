@@ -13,7 +13,7 @@ from PIL import Image
 import socketio
 
 sio_saveData = socketio.Client()
-sio_saveData.connect('http://localhost:5000')
+sio_saveData.connect('http://localhost:4000')
 
 @sio_saveData.event
 def connect():

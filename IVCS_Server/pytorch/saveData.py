@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from datetime import datetime
 from time import time
 from pytz import timezone
@@ -8,22 +10,23 @@ import requests
 import json
 import threading
 
-from flask import Flask
-from flask_socketio import SocketIO
-from flask import request
-
+# from flask import Flask
+# from flask_socketio import SocketIO
 import socketio
 import eventlet
-from eventlet import wsgi
+import eventlet.wsgi
+from flask import Flask
 
 import pandas as pd
 import matplotlib.pyplot as plt
 
+# app = Flask(__name__)
+# socketio = SocketIO(app)
+sio = socketio.Server(cors_allowed_origins='*')
 app = Flask(__name__)
-socketio = SocketIO(app, cors_allowed_origins='*')
 
 HOST = 'localhost'
-PORT = 5000
+PORT = 4000
 ROOT_PATH = './DATA'
 
 response = requests.get('http://localhost:3000/getUrl')
@@ -35,7 +38,7 @@ latest = []
 # time_tmp = -1 # 이전 시간 정보 저장
 time_tmp = datetime.now(timezone("Asia/Seoul"))
 
-@socketio.on('model_output')
+@sio.on('model_output')
 def get_data(output):
     global time_tmp, data, latest, cctvname
     output = json.loads(output)
@@ -61,11 +64,15 @@ def get_data(output):
         # tmp.append(output)
     latest = tmp
 
-@socketio.on('request_counting')
-def startCounting(cctvIdx):
-    global latest
-    # print(latest)
-    socketio.emit('counting', str(latest[int(cctvIdx)][0]), request.sid)
+@sio.on('req_counting')
+def startCounting( mSocket ,cctvIdx):
+    # if(latest.__len__() != 0):
+    #     socketio.emit('res_counting', latest[cctvIdx], request.sid)
+    # else:
+    #     socketio.emit('res_counting', -1, request.sid)
+    print('is comming')
+    sio.emit('res_counting', 3.274)
+
 
 # cctv ID에 따른 저장 경로 생성
 def make_cctv_dir():
@@ -180,7 +187,10 @@ if __name__ == "__main__":
         os.mkdir(ROOT_PATH)
     make_cctv_dir()
 
-    # socketio.run(app, debug=True, host=HOST, port=PORT)
-    socketio.run(app, host=HOST, port=PORT)
+    # wrap Flask application with engineio's middleware
+    app = socketio.Middleware(sio, app)
 
-    # eventlet.wsgi.server(eventlet.listen((HOST, PORT)), app)
+    # deploy as an eventlet WSGI server
+    eventlet.wsgi.server(eventlet.listen(('', PORT)), app)
+    # socketio.run(app, debug=True, host=HOST, port=PORT)
+

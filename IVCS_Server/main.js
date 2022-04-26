@@ -1,3 +1,4 @@
+const { json } = require('express');
 const express = require('express');
 const { url } = require('inspector');
 const app=express();
@@ -20,6 +21,9 @@ app.get("/client", (req, res) => {
 app.get("/getUrl", (req, res) => {
     res.json(information);
 })
+app.get("/getUrl_mobile", (req, res) => {
+    res.send(information);
+})
 
 // socket
 io.on('connection',function(socket){
@@ -27,14 +31,23 @@ io.on('connection',function(socket){
     const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     console.log('새로운 클라이언트 접속', ip, socket.id, req.ip);
 
-    socket.on("start", (data) => {
+    socket.on("req_counting", (data) => {
+        // 임시 기능
         console.log(data)
+        var random = Math.random()
+        socket.emit("res_counting", random.toString())
     })
-    socket.on("end", (data) => {
-        console.log(data)
-    })
-    socket.on("changeCCTV", (data) => {
-        console.log(data)
+    socket.on("req_analysis", (data) => {
+        // 임시 기능
+        var obj = JSON.parse(data.toString())
+        var cctvname = obj.cctvname
+        var type = obj.type
+        var testdata = Array()
+        for (i=0;i<12;i++){
+            testdata.push( parseInt(Math.random()*10) )
+        }
+        console.log(testdata)
+        socket.emit("res_analysis", { "data": testdata, "type": type.toString() })
     })
     socket.on("modelOutput", (data) => {
         console.log(data)
@@ -56,6 +69,8 @@ server.listen(3000,()=>{
         
         information = data.toString().split("\n")[0]
         information_json = JSON.parse(information.replace(/'/g, '"'))
+
+        console.log(' The info is ready!!');
     });
     console.log('Socket IO server listening on port ');
 });

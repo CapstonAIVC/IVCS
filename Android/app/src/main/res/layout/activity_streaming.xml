@@ -65,7 +65,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="48dp"
                     android:layout_weight="1"
-                    android:text="밀도 분석" />
+                    android:text="마스크" />
             </LinearLayout>
 
             <LinearLayout
