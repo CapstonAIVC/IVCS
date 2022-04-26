@@ -50,6 +50,7 @@ server.listen(3000,()=>{
         getUrl_result.stderr.on('data', function(data) { console.log(data.toString()); });
         
         information = data.toString().split("\n")[0]
+        console.log(information)
     });
     console.log('Socket IO server listening on port ');
 });

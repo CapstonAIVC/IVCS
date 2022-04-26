@@ -12,3 +12,5 @@ conda install pytorch==1.6.0 torchvision==0.7.0 -c pytorch
 pip install opencv-python  
 pip install python-socketio  
 pip install flask-socketio
+
+conda install -c conda-forge matplotlib
