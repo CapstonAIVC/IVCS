@@ -21,6 +21,9 @@ app.get("/client", (req, res) => {
 app.get("/getUrl", (req, res) => {
     res.json(information);
 })
+app.get("/getUrl_mobile", (req, res) => {
+    res.send(information);
+})
 
 // socket
 io.on('connection',function(socket){
@@ -60,6 +63,7 @@ server.listen(3000,()=>{
         getUrl_result.stderr.on('data', function(data) { console.log(data.toString()); });
         
         information = data.toString().split("\n")[0]
+        console.log(' The info is ready!!');
     });
     console.log('Socket IO server listening on port ');
 });

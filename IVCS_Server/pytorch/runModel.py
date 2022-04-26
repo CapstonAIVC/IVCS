@@ -15,7 +15,7 @@ from PIL import Image
 import socketio
 
 sio_saveData = socketio.Client()
-sio_saveData.connect('http://localhost:5000')
+sio_saveData.connect('http://localhost:4000')
 
 @sio_saveData.event
 def connect():
@@ -150,10 +150,10 @@ if __name__ == '__main__':
             # print(cctvname[i] + "\'s predict is "+str(count_pred))
             result.append(count_pred)
 
-        sio_saveData.emit('model_output', "plz")
+        sio_saveData.emit('model_output', 'plz')
+
+        print('done')
         
 
         # sio.emit('modelOutput', {"cctvname": "테스트이름", "time":"20xx-0x-xx", "count":str(count_pred[4][0].item())})
         # sio.emit('modelOutput', str(count_pred[4][0].item()))
-
-        print("done\n\n")

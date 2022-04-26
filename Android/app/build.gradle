@@ -47,7 +47,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     // Internet
-    implementation 'io.socket:socket.io-client:2.0.0'
+    implementation 'io.socket:socket.io-client:2.0.1'
     implementation 'com.squareup.okhttp3:okhttp:4.9.3'
 
     // for hls streaming

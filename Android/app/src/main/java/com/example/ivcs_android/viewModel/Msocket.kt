@@ -19,7 +19,7 @@ class Msocket {
 
     fun setSocket(){
         try {
-            mSocket = IO.socket(Consts.localhost_DataServer)
+            mSocket = IO.socket(Consts.localhost)
             mSocket.connect()
         } catch (e: URISyntaxException) {
             Log.e("ERR_setsocket", e.toString())
@@ -37,7 +37,7 @@ class Msocket {
     }
 
     fun checkSocket(activity : Activity){
-        if(!Msocket.instance.mSocket.connected()){
+        if(!instance.mSocket.connected()){
             Toast.makeText(activity.applicationContext,"소켓 연결 해제됨", Toast.LENGTH_SHORT).show()
             activity.finish()
         }

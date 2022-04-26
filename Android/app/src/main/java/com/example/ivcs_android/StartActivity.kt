@@ -59,7 +59,8 @@ class StartActivity : AppCompatActivity() {
     }
 
     private fun checkInternetResources() : Boolean{
-        if(!Msocket.instance.mSocket.connected()){
+        if(false){
+//        if(!Msocket.instance.mSocket.connected()){
             Msocket.instance.setSocket()
             Toast.makeText(this,"소켓 연결중, 잠시 후 시도",Toast.LENGTH_SHORT).show()
             return false
