@@ -47,7 +47,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     // Internet
-    implementation 'io.socket:socket.io-client:2.0.0'
+    implementation 'io.socket:socket.io-client:2.0.1'
     implementation 'com.squareup.okhttp3:okhttp:4.9.3'
 
     // for hls streaming
@@ -60,5 +60,8 @@ dependencies {
     implementation "io.reactivex.rxjava3:rxjava:3.1.4"
     implementation "io.reactivex.rxjava3:rxkotlin:3.0.1"
     implementation "io.reactivex.rxjava3:rxandroid:3.0.0"
+
+    //graph
+    implementation "im.dacer:AndroidCharts:1.0.4"
 
 }

@@ -16,17 +16,24 @@
         <form action="">
             <select name="camera_id" >
                 <option value="none">=== 선택 ===</option>
-                <option value="[수도권제1순환선] 성남">[수도권제1순환선] 성남</option>
-                <option value="[수도권제1순환선] 성남요금소">[수도권제1순환선] 성남요금소</option>
+                <option value=0>[수도권제1순환선] 성남</option>
+                <option value=1>[수도권제1순환선] 성남요금소</option>
+                <option value=0>[경부선] 공세육교</option>
             </select>
             <button>선택</button>
         </form>
     </div>
-    <div width="1000" height="2000">
-        <video autoplay="true" id="hlsPlayEx" muted="muted">
-            <!-- <source id="video" src="http://cctvsec.ktict.co.kr:8081/openapix025/2/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NC83LzIwMjIgMzo0ODowMCBBTSZoYXNoX3ZhbHVlPWwxcm9LK00yYUhwNENadmN0QWZscVE9PSZ2YWxpZG1pbnV0ZXM9MTU2MCZpZD05NDY0M2RiOTRkNzQ0YTJhODUwY2RmOTY2Mzk2NTE2NC0xNjQ5MzA2ODgwMzkwLTImY2hlY2tpcD10cnVl" type="application/x-mpegURL"> -->
-            <!-- <source id="video" src="http://cctvsec.ktict.co.kr:8081/openapix025/2/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NC83LzIwMjIgMzo1NDo0MSBBTSZoYXNoX3ZhbHVlPVZYWFZpcXpnWWR6emRQVXlLU211U2c9PSZ2YWxpZG1pbnV0ZXM9MTU2MCZpZD05NDY0M2RiOTRkNzQ0YTJhODUwY2RmOTY2Mzk2NTE2NC0xNjQ5MzA3MjgxMTc3LTImY2hlY2tpcD10cnVl" type="application/x-mpegURL"> -->
-            <source id="video">
-        </video>
+    <div display="flex">
+        <div width="1000" height="2000">
+            <video autoplay="true" id="hlsPlayEx" muted="muted">
+                <!-- <source id="video" src="http://cctvsec.ktict.co.kr:8081/openapix025/2/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NC83LzIwMjIgMzo0ODowMCBBTSZoYXNoX3ZhbHVlPWwxcm9LK00yYUhwNENadmN0QWZscVE9PSZ2YWxpZG1pbnV0ZXM9MTU2MCZpZD05NDY0M2RiOTRkNzQ0YTJhODUwY2RmOTY2Mzk2NTE2NC0xNjQ5MzA2ODgwMzkwLTImY2hlY2tpcD10cnVl" type="application/x-mpegURL"> -->
+                <!-- <source id="video" src="http://cctvsec.ktict.co.kr:8081/openapix025/2/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9NC83LzIwMjIgMzo1NDo0MSBBTSZoYXNoX3ZhbHVlPVZYWFZpcXpnWWR6emRQVXlLU211U2c9PSZ2YWxpZG1pbnV0ZXM9MTU2MCZpZD05NDY0M2RiOTRkNzQ0YTJhODUwY2RmOTY2Mzk2NTE2NC0xNjQ5MzA3MjgxMTc3LTImY2hlY2tpcD10cnVl" type="application/x-mpegURL"> -->
+                <source id="video">
+            </video>
+        </div>
+        <div>
+            <button id="counting" onclick="show_counting();">실시간 분석 시작</button>
+            <p></p>
+        </div>
     </div>
 </body>
