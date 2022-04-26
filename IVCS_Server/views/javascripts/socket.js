@@ -10,7 +10,8 @@ selected_camera.addEventListener('submit', (e) => {
     var camera_id = e.target.camera_id.value
     counting_camera.push(e.target.camera_id.value);
     socket.emit('hls_req', camera_id);
-    e.target.camera_id.value = '';
+    // socket_data.emit('request_counting', camera_id);
+    // e.target.camera_id.value = '';
 })
 
 function show_counting(){
