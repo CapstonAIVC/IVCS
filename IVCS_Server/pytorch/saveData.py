@@ -67,8 +67,10 @@ def get_data(sid, output):
 @sio.on('req_counting')
 def startCounting(sid, cctvIdx):
     global latest
-    # print(str(len(latest)))
     sio.emit('res_counting', str(round(latest[int(cctvIdx)][0], 3)), sid)
+
+# @sio.on('req_plot')
+# def res_plot_png(sid, measure_method, cameraid, start, end):
 
 
 # cctv ID에 따른 저장 경로 생성
