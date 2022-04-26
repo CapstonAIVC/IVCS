@@ -10,11 +10,17 @@ import threading
 
 from flask import Flask
 from flask_socketio import SocketIO
+from flask import request
+
+import socketio
+import eventlet
+from eventlet import wsgi
 
 import pandas as pd
+import matplotlib.pyplot as plt
 
 app = Flask(__name__)
-socketio = SocketIO(app)
+socketio = SocketIO(app, cors_allowed_origins='*')
 
 HOST = 'localhost'
 PORT = 5000
@@ -56,15 +62,10 @@ def get_data(output):
     latest = tmp
 
 @socketio.on('request_counting')
-def startCounting( cctvIdx = 0 ):
-    socketio.emit('counting', latest[cctvIdx], request.sid)
-
-@socketio.on('request_plot')
-def request_plot(cctvname):
-    current_time = datetime.now(timezone("Asia/Seoul"))
-    makeThread=MakePlot(current_time, cctvname)
-    makeThread.start()
-
+def startCounting(cctvIdx):
+    global latest
+    # print(latest)
+    socketio.emit('counting', str(latest[int(cctvIdx)][0]), request.sid)
 
 # cctv ID에 따른 저장 경로 생성
 def make_cctv_dir():
@@ -108,14 +109,69 @@ class SaveCSV(threading.Thread):
 
             df.to_csv(ROOT_PATH+'/'+cctv+'/'+str(self.time.year)+'/'+month+'/'+day+'/'+hour+'.csv', mode='w')
 
-class MakePlot(threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self, time, cctvname)
-        self.time = time
+class AnalyizeData(threading.Thread):
+    def __init__(self, measure, cctvname, start_time, end_time):
+        threading.Thread.__init__(self)
+        self.measure = measure
         self.cctvname = cctvname
+        self.start_time = start_time
+        self.end_time = end_time
+        #split time with date and hour
+        self.start_date, self.start_hour = self.start_time.split('_')
+        self.end_date, self.end_hour = self.end_time.split('_')
+
+
+    # csv 파일 경로 리스트 반환
+    def get_csv_path_list(self):
+        csv_path_list = []
+        start_year, start_month, start_day = self.start_date.split('-')
+        end_year, end_month, end_day = self.end_date.split('-')
+        start_path = os.path.join(ROOT_PATH, self.cctvname, start_year, start_month, start_day)
+        end_path = os.path.join(ROOT_PATH, self.cctvname, end_year, end_month, end_day)
+
+        for path in os.listdir(start_path):
+            start_hour = int(self.start_hour.split(':')[0])
+            if path.split('.')[-1] == 'csv' and int(path.split('.')[0]) >= start_hour:
+                csv_path_list.append(os.path.join(start_path, path))
+
+
+        for path in os.listdir(end_path):
+            end_hour = int(self.end_hour.split(':')[0])
+            if path.split('.')[-1] == 'csv' and int(path.split('.')[0]) < end_hour:
+                csv_path_list.append(os.path.join(end_path, path))
+
+        csv_path_list.sort()
+        return csv_path_list
+
+    # csv 파일 전처리
+    def csv_preprocess(self,csv_path):
+        path_data = csv_path.split('/')
+        year, month, day, hour = path_data[-4], path_data[-3], path_data[-2], path_data[-1].split('.')[0]   
+        df = pd.read_csv(csv_path)
+
+        # 'Time' column value 중 'min-sec' 을 'year-month-day hour:min:sec'으로 바꾸기
+        df['Time'] = df['Time'].apply(lambda x: year + '-' + month + '-' + day + ' ' + hour + ':' + x.split('-')[0] + ':' + x.split('-')[1])
+        df['Count'] = df['Count'].apply(lambda x: round(float(x.replace('[','').replace(']','')),3))
+        return df
+
+
+    # concat all csv file from csv_path into one dataframe by using csv_preprocess
+    def get_dataframe(self, csv_path_list):
+        df_list = []
+        for csv_path in csv_path_list:
+            df_temp = self.csv_preprocess(csv_path)
+            df_list.append(df_temp)
+        df = pd.concat(df_list)
+        return df
+
 
     def run(self):
-        dd
+        csv_path_list = self.get_csv_path_list()
+        df = self.get_dataframe(csv_path_list)
+        df = df.drop(['Unnamed: 0'], axis=1)
+        
+        plt.figure(figsize=(15,5))
+        plt.plot(df['Count'])
         
 
 if __name__ == "__main__":
@@ -124,4 +180,7 @@ if __name__ == "__main__":
         os.mkdir(ROOT_PATH)
     make_cctv_dir()
 
-    socketio.run(app, debug=True, host=HOST, port=PORT)
+    # socketio.run(app, debug=True, host=HOST, port=PORT)
+    socketio.run(app, host=HOST, port=PORT)
+
+    # eventlet.wsgi.server(eventlet.listen((HOST, PORT)), app)
