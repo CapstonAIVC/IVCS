@@ -33,7 +33,7 @@ response = requests.get('http://localhost:3000/getUrl')
 total_info = eval(json.loads(response.text))
 cctvname = total_info['cctvname']
 data = {}
-latest = []
+latest = [-1,-1,-1,-1,-1]
 
 # time_tmp = -1 # 이전 시간 정보 저장
 time_tmp = datetime.now(timezone("Asia/Seoul"))
@@ -71,7 +71,8 @@ def startCounting( mSocket ,cctvIdx):
     # else:
     #     socketio.emit('res_counting', -1, request.sid)
     print('is comming')
-    sio.emit('res_counting', 3.274)
+    # sio.emit('res_counting', latest[0])
+    sio.emit('res_counting', 8.273)
 
 
 # cctv ID에 따른 저장 경로 생성

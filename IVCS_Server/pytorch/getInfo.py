@@ -42,6 +42,13 @@ if __name__ == '__main__':
             response=requests.get(json_data['cctvurl'])
             cctvinfo_dict['cctvurl'].append(response.url)
             break
+    i = 4
+    for json_data in data['response']['data']:
+        response=requests.get(json_data['cctvurl'])
+        cctvinfo_dict['cctvname'].append(json_data['cctvname'])
+        cctvinfo_dict['cctvurl'].append(response.url)
+        if i < 0 : break
+        i -= 1
     ####################################
 
     print(str(cctvinfo_dict))

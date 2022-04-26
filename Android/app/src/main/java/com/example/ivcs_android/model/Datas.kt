@@ -29,10 +29,14 @@ class Datas {
     var changeCountText : BehaviorSubject<String> = BehaviorSubject.createDefault("차량 수: ")
 
     // analysis 관련
-    var analysisTypeChange : PublishSubject<Boolean> = PublishSubject.create()
+//    var analysisTypeChange : PublishSubject<Boolean> = PublishSubject.create()
     var analName = ""
-    var analType = Consts.day
-    var analysisDataChange : PublishSubject<String> = PublishSubject.create()
+    var analIndex = 0
+//    var analType = Consts.day
+    var startTimeInfo = arrayOf<Long>(2022,4,26,15)
+    var endTimeInfo = arrayOf<Long>(2022,4,26,15)
+    // 처리중인 요청이 있으면 true
+    var analysisDataRequest : BehaviorSubject<Boolean> = BehaviorSubject.createDefault(false)
 
     fun setInfo(){
         val url = Consts.localhost+Consts.getUrl
