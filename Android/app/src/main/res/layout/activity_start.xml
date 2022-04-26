@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#EAEAEA"
     tools:context=".StartActivity">
 
     <LinearLayout
@@ -15,16 +16,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btGoToStreaming"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/radius_rec"
             android:text="Streaming" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btGoToAnalysis"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/radius_rec"
             android:text="Analysys" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

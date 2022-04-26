@@ -6,6 +6,7 @@ androidDependensySocket==2.x.x
 
 flask==2.0.2
 
+python==3.8.8  
 conda install pytorch==1.6.0 torchvision==0.7.0 -c pytorch  
 
 

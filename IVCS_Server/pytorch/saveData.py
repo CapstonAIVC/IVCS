@@ -33,7 +33,7 @@ response = requests.get('http://localhost:3000/getUrl')
 total_info = eval(json.loads(response.text))
 cctvname = total_info['cctvname']
 data = {}
-latest = []
+latest = [-1,-1,-1,-1,-1]
 
 # time_tmp = -1 # 이전 시간 정보 저장
 time_tmp = datetime.now(timezone("Asia/Seoul"))
