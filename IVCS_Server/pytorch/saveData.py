@@ -71,8 +71,7 @@ def startCounting( mSocket ,cctvIdx):
     # else:
     #     socketio.emit('res_counting', -1, request.sid)
     print('is comming')
-    # sio.emit('res_counting', latest[0])
-    sio.emit('res_counting', 8.273)
+    sio.emit('res_counting', latest[0])
 
 
 # cctv ID에 따른 저장 경로 생성
