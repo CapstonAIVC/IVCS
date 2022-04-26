@@ -54,6 +54,11 @@ io.on('connection',function(socket){
         // socket.emit("live_res", {"cctvname":"test"data});
         // sio.emit('modelOutput', {"cctvname": "테스트이름", "time":"20xx-0x-xx", "count":str(count_pred[4][0].item())})
     })
+    socket.on("hls_req", (data) => {
+        // console.log(information_json);
+        socket.emit('hls_res', information_json.cctvurl[data]);
+
+    })
 });
 
 server.listen(3000,()=>{
@@ -63,6 +68,8 @@ server.listen(3000,()=>{
         getUrl_result.stderr.on('data', function(data) { console.log(data.toString()); });
         
         information = data.toString().split("\n")[0]
+        information_json = JSON.parse(information.replace(/'/g, '"'))
+
         console.log(' The info is ready!!');
     });
     console.log('Socket IO server listening on port ');

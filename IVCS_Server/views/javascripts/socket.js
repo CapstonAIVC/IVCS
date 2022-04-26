@@ -1,6 +1,5 @@
 const socket = io.connect('http://localhost:3000');
 const socket_data = io('http://localhost:4000');
-// const socket_data = io.connect('http://localhost:5000');
 
 const selected_camera = document.getElementById('camera');
 // const live_stream = document.getElementById('hlsPlayEx');
@@ -16,7 +15,7 @@ selected_camera.addEventListener('submit', (e) => {
 })
 
 function show_counting(){
-    socket_data.emit('req_counting', counting_camera[counting_camera.length-1]);
+    socket_data.emit('reqest_counting', counting_camera[counting_camera.length-1]);
 }
 
 socket.on('hls_res', (hls_url) => {

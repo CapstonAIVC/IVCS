@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
+from time import time
 from pytz import timezone
 import os
 import copy
@@ -17,6 +18,7 @@ import eventlet.wsgi
 from flask import Flask
 
 import pandas as pd
+import matplotlib.pyplot as plt
 
 # app = Flask(__name__)
 # socketio = SocketIO(app)
@@ -25,7 +27,7 @@ app = Flask(__name__)
 
 HOST = 'localhost'
 PORT = 4000
-ROOT_PATH = './'
+ROOT_PATH = './DATA'
 
 response = requests.get('http://localhost:3000/getUrl')
 total_info = eval(json.loads(response.text))
@@ -39,13 +41,14 @@ time_tmp = datetime.now(timezone("Asia/Seoul"))
 @sio.on('model_output')
 def get_data(output):
     global time_tmp, data, latest, cctvname
+    output = json.loads(output)
     print(output)
     current_time = datetime.now(timezone("Asia/Seoul"))
 
     if time_tmp.hour != current_time.hour:
         time_tmp = current_time
         save_data = copy.deepcopy(data)
-        data.clear()
+        for cctv in data.keys(): data[cctv]=[]
         saveThread=SaveCSV(save_data, time_tmp)
         saveThread.start()
         
@@ -55,10 +58,10 @@ def get_data(output):
 
     tmp = []
     for idx, cctv in enumerate(cctvname):
-        # data[cctv].append([time_info, output[idx]])
-        # tmp.append(output[idx])
-        data[cctv].append([time_info, output])
-        tmp.append(output)
+        data[cctv].append([time_info, output[idx]])
+        tmp.append(output[idx])
+        # data[cctv].append([time_info, output])
+        # tmp.append(output)
     latest = tmp
 
 @sio.on('req_counting')
@@ -70,9 +73,6 @@ def startCounting( mSocket ,cctvIdx):
     print('is comming')
     sio.emit('res_counting', 3.274)
 
-
-# @socketio.on('req_data')
-# def send_data(cctv_time):
 
 # cctv ID에 따른 저장 경로 생성
 def make_cctv_dir():
@@ -88,8 +88,8 @@ def make_cctv_dir():
 class SaveCSV(threading.Thread):
     def __init__(self, data, time_info):
         threading.Thread.__init__(self)
-        self.data=data
-        self.time=time_info
+        self.data = data
+        self.time = time_info
 
     def make_dir(self, cctv):
         year = self.time.year
@@ -105,7 +105,80 @@ class SaveCSV(threading.Thread):
             self.make_dir(cctv)
 
             df = pd.DataFrame( self.data[cctv], columns = ['Time', 'Count'] )
-            df.to_csv(ROOT_PATH+'/'+cctv+'/'+str(self.time.year)+'/'+str(self.time.month)+'/'+str(self.time.day)+'/'+str(self.time.hour)+'.csv', mode='w')
+
+            # 2자리 폴더명 & 파일명 생성을 위한 코드
+            if int(self.time.month) < 10: month = '0'+str(self.time.month)
+            else: month = str(self.time.month)
+            if int(self.time.day) < 10: day = '0'+str(self.time.day)
+            else: day = str(self.time.day)
+            if int(self.time.hour) < 10: hour = '0'+str(self.time.hour)
+            else: hour = str(self.time.hour)
+
+            df.to_csv(ROOT_PATH+'/'+cctv+'/'+str(self.time.year)+'/'+month+'/'+day+'/'+hour+'.csv', mode='w')
+
+class AnalyizeData(threading.Thread):
+    def __init__(self, measure, cctvname, start_time, end_time):
+        threading.Thread.__init__(self)
+        self.measure = measure
+        self.cctvname = cctvname
+        self.start_time = start_time
+        self.end_time = end_time
+        #split time with date and hour
+        self.start_date, self.start_hour = self.start_time.split('_')
+        self.end_date, self.end_hour = self.end_time.split('_')
+
+
+    # csv 파일 경로 리스트 반환
+    def get_csv_path_list(self):
+        csv_path_list = []
+        start_year, start_month, start_day = self.start_date.split('-')
+        end_year, end_month, end_day = self.end_date.split('-')
+        start_path = os.path.join(ROOT_PATH, self.cctvname, start_year, start_month, start_day)
+        end_path = os.path.join(ROOT_PATH, self.cctvname, end_year, end_month, end_day)
+
+        for path in os.listdir(start_path):
+            start_hour = int(self.start_hour.split(':')[0])
+            if path.split('.')[-1] == 'csv' and int(path.split('.')[0]) >= start_hour:
+                csv_path_list.append(os.path.join(start_path, path))
+
+
+        for path in os.listdir(end_path):
+            end_hour = int(self.end_hour.split(':')[0])
+            if path.split('.')[-1] == 'csv' and int(path.split('.')[0]) < end_hour:
+                csv_path_list.append(os.path.join(end_path, path))
+
+        csv_path_list.sort()
+        return csv_path_list
+
+    # csv 파일 전처리
+    def csv_preprocess(self,csv_path):
+        path_data = csv_path.split('/')
+        year, month, day, hour = path_data[-4], path_data[-3], path_data[-2], path_data[-1].split('.')[0]   
+        df = pd.read_csv(csv_path)
+
+        # 'Time' column value 중 'min-sec' 을 'year-month-day hour:min:sec'으로 바꾸기
+        df['Time'] = df['Time'].apply(lambda x: year + '-' + month + '-' + day + ' ' + hour + ':' + x.split('-')[0] + ':' + x.split('-')[1])
+        df['Count'] = df['Count'].apply(lambda x: round(float(x.replace('[','').replace(']','')),3))
+        return df
+
+
+    # concat all csv file from csv_path into one dataframe by using csv_preprocess
+    def get_dataframe(self, csv_path_list):
+        df_list = []
+        for csv_path in csv_path_list:
+            df_temp = self.csv_preprocess(csv_path)
+            df_list.append(df_temp)
+        df = pd.concat(df_list)
+        return df
+
+
+    def run(self):
+        csv_path_list = self.get_csv_path_list()
+        df = self.get_dataframe(csv_path_list)
+        df = df.drop(['Unnamed: 0'], axis=1)
+        
+        plt.figure(figsize=(15,5))
+        plt.plot(df['Count'])
         
 
 if __name__ == "__main__":
@@ -118,6 +191,6 @@ if __name__ == "__main__":
     app = socketio.Middleware(sio, app)
 
     # deploy as an eventlet WSGI server
-    eventlet.wsgi.server(eventlet.listen(('', 4000)), app)
+    eventlet.wsgi.server(eventlet.listen(('', PORT)), app)
     # socketio.run(app, debug=True, host=HOST, port=PORT)
 
