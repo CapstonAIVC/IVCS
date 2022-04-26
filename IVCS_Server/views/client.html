@@ -16,9 +16,9 @@
         <form action="">
             <select name="camera_id" >
                 <option value="none">=== 선택 ===</option>
-                <option value=0>[수도권제1순환선] 성남</option>
-                <option value=1>[수도권제1순환선] 성남요금소</option>
                 <option value=0>[경부선] 공세육교</option>
+                <option value=1>[수도권제1순환선] 성남</option>
+                <option value=2>[수도권제1순환선] 성남요금소</option>
             </select>
             <button>선택</button>
         </form>
@@ -32,8 +32,8 @@
             </video>
         </div>
         <div>
-            <button id="counting" onclick="show_counting();">실시간 분석 시작</button>
-            <p></p>
+            <button id="counting" onclick=req_counting_flag()>실시간 분석 시작</button>
+            <p>차량 수 : <span class="counting_text">---</span></p>
         </div>
     </div>
 </body>

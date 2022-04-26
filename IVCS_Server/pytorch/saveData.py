@@ -39,7 +39,7 @@ latest = []
 time_tmp = datetime.now(timezone("Asia/Seoul"))
 
 @sio.on('model_output')
-def get_data(output):
+def get_data(sid, output):
     global time_tmp, data, latest, cctvname
     output = json.loads(output)
     print(output)
@@ -65,13 +65,10 @@ def get_data(output):
     latest = tmp
 
 @sio.on('req_counting')
-def startCounting( mSocket ,cctvIdx):
-    # if(latest.__len__() != 0):
-    #     socketio.emit('res_counting', latest[cctvIdx], request.sid)
-    # else:
-    #     socketio.emit('res_counting', -1, request.sid)
-    print('is comming')
-    sio.emit('res_counting', 3.274)
+def startCounting(sid, cctvIdx):
+    global latest
+    # print(str(len(latest)))
+    sio.emit('res_counting', str(round(latest[int(cctvIdx)][0], 3)), sid)
 
 
 # cctv ID에 따른 저장 경로 생성
