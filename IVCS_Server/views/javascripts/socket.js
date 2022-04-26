@@ -3,6 +3,15 @@ const socket_data = io('http://localhost:4000');
 
 const selected_camera = document.getElementById('camera');
 // const live_stream = document.getElementById('hlsPlayEx');
+const count_text = document.getElementsByClassName('counting_text')[0]
+
+var analysis_camera = document.getElementById('analysis_camera_id');
+var measure_unit = document.getElementById('measure_unit')
+var start_date = document.getElementById('start_date')
+var end_date = document.getElementById('end_date')
+var start_time = document.getElementById('start_time')
+var end_time = document.getElementById('end_time')
+
 var counting_camera = [];
 
 selected_camera.addEventListener('submit', (e) => {
@@ -10,12 +19,20 @@ selected_camera.addEventListener('submit', (e) => {
     var camera_id = e.target.camera_id.value
     counting_camera.push(e.target.camera_id.value);
     socket.emit('hls_req', camera_id);
-    // socket_data.emit('request_counting', camera_id);
-    // e.target.camera_id.value = '';
+    e.target.camera_id.value = '';
 })
 
-function show_counting(){
-    socket_data.emit('reqest_counting', counting_camera[counting_camera.length-1]);
+function req_counting_flag() {
+    setInterval(function () { 
+        socket_data.emit('req_counting', counting_camera[counting_camera.length-1]); 
+    }, 2000);
+}
+
+function analysis(){
+    console.log(measure_unit.value)
+    console.log(analysis_camera.value)
+    console.log(start_date.value+"-"+start_time.value)
+    console.log(end_date.value+"-"+end_time.value)
 }
 
 socket.on('hls_res', (hls_url) => {
@@ -50,4 +67,8 @@ socket.on('hls_res', (hls_url) => {
         hls.loadSource(videoSrc);
         hls.attachMedia(video);
     }
+})
+
+socket_data.on('res_counting', (count) => {
+    count_text.innerHTML = count;
 })
