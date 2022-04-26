@@ -19,7 +19,7 @@ class Msocket {
 
     fun setSocket(){
         try {
-            mSocket = IO.socket(Consts.localhost)
+            mSocket = IO.socket(Consts.localhost_DataServer)
             mSocket.connect()
         } catch (e: URISyntaxException) {
             Log.e("ERR_setsocket", e.toString())
@@ -30,10 +30,10 @@ class Msocket {
             Datas.instance.changeCountText.onNext( "차량 수: "+it[0].toString() )
         }
 
-        mSocket.on("res_analysis") {
-            Log.e("Listen", "res_analysis")
-            Datas.instance.analysisDataChange.onNext(it[0].toString())
-        }
+//        mSocket.on("res_analysis") {
+//            Log.e("Listen", "res_analysis")
+//            Datas.instance.analysisDataChange.onNext(it[0].toString())
+//        }
     }
 
     fun checkSocket(activity : Activity){

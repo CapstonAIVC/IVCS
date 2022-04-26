@@ -33,13 +33,13 @@ response = requests.get('http://localhost:3000/getUrl')
 total_info = eval(json.loads(response.text))
 cctvname = total_info['cctvname']
 data = {}
-latest = []
+latest = [-1,-1,-1,-1,-1]
 
 # time_tmp = -1 # 이전 시간 정보 저장
 time_tmp = datetime.now(timezone("Asia/Seoul"))
 
 @sio.on('model_output')
-def get_data(output):
+def get_data(sid, output):
     global time_tmp, data, latest, cctvname
     output = json.loads(output)
     print(output)
@@ -65,13 +65,12 @@ def get_data(output):
     latest = tmp
 
 @sio.on('req_counting')
-def startCounting( mSocket ,cctvIdx):
-    # if(latest.__len__() != 0):
-    #     socketio.emit('res_counting', latest[cctvIdx], request.sid)
-    # else:
-    #     socketio.emit('res_counting', -1, request.sid)
-    print('is comming')
-    sio.emit('res_counting', 3.274)
+def startCounting(sid, cctvIdx):
+    global latest
+    sio.emit('res_counting', str(round(latest[int(cctvIdx)][0], 3)), sid)
+
+# @sio.on('req_plot')
+# def res_plot_png(sid, measure_method, cameraid, start, end):
 
 
 # cctv ID에 따른 저장 경로 생성

@@ -23,19 +23,25 @@ class AnalysisActivity : AppCompatActivity() {
         analysisBinding = ActivityAnalysisBinding.inflate(layoutInflater)
         setContentView(analysisBinding.root)
 
-        // lineView 속성 세팅
-        analysisBinding.lineView.layoutParams.height = resources.displayMetrics.heightPixels/2
-        analysisBinding.lineView.setDrawDotLine(false)
-        analysisBinding.lineView.setShowPopup(LineView.SHOW_POPUPS_All)
+//        analysisBinding.scrollHoriz.layoutParams.height = resources.displayMetrics.heightPixels/2
+        analysisBinding.imageAnalysis.layoutParams.height = resources.displayMetrics.heightPixels/3
 
+        analysisBinding.textAnalysis.text = "평균 \n 14~15시 : 8.3543295249549\n 15~16시 : 8.307645287563986"
+
+
+//        // lineView 속성 세팅
+//        analysisBinding.lineView.layoutParams.height = resources.displayMetrics.heightPixels/2
+//        analysisBinding.lineView.setDrawDotLine(false)
+//        analysisBinding.lineView.setShowPopup(LineView.SHOW_POPUPS_All)
+//
         analysisBind = AnalysisBind(this, analysisBinding)
         analysisBind.bindForAnalysis()
 
         setAnalysisViews = SetAnalysisViews(this,analysisBinding)
         setAnalysisViews.setViews()
-
-        // 처음 세팅
-        Datas.instance.analName = Datas.instance.arrForListView[0]
-        analysisBinding.rBtDay.performClick()
+//
+//        // 처음 세팅
+//        Datas.instance.analName = Datas.instance.arrForListView[0]
+//        analysisBinding.rBtDay.performClick()
     }
 }

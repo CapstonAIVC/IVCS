@@ -7,6 +7,25 @@
     <!-- <script src="https://vjs.zencdn.net/7.18.1/video.min.js"></script> -->
     
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" integrity="sha512-uto9mlQzrs59VwILcLiRYeLKPPbS/bT71da/OEBYEwcdNUk8jYIy+D176RYoop1Da+f9mvkYrmj5MCLZWEtQuA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" integrity="sha512-aOG0c6nPNzGk+5zjwyJaoRUgCdOrfSDhmMID2u4+OIslr0GjpLKo7Xm0Ao3xmpM4T8AmIouRkqwj1nrdVsLKEQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <script>
+        $.datepicker.setDefaults({
+            dateFormat: 'yy-mm-dd',
+            prevText: '이전 달',
+            nextText: '다음 달',
+            monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+            monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+            dayNames: ['일', '월', '화', '수', '목', '금', '토'],
+            dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
+            dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+            showMonthAfterYear: true,
+            yearSuffix: '년'
+        });
+    </script>
 </head>
  
 <body>
@@ -16,9 +35,9 @@
         <form action="">
             <select name="camera_id" >
                 <option value="none">=== 선택 ===</option>
-                <option value=0>[수도권제1순환선] 성남</option>
-                <option value=1>[수도권제1순환선] 성남요금소</option>
                 <option value=0>[경부선] 공세육교</option>
+                <option value=1>[수도권제1순환선] 성남</option>
+                <option value=2>[수도권제1순환선] 성남요금소</option>
             </select>
             <button>선택</button>
         </form>
@@ -32,8 +51,80 @@
             </video>
         </div>
         <div>
-            <button id="counting" onclick="show_counting();">실시간 분석 시작</button>
-            <p></p>
+            <button id="counting" onclick=req_counting_flag()>실시간 분석 시작</button>
+            <p>차량 수 : <span class="counting_text">---</span></p>
         </div>
+    </div>
+    <div>
+        <h5>분석 카메라 선택</h5>
+        <select id="analysis_camera_id" >
+            <option value="none">=== 선택 ===</option>
+            <option value=0>[경부선] 공세육교</option>
+            <option value=1>[수도권제1순환선] 성남</option>
+            <option value=2>[수도권제1순환선] 성남요금소</option>
+        </select>
+
+        <h5>분석 단위</h5>
+        <select id="measure_unit">
+            <option value="period">기간별</option>
+            <option value="hour">시간별</option>
+        </select>
+        <br>
+
+        <h5>분석 시작 날짜 & 시간</h5>
+        <input class="datepicker", id="start_date" name="start_date">
+        <script>
+            $(function () {
+            $('.datepicker').datepicker();
+            document.getElementById("start_date").value = $('input[name=start_date]').val()
+            });
+        </script>
+        <select id="start_time" name="start_time">
+            <script>
+                var strHours = '';
+                var time = '';
+                
+                for(var i = 0 ; i < 24; i++){
+                    if( i < 10){
+                        time = '0'+ i;
+                        strHours += '<option value="'+time+'">'+time+'시</option>';
+                    }else{
+                        time = i;
+                        strHours += '<option value="'+time+'">'+time+'시</option>';
+                    }
+                }
+               $("#start_time").html(strHours);
+            </script>
+        </select>
+
+        <h5>분석 끝 날짜 & 시간</h5>
+        <input class="datepicker" id="end_date" name="end_date">
+        <script>
+            $(function () {
+            $('.datepicker').datepicker();
+            document.getElementById("end_date").value = $('input[name=end_date]').val()
+            });
+        </script>
+        <select id="end_time" name="end_time">
+            <script>
+                var strHours = '';
+                var time = '';
+                
+                for(var i = 0 ; i < 24; i++){
+                    if( i < 10){
+                        time = '0'+ i;
+                        strHours += '<option value="'+time+'">'+time+'시</option>';
+                    }else{
+                        time = i;
+                        strHours += '<option value="'+time+'">'+time+'시</option>';
+                    }
+                }
+               $("#end_time").html(strHours);
+            </script>
+        </select>
+
+        <br>
+
+        <button id="analysis" onclick=analysis()>분석 시작</button>
     </div>
 </body>

@@ -4,72 +4,94 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#EAEAEA"
     tools:context=".AnalysisActivity">
 
     <HorizontalScrollView
         android:id="@+id/scrollHoriz"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:background="#00FFFFFF"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="SpeakableTextPresentCheck">
 
-        <im.dacer.androidcharts.LineView
-            android:id="@+id/lineView"
+        <ImageView
+            android:id="@+id/imageAnalysis"
             android:layout_width="wrap_content"
-            android:layout_height="300dp" />
-
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp" />
     </HorizontalScrollView>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:orientation="horizontal"
+        android:background="#00FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/scrollHoriz">
 
-        <ListView
-            android:id="@+id/analCctvList"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
-        <RadioGroup
-            android:id="@+id/rBtGroup"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:background="#00FFFFFF"
+            android:orientation="vertical">
 
-            <RadioButton
-                android:id="@+id/rBtDay"
+            <TextView
+                android:id="@+id/textAnalysis"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:background="#D5D5D5"
-                android:text="일 단위"
-                android:textSize="20sp" />
+                android:layout_margin="10dp"
+                android:background="@drawable/radius_rec"
+                android:padding="3dp"
+                android:text="시간 설정 후 요청 버튼을 눌러주세요"
+                android:textColor="#000000"
+                android:textSize="25dp" />
 
-            <RadioButton
-                android:id="@+id/rBtMonth"
+            <TextView
+                android:id="@+id/textStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:background="#D5D5D5"
-                android:text="달 단위"
-                android:textSize="20sp" />
+                android:layout_margin="10dp"
+                android:background="@drawable/radius_rec"
+                android:padding="3dp"
+                android:text="시작 날짜 :"
+                android:textColor="#000000"
+                android:textSize="30dp" />
 
-            <RadioButton
-                android:id="@+id/rBtYear"
+            <TextView
+                android:id="@+id/textEnd"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:background="#D5D5D5"
-                android:text="연 단위"
-                android:textSize="20sp" />
-        </RadioGroup>
+                android:layout_margin="10dp"
+                android:background="@drawable/radius_rec"
+                android:padding="3dp"
+                android:text="종료 날짜 :"
+                android:textColor="#000000"
+                android:textSize="30dp" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/textCctvName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/radius_rec"
+                android:padding="3dp"
+                android:text="CCTV : "
+                android:textColor="#000000"
+                android:textSize="30dp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btRequest"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_margin="10dp"
+                android:background="@drawable/radius_rec"
+                android:text="Button" />
+
+        </LinearLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
