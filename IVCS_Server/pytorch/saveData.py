@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 from datetime import datetime
 from time import time
 from pytz import timezone
@@ -19,10 +18,12 @@ from flask import Flask
 
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib
+import io
 
 # app = Flask(__name__)
 # socketio = SocketIO(app)
-sio = socketio.Server(cors_allowed_origins='*')
+sio = socketio.Server(cors_allowed_origins='*', async_mode='threading')
 app = Flask(__name__)
 
 HOST = 'localhost'
@@ -59,6 +60,7 @@ def get_data(sid, output):
     tmp = []
     for idx, cctv in enumerate(cctvname):
         data[cctv].append([time_info, output[idx]])
+        break #[경부선] 공세육교만 테스트
         tmp.append(output[idx])
         # data[cctv].append([time_info, output])
         # tmp.append(output)
@@ -69,8 +71,13 @@ def startCounting(sid, cctvIdx):
     global latest
     sio.emit('res_counting', str(round(latest[int(cctvIdx)][0], 3)), sid)
 
-# @sio.on('req_plot')
-# def res_plot_png(sid, measure_method, cameraid, start, end):
+@sio.on('req_plot')
+def res_plot_png(sid, measure_method, cameraid, start, end):
+    global cctvname, plot_dic
+
+    matplotlib.use('agg')
+    makePlotThread=AnalyizeData(measure_method, cctvname[int(cameraid)], start, end, sid)
+    makePlotThread.start()
 
 
 # cctv ID에 따른 저장 경로 생성
@@ -116,7 +123,7 @@ class SaveCSV(threading.Thread):
             df.to_csv(ROOT_PATH+'/'+cctv+'/'+str(self.time.year)+'/'+month+'/'+day+'/'+hour+'.csv', mode='w')
 
 class AnalyizeData(threading.Thread):
-    def __init__(self, measure, cctvname, start_time, end_time):
+    def __init__(self, measure, cctvname, start_time, end_time, user_id):
         threading.Thread.__init__(self)
         self.measure = measure
         self.cctvname = cctvname
@@ -125,6 +132,7 @@ class AnalyizeData(threading.Thread):
         #split time with date and hour
         self.start_date, self.start_hour = self.start_time.split('_')
         self.end_date, self.end_hour = self.end_time.split('_')
+        self.user_id = user_id
 
 
     # csv 파일 경로 리스트 반환
@@ -178,6 +186,11 @@ class AnalyizeData(threading.Thread):
         
         plt.figure(figsize=(15,5))
         plt.plot(df['Count'])
+        
+        img_buf = io.BytesIO()
+        plt.savefig(img_buf, format='png')
+        sio.emit('res_plot', img_buf.getvalue())
+
         
 
 if __name__ == "__main__":

@@ -12,6 +12,8 @@ var end_date = document.getElementById('end_date')
 var start_time = document.getElementById('start_time')
 var end_time = document.getElementById('end_time')
 
+var plot_img = document.getElementById('analysis_result')
+
 var counting_camera = [];
 
 selected_camera.addEventListener('submit', (e) => {
@@ -33,7 +35,7 @@ function analysis(){
     // console.log(analysis_camera.value)
     // console.log(start_date.value+"-"+start_time.value)
     // console.log(end_date.value+"-"+end_time.value)
-    socket_data.emit('req_plot', measure_unit.value, analysis_camera.value, start_date.value+"-"+start_time.value, end_date.value+"-"+end_time.value);
+    socket_data.emit('req_plot', measure_unit.value, analysis_camera.value, start_date.value+"_"+start_time.value, end_date.value+"_"+end_time.value);
 }
 
 socket.on('hls_res', (hls_url) => {
@@ -74,6 +76,7 @@ socket_data.on('res_counting', (count) => {
     count_text.innerHTML = count;
 })
 
-socket_data.on('res_plot', (plot_img) => {
-    
+socket_data.on('res_plot', (img_byte) => {
+    var arrayBuffer = new Uint8Array(img_byte);
+    plot_img.src =  URL.createObjectURL( new Blob([arrayBuffer.buffer], { type: 'image/png' } ));
 })
