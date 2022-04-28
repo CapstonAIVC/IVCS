@@ -13,7 +13,7 @@ from PIL import Image
 import socketio
 
 sio_saveData = socketio.Client()
-sio_saveData.connect('http://localhost:4000')
+sio_saveData.connect('http://localhost:4000', wait_timeout = 10)
 
 @sio_saveData.event
 def connect():
@@ -165,6 +165,54 @@ def popFrames():
 
 ############################################################################################################
 # [경부선] 공세육교 24시간 데이터 수집을 위한 코드
+
+# async def main(model):
+#     mask = Image.open('./our_mask.png').convert('L')
+#     mask = np.array(mask)
+#     mask = torch.Tensor(mask)
+#     mask_tmp = torch.Tensor(mask)
+#     for i in range(4): mask = torch.cat((mask, mask_tmp), 0)
+#     mask = mask.unsqueeze(1)
+
+#     for i in range(5):
+#         addFramesByTensor(-1)
+
+#     ## index는 tensorList 안의 list에 이번에 교체할 위치이다.
+#     index = 0
+#     while True:
+#         addFramesByTensor(index)
+#         if index == 4:
+#             index = 0
+#         else:
+#             index += 1
+
+#         result = []
+#         for i in range(TOTAL_CCTV_NUM):
+#             ## queue 
+#             X = tensorList[i][index] ## 리스트 중 첫 프레임
+#             for j in range(index+1, 5): ## 두번째부터 4까지
+#                 X = torch.cat((X,tensorList[i][j]), 0)
+#             for j in range(0, index): ## 0부터 index까지
+#                 X = torch.cat((X,tensorList[i][j]), 0)
+
+#             with torch.no_grad():
+#                 density_pred, count_pred = model(X, mask=mask)
+            
+#             result.append(count_pred.tolist()[0])
+
+
+#         result_json = json.dumps(result)
+#         await sio_saveData.emit('model_output', result_json)
+
+#         print(str(result[0])+"\n")
+
+# if __name__ == '__main__':
+#     setInfo()
+#     setStreaming()
+#     model = setmodel()
+
+#     main(model)
+
 if __name__ == '__main__':
 
     setInfo()

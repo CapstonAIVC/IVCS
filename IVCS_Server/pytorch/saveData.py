@@ -23,7 +23,9 @@ import io
 
 # app = Flask(__name__)
 # socketio = SocketIO(app)
-sio = socketio.Server(cors_allowed_origins='*', async_mode='threading')
+# sio = socketio.Server(cors_allowed_origins='*', async_mode='threading')
+sio = socketio.Server(cors_allowed_origins='*')
+
 app = Flask(__name__)
 
 HOST = 'localhost'
@@ -60,8 +62,8 @@ def get_data(sid, output):
     tmp = []
     for idx, cctv in enumerate(cctvname):
         data[cctv].append([time_info, output[idx]])
-        break #[경부선] 공세육교만 테스트
         tmp.append(output[idx])
+        break
         # data[cctv].append([time_info, output])
         # tmp.append(output)
     latest = tmp
@@ -69,6 +71,7 @@ def get_data(sid, output):
 @sio.on('req_counting')
 def startCounting(sid, cctvIdx):
     global latest
+    # sio.emit('res_counting', str(round(latest[int(cctvIdx)[0]], 3)), sid)
     sio.emit('res_counting', str(round(latest[int(cctvIdx)][0], 3)), sid)
 
 @sio.on('req_plot')
@@ -76,8 +79,16 @@ def res_plot_png(sid, measure_method, cameraid, start, end):
     global cctvname, plot_dic
 
     matplotlib.use('agg')
-    makePlotThread=AnalyizeData(measure_method, cctvname[int(cameraid)], start, end, sid)
-    makePlotThread.start()
+    AnalyizeData(measure_method, cctvname[int(cameraid)], start, end, sid).start()
+    # makePlotThread.start()
+    # print(buffer.getvalue())
+    # sio.emit('res_plot', buffer.getvalue(), sid)
+
+def emitPlot(sid, buffer) :
+    print(buffer.getvalue())
+    # sio.emit('res_plot', buffer.getvalue(), sid)
+    sio.emit('res_plot', "1", sid)
+
 
 
 # cctv ID에 따른 저장 경로 생성
@@ -189,7 +200,13 @@ class AnalyizeData(threading.Thread):
         
         img_buf = io.BytesIO()
         plt.savefig(img_buf, format='png')
-        sio.emit('res_plot', img_buf.getvalue())
+
+        print("\n\n\n\n")
+        print(self.user_id)
+        # print(img_buf.getvalue())
+        # return img_buf
+        # sio.emit('res_plot', img_buf.getvalue())
+        emitPlot(self.user_id, img_buf)
 
         
 

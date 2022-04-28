@@ -78,5 +78,6 @@ socket_data.on('res_counting', (count) => {
 
 socket_data.on('res_plot', (img_byte) => {
     var arrayBuffer = new Uint8Array(img_byte);
+    console.log(arrayBuffer)
     plot_img.src =  URL.createObjectURL( new Blob([arrayBuffer.buffer], { type: 'image/png' } ));
 })
