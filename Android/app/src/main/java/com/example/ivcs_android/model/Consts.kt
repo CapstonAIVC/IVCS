@@ -13,6 +13,12 @@ class Consts {
         const val month : String = "month"
         const val year : String = "year"
 
+        // 분석화면 버튼들
+        const val setStart = "setStart"
+        const val setEnd = "setEnd"
+        const val setCctv = "setCctv"
+        const val requestAnal = "requestAnal"
+
         // 그래프 하단
         val bottomDay = arrayListOf( "0시", "1시", "2시", "3시", "4시", "5시", "6시", "7시", "8시", "9시", "10시", "11시", "12시", "13시", "14시", "15시", "16시", "17시", "18시", "19시", "20시", "21시", "22시", "23시" )
         val bottomMonth = arrayListOf("1일", "2일", "3일", "4일", "5일", "6일", "7일", "8일", "9일", "10일", "11일", "12일", "13일", "14일", "15일", "16일", "17일", "18일", "19일", "20일", "21일", "22일", "23일", "24일", "25일", "26일", "27일", "28일", "29일", "30일", "31일")

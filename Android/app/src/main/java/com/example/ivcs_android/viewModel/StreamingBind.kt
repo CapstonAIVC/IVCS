@@ -11,6 +11,7 @@ import com.example.ivcs_android.view.streaming.Streaming
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.schedulers.Schedulers
 import okhttp3.*
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -45,7 +46,8 @@ class StreamingBind(streaming : Streaming, mBinding : ActivityStreamingBinding) 
                 {
                     if(it){
                         mBinding.textViewCounting.visibility = View.VISIBLE
-                        countData = Observable.interval(1,TimeUnit.SECONDS)
+                        countData = Observable.interval(1500,TimeUnit.MILLISECONDS)
+                            .observeOn(Schedulers.io()) // 인터넷 처리를위한 스케쥴러 할당
                             .subscribe {
                                 Msocket.instance.checkSocket( streaming.mContext as Activity )
                                 Msocket.instance.mSocket.emit("req_counting",Datas.instance.cctvIdx)
