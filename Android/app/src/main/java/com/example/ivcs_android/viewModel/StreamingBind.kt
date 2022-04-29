@@ -48,7 +48,7 @@ class StreamingBind(streaming : Streaming, mBinding : ActivityStreamingBinding) 
                         countData = Observable.interval(1,TimeUnit.SECONDS)
                             .subscribe {
                                 Msocket.instance.checkSocket( streaming.mContext as Activity )
-                                Msocket.instance.mSocket.emit("req_counting",Datas.instance.cctvIdx)
+                                Msocket.instance.mSocket.emit("req_counting",Datas.instance.cctvIdx.toString())
                             }
                     }
                     else{
