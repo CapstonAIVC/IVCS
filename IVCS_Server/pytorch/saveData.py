@@ -48,7 +48,8 @@ def get_data(sid, output):
     print(output)
     current_time = datetime.now(timezone("Asia/Seoul"))
 
-    if time_tmp.hour != current_time.hour:
+    # if time_tmp.hour != current_time.hour:
+    if time_tmp.minute != current_time.minute:
         time_tmp = current_time
         save_data = copy.deepcopy(data)
         for cctv in data.keys(): data[cctv]=[]
@@ -72,7 +73,7 @@ def get_data(sid, output):
 def startCounting(sid, cctvIdx):
     global latest
     # sio.emit('res_counting', str(round(latest[int(cctvIdx)[0]], 3)), sid)
-    sio.emit('res_counting', str(round(latest[int(cctvIdx)][0], 3)), sid)
+    sio.emit('res_counting', str(round(latest[int(cctvIdx)], 3)), sid)
 
 @sio.on('req_plot')
 def res_plot_png(sid, measure_method, cameraid, start, end):
@@ -103,6 +104,7 @@ def make_cctv_dir():
     print(data)
 
 class SaveCSV(threading.Thread):
+    global cctvname
     def __init__(self, data, time_info):
         threading.Thread.__init__(self)
         self.data = data
@@ -113,15 +115,16 @@ class SaveCSV(threading.Thread):
         month = self.time.month
         day = self.time.day
 
-        if not os.path.isdir(ROOT_PATH+'/'+cctv+'/'+str(year)): os.mkdir(ROOT_PATH+'/'+cctv+'/'+str(year))
-        if not os.path.isdir(ROOT_PATH+'/'+cctv+'/'+str(year)+'/'+str(month)): os.mkdir(ROOT_PATH+'/'+cctv+'/'+str(year)+'/'+str(month))
-        if not os.path.isdir(ROOT_PATH+'/'+cctv+'/'+str(year)+'/'+str(month)+'/'+str(day)): os.mkdir(ROOT_PATH+'/'+cctv+'/'+str(year)+'/'+str(month)+'/'+str(day))
+        if not os.path.isdir(ROOT_PATH+'/'+cctv+'/'+str(year)+'/'): os.mkdir(ROOT_PATH+'/'+cctv+'/'+str(year)+'/')
+        if not os.path.isdir(ROOT_PATH+'/'+cctv+'/'+str(year)+'/'+str(month)+'/'): os.mkdir(ROOT_PATH+'/'+cctv+'/'+str(year)+'/'+str(month)+'/')
+        if not os.path.isdir(ROOT_PATH+'/'+cctv+'/'+str(year)+'/'+str(month)+'/'+str(day)+'/'): os.mkdir(ROOT_PATH+'/'+cctv+'/'+str(year)+'/'+str(month)+'/'+str(day)+'/')
 
     def run(self):
         for cctv in cctvname:
             self.make_dir(cctv)
 
             df = pd.DataFrame( self.data[cctv], columns = ['Time', 'Count'] )
+            print(df)
 
             # 2자리 폴더명 & 파일명 생성을 위한 코드
             if int(self.time.month) < 10: month = '0'+str(self.time.month)

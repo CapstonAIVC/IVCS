@@ -250,7 +250,7 @@ if __name__ == '__main__':
             with torch.no_grad():
                 density_pred, count_pred = model(X, mask=mask)
             
-            result.append(count_pred.tolist()[0])
+            result.append(count_pred.tolist()[4][0])
 
 
         result_json = json.dumps(result)
