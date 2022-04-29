@@ -48,8 +48,8 @@ def get_data(sid, output):
     print(output)
     current_time = datetime.now(timezone("Asia/Seoul"))
 
-    # if time_tmp.hour != current_time.hour:
-    if time_tmp.minute != current_time.minute:
+    # if time_tmp.hour != current_time.hour: #1시간 간격 데이터  저저장
+    if time_tmp.minute != current_time.minute: #테스트를 위한 1분 간격 저장
         time_tmp = current_time
         save_data = copy.deepcopy(data)
         for cctv in data.keys(): data[cctv]=[]
@@ -72,8 +72,7 @@ def get_data(sid, output):
 @sio.on('req_counting')
 def startCounting(sid, cctvIdx):
     global latest
-    # sio.emit('res_counting', str(round(latest[int(cctvIdx)[0]], 3)), sid)
-    sio.emit('res_counting', str(round(latest[int(cctvIdx)][0], 3)), sid)
+    sio.emit('res_counting', str(round(latest[int(cctvIdx)], 3)), sid)
 
 @sio.on('req_plot')
 def res_plot_png(sid, measure_method, cameraid, start, end):
