@@ -48,10 +48,12 @@ class StreamingBind(streaming : Streaming, mBinding : ActivityStreamingBinding) 
                         mBinding.textViewCounting.visibility = View.VISIBLE
                         countData = Observable.interval(1500,TimeUnit.MILLISECONDS)
                             .observeOn(Schedulers.io()) // 인터넷 처리를위한 스케쥴러 할당
-                            .subscribe {
-                                Msocket.instance.checkSocket( streaming.mContext as Activity )
-                                Msocket.instance.mSocket.emit("req_counting",Datas.instance.cctvIdx)
-                            }
+                            .subscribe (
+                                {Msocket.instance.mSocket.emit("req_counting",Datas.instance.cctvIdx)},
+                                {
+                                    (streaming as Activity).finish()
+                                }
+                            )
                     }
                     else{
                         countData.dispose()

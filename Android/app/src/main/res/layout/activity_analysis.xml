@@ -82,6 +82,46 @@
                 android:textColor="#000000"
                 android:textSize="30dp" />
 
+            <RadioGroup
+                android:id="@+id/rBtGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/rBtHour"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@color/white"
+                    android:text="시간단위"
+                    android:textColor="#000000"
+                    android:textSize="20dp" />
+
+                <RadioButton
+                    android:id="@+id/rBtDay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@color/white"
+                    android:text="일단위"
+                    android:textColor="#000000"
+                    android:textSize="20dp" />
+
+                <RadioButton
+                    android:id="@+id/rBtMonth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@color/white"
+                    android:text="달단위"
+                    android:textColor="#000000"
+                    android:textSize="20dp" />
+            </RadioGroup>
+
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btRequest"
                 android:layout_width="100dp"

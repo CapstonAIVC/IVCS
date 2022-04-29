@@ -10,6 +10,7 @@ import com.example.ivcs_android.databinding.ActivityStreamingBinding
 import com.example.ivcs_android.model.Datas
 import com.example.ivcs_android.view.streaming.SetStreamingViews
 import com.example.ivcs_android.view.streaming.Streaming
+import com.example.ivcs_android.viewModel.Msocket
 import com.example.ivcs_android.viewModel.StreamingBind
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
@@ -42,6 +43,8 @@ class StreamingActivity : AppCompatActivity() {
     }
 
     private fun initStreamingActivity(){
+        Msocket.instance.setSocket()
+
         setStreamingViews = SetStreamingViews(this, mBinding)
         setStreamingViews.setViews()
 
@@ -53,9 +56,10 @@ class StreamingActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
+        Msocket.instance.releaseSocket()
         mStreaming.releasePlayer()
         Datas.instance.countSwitchSubject.onNext(false)
+        super.onDestroy()
     }
 
 }

@@ -1,5 +1,6 @@
 package com.example.ivcs_android.view.streaming
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
@@ -36,7 +37,12 @@ class SetStreamingViews(context: Context, mBinding: ActivityStreamingBinding) {
 
     fun setSwitchs(){
         mBinding.countingSwitch.setOnClickListener {
-            Datas.instance.countSwitchSubject.onNext( (it as Switch).isChecked )
+            if( !Msocket.instance.checkSocket( context )){
+                ( it as Switch ).isChecked = false
+            }
+            else {
+                Datas.instance.countSwitchSubject.onNext((it as Switch).isChecked)
+            }
         }
         mBinding.densitySwitch.setOnClickListener {
             Datas.instance.densitySwitchSubject.onNext( (it as Switch).isChecked )

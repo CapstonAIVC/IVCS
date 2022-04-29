@@ -13,11 +13,19 @@ import com.example.ivcs_android.R
 import com.example.ivcs_android.databinding.ActivityAnalysisBinding
 import com.example.ivcs_android.model.Consts
 import com.example.ivcs_android.model.Datas
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.schedulers.Schedulers
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.json.JSONObject
 
 class AnalysisBind(context: Context, mBinding: ActivityAnalysisBinding) {
 
     var context = context
     var analysisBinding = mBinding
+    var disposableSetUI : Disposable = Disposable.empty()
 
     fun bindForAnalysis(){
         setAnalysisRequestBind()
@@ -42,17 +50,50 @@ class AnalysisBind(context: Context, mBinding: ActivityAnalysisBinding) {
 
     fun setAnalysisRequestBind(){
         Datas.instance.analysisDataRequest
-            .filter { it } // false로 넘어오는 요청은 작업이 끝났다는 신호임
+            .observeOn(Schedulers.io())
             .subscribe(
                 {
-                // 요청 및 적용 후 false로 요청처리가 끝났음을 명시
-                    var bmp : Bitmap = BitmapFactory.decodeResource( context.resources, R.drawable.graph )
-                    val h = analysisBinding.imageAnalysis.layoutParams.height
-                    val w = h.toFloat() * (bmp.width.toFloat()/bmp.height.toFloat())
-                    bmp = Bitmap.createScaledBitmap(bmp, w.toInt(), h, true )
-                    analysisBinding.imageAnalysis.setImageBitmap(bmp)
+                    if(it){
+                        // false로 넘어오는 요청은 작업이 끝났다는 신호임
+                        disposableSetUI = Disposable.empty()
+                    }
+                    else {
+                        //json을 만들고 요청을 보낸다.
+                        // 받은 응답을 mainthread를 이용하는 객체에 넘겨준다.
+                        // mainthread를 이용하는 객체는 화면을 처리하고 falseㄹ 요청이 끝났음을 subject에 알려준다.
+                        var startDate =
+                            Datas.instance.startTimeInfo[0].toString() + "_" + Datas.instance.startTimeInfo[1].toString() + "_" + Datas.instance.startTimeInfo[2].toString() + "_" + Datas.instance.startTimeInfo[3].toString()
+                        var endDate =
+                            Datas.instance.endTimeInfo[0].toString() + "_" + Datas.instance.endTimeInfo[1].toString() + "_" + Datas.instance.endTimeInfo[2].toString() + "_" + Datas.instance.endTimeInfo[3].toString()
 
-                    Datas.instance.analysisDataRequest.onNext(false)
+                        var jsonObj = JSONObject()
+                        jsonObj.put("measure_method", Datas.instance.analType)
+                        jsonObj.put("cameraid", Datas.instance.analIndex.toString())
+                        jsonObj.put("start", startDate)
+                        jsonObj.put("end", endDate)
+
+                        // 그림 요청
+                        var client = OkHttpClient()
+                        var request = Request.Builder().url("https://www.naver.com").build()
+                        var response = client.newCall(request).execute()
+
+                        // response 적용
+                        disposableSetUI = Observable
+                            .just(response)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(Schedulers.computation())
+                            .map {
+                                // 여기서 bitmap으로 변환
+                                var bmp : Bitmap = BitmapFactory.decodeResource( context.resources, R.drawable.graph )
+                                val h = analysisBinding.imageAnalysis.layoutParams.height
+                                val w = h.toFloat() * (bmp.width.toFloat()/bmp.height.toFloat())
+                                Bitmap.createScaledBitmap(bmp, w.toInt(), h, true )
+                            }
+                            .subscribe {
+                                analysisBinding.imageAnalysis.setImageBitmap(it)
+                                Datas.instance.analysisDataRequest.onNext(false)
+                            }
+                    }
                 },
                 { Log.e("AnalysisRequestBindErr", it.message.toString())}
             )

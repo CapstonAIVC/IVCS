@@ -39,7 +39,7 @@ class StartActivity : AppCompatActivity() {
     }
 
     fun setWithInternet(){
-        Msocket.instance.setSocket()
+//        Msocket.instance.setSocket()
         Datas.instance.setInfo()
     }
 
@@ -59,12 +59,13 @@ class StartActivity : AppCompatActivity() {
     }
 
     private fun checkInternetResources() : Boolean{
-        if(!Msocket.instance.mSocket.connected()){
-            Msocket.instance.setSocket()
-            Toast.makeText(this,"소켓 연결중, 잠시 후 시도",Toast.LENGTH_SHORT).show()
-            return false
-        }
-        else if (Datas.instance.arrForUrl.isEmpty()) {
+//        if(!Msocket.instance.mSocket.connected()){
+//            Msocket.instance.setSocket()
+//            Toast.makeText(this,"소켓 연결중, 잠시 후 시도",Toast.LENGTH_SHORT).show()
+//            return false
+//        }
+//        else
+            if (Datas.instance.arrForUrl.isEmpty()) {
             Datas.instance.setInfo()
             Toast.makeText(this, "서버 정보 요청중", Toast.LENGTH_SHORT).show()
             return false

@@ -28,9 +28,9 @@ class Datas {
 
     /** analysis 관련 */
 //    var analysisTypeChange : PublishSubject<Boolean> = PublishSubject.create()
+    var analType = Consts.hour
     var analName = ""
     var analIndex = 0
-//    var analType = Consts.day
     var startTimeInfo = arrayOf<Long>(2022,4,26,15)
     var endTimeInfo = arrayOf<Long>(2022,4,26,15)
     // 처리중인 요청이 있으면 true

@@ -28,6 +28,7 @@ class SetAnalysisViews(context: Context, mBinding: ActivityAnalysisBinding) {
     fun setViews(){
         setTextBts()
         setBts()
+        setRadioBts()
     }
 
     fun setTextBts(){
@@ -35,7 +36,7 @@ class SetAnalysisViews(context: Context, mBinding: ActivityAnalysisBinding) {
             Datas.instance.analysisButtonSubject.onNext(Consts.setStart)
         }
         binding.textEnd.setOnClickListener {
-            Datas.instance.analysisButtonSubject.onNext(Consts.setStart)
+            Datas.instance.analysisButtonSubject.onNext(Consts.setEnd)
         }
         binding.textCctvName.setOnClickListener {
             Datas.instance.analysisButtonSubject.onNext(Consts.setCctv)
@@ -46,6 +47,19 @@ class SetAnalysisViews(context: Context, mBinding: ActivityAnalysisBinding) {
         binding.btRequest.setOnClickListener {
             Datas.instance.analysisButtonSubject.onNext(Consts.requestAnal)
         }
+    }
+
+    fun setRadioBts(){
+
+        binding.rBtHour.tag = Consts.hour
+        binding.rBtDay.tag = Consts.day
+        binding.rBtMonth.tag = Consts.month
+
+        binding.rBtGroup.setOnCheckedChangeListener { _, checkedViewId ->
+            Datas.instance.analType = binding.root.findViewById<RadioButton>(checkedViewId).tag as String
+        }
+
+        binding.rBtHour.performClick()
     }
 
 }
