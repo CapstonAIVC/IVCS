@@ -9,6 +9,7 @@ import com.example.ivcs_android.databinding.ActivityStreamingBinding
 import com.example.ivcs_android.model.Datas
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
@@ -40,6 +41,18 @@ class Streaming(context: Context, mBinding: ActivityStreamingBinding) {
 //        player!!.setMediaSource( getMediaSource(url) )
 //        player!!.prepare()
 //        player!!.playWhenReady = true
+    }
+
+    fun catchPlayerErr(){
+        player!!.addListener( object : Player.Listener{
+            override fun onEvents(player: Player, events: Player.Events) {
+                super.onEvents(player, events)
+                if(events.contains(Player.EVENT_PLAYER_ERROR)){
+                    // player 에러 발생시 다시 세팅
+                    Datas.instance.changeUrlSubject.onNext(Datas.instance.arrForUrl[ Datas.instance.cctvIdx ])
+                }
+            }
+        } )
     }
 
     private fun getMediaSource(urlStr : String) : MediaSource{
