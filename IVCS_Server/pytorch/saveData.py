@@ -48,7 +48,8 @@ def get_data(sid, output):
     print(output)
     current_time = datetime.now(timezone("Asia/Seoul"))
 
-    if time_tmp.hour != current_time.hour:
+    # if time_tmp.hour != current_time.hour:
+    if time_tmp.minute != current_time.minute:
         time_tmp = current_time
         save_data = copy.deepcopy(data)
         for cctv in data.keys(): data[cctv]=[]
@@ -108,14 +109,19 @@ class SaveCSV(threading.Thread):
         self.data = data
         self.time = time_info
 
-    def make_dir(self, cctv):
-        year = self.time.year
-        month = self.time.month
-        day = self.time.day
+        # 2자리 폴더명 & 파일명 생성을 위한 코드
+        self.year = str(self.time.year)
+        if int(self.time.month) < 10: self.month = '0'+str(self.time.month)
+        else: self.month = str(self.time.month)
+        if int(self.time.day) < 10: self.day = '0'+str(self.time.day)
+        else: self.day = str(self.time.day)
+        if int(self.time.hour) < 10: self.hour = '0'+str(self.time.hour)
+        else: self.hour = str(self.time.hour)
 
-        if not os.path.isdir(ROOT_PATH+'/'+cctv+'/'+str(year)): os.mkdir(ROOT_PATH+'/'+cctv+'/'+str(year))
-        if not os.path.isdir(ROOT_PATH+'/'+cctv+'/'+str(year)+'/'+str(month)): os.mkdir(ROOT_PATH+'/'+cctv+'/'+str(year)+'/'+str(month))
-        if not os.path.isdir(ROOT_PATH+'/'+cctv+'/'+str(year)+'/'+str(month)+'/'+str(day)): os.mkdir(ROOT_PATH+'/'+cctv+'/'+str(year)+'/'+str(month)+'/'+str(day))
+    def make_dir(self, cctv):
+        if not os.path.isdir(ROOT_PATH+'/'+cctv+'/'+self.year): os.mkdir(ROOT_PATH+'/'+cctv+'/'+self.year)
+        if not os.path.isdir(ROOT_PATH+'/'+cctv+'/'+self.year+'/'+self.month): os.mkdir(ROOT_PATH+'/'+cctv+'/'+self.year+'/'+self.month)
+        if not os.path.isdir(ROOT_PATH+'/'+cctv+'/'+self.year+'/'+self.month+'/'+self.day): os.mkdir(ROOT_PATH+'/'+cctv+'/'+self.year+'/'+self.month+'/'+self.day)
 
     def run(self):
         for cctv in cctvname:
@@ -123,15 +129,7 @@ class SaveCSV(threading.Thread):
 
             df = pd.DataFrame( self.data[cctv], columns = ['Time', 'Count'] )
 
-            # 2자리 폴더명 & 파일명 생성을 위한 코드
-            if int(self.time.month) < 10: month = '0'+str(self.time.month)
-            else: month = str(self.time.month)
-            if int(self.time.day) < 10: day = '0'+str(self.time.day)
-            else: day = str(self.time.day)
-            if int(self.time.hour) < 10: hour = '0'+str(self.time.hour)
-            else: hour = str(self.time.hour)
-
-            df.to_csv(ROOT_PATH+'/'+cctv+'/'+str(self.time.year)+'/'+month+'/'+day+'/'+hour+'.csv', mode='w')
+            df.to_csv(ROOT_PATH+'/'+cctv+'/'+self.year+'/'+self.month+'/'+self.day+'/'+self.hour+'.csv', mode='w')
 
 class AnalyizeData(threading.Thread):
     def __init__(self, measure, cctvname, start_time, end_time, user_id):
