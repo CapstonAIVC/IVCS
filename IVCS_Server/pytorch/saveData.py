@@ -104,7 +104,6 @@ def make_cctv_dir():
     print(data)
 
 class SaveCSV(threading.Thread):
-    global cctvname
     def __init__(self, data, time_info):
         threading.Thread.__init__(self)
         self.data = data

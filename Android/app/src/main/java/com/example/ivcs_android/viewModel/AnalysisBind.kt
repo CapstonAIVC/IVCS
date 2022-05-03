@@ -17,6 +17,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
+import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
@@ -74,16 +75,23 @@ class AnalysisBind(context: Context, mBinding: ActivityAnalysisBinding) {
 
                         // 그림 요청
                         var client = OkHttpClient()
-                        var request = Request.Builder().url("https://www.naver.com").build()
+                        var formBody = FormBody.Builder()
+                            .add("info",jsonObj.toString())
+                            .build()
+                        var request = Request.Builder()
+                            .url("tmp")
+                            .post(formBody)
+                            .build()
                         var response = client.newCall(request).execute()
 
-                        // response 적용
+                        // response에서 얻은 이미지 가공
                         disposableSetUI = Observable
                             .just(response)
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribeOn(Schedulers.computation())
                             .map {
                                 // 여기서 bitmap으로 변환
+                                Log.e("analResponse", response.body!!.string())
                                 var bmp : Bitmap = BitmapFactory.decodeResource( context.resources, R.drawable.graph )
                                 val h = analysisBinding.imageAnalysis.layoutParams.height
                                 val w = h.toFloat() * (bmp.width.toFloat()/bmp.height.toFloat())
