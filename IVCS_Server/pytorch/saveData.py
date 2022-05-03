@@ -10,11 +10,11 @@ import json
 import threading
 
 # from flask import Flask
-# from flask_socketio import SocketIO
 import socketio
 import eventlet
 import eventlet.wsgi
-from flask import Flask
+from flask import Flask, request, Response, jsonify
+from flask_cors import CORS
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -25,8 +25,8 @@ import io
 # socketio = SocketIO(app)
 # sio = socketio.Server(cors_allowed_origins='*', async_mode='threading')
 sio = socketio.Server(cors_allowed_origins='*')
-
 app = Flask(__name__)
+CORS(app, resource={r"/req_plot":{"origins":"*"}})
 
 HOST = 'localhost'
 PORT = 4000
@@ -48,8 +48,13 @@ def get_data(sid, output):
     print(output)
     current_time = datetime.now(timezone("Asia/Seoul"))
 
+<<<<<<< HEAD
     # if time_tmp.hour != current_time.hour:
     if time_tmp.minute != current_time.minute:
+=======
+    # if time_tmp.minute != current_time.minute: #테스트를 위한 1분 간격 저장
+    if time_tmp.hour != current_time.hour: #1시간 간격 데이터  저저장
+>>>>>>> web_dev
         time_tmp = current_time
         save_data = copy.deepcopy(data)
         for cctv in data.keys(): data[cctv]=[]
@@ -69,28 +74,31 @@ def get_data(sid, output):
         # tmp.append(output)
     latest = tmp
 
+<<<<<<< HEAD
 @sio.on('req_counting')
 def startCounting(sid, cctvIdx):
     global latest
     # sio.emit('res_counting', str(round(latest[int(cctvIdx)[0]], 3)), sid)
     sio.emit('res_counting', str(round(latest[int(cctvIdx)], 3)), sid)
+=======
+@app.route('/req_plot', methods=['POST'])
+def res_plot_png():
+    global cctvname
+>>>>>>> web_dev
 
-@sio.on('req_plot')
-def res_plot_png(sid, measure_method, cameraid, start, end):
-    global cctvname, plot_dic
+    params = request.get_json()
 
-    matplotlib.use('agg')
-    AnalyizeData(measure_method, cctvname[int(cameraid)], start, end, sid).start()
-    # makePlotThread.start()
-    # print(buffer.getvalue())
-    # sio.emit('res_plot', buffer.getvalue(), sid)
+    measure_method = params['measure_method']
+    cameraid = params['cameraid']
+    start = params['start']
+    end = params['end']
 
-def emitPlot(sid, buffer) :
-    print(buffer.getvalue())
-    # sio.emit('res_plot', buffer.getvalue(), sid)
-    sio.emit('res_plot', "1", sid)
+    task = AnalyizeData(measure_method, cctvname[int(cameraid)], start, end)
+    result = task.run()
 
+    print(result.getvalue())
 
+    return "result.getvalue()"
 
 # cctv ID에 따른 저장 경로 생성
 def make_cctv_dir():
@@ -109,14 +117,25 @@ class SaveCSV(threading.Thread):
         self.data = data
         self.time = time_info
 
-    def make_dir(self, cctv):
-        year = self.time.year
-        month = self.time.month
-        day = self.time.day
+        # 2자리 폴더명 & 파일명 생성을 위한 코드
+        self.year = str(self.time.year)
+        if int(self.time.month) < 10: self.month = '0'+str(self.time.month)
+        else: self.month = str(self.time.month)
+        if int(self.time.day) < 10: self.day = '0'+str(self.time.day)
+        else: self.day = str(self.time.day)
+        if int(self.time.hour) < 10: self.hour = '0'+str(self.time.hour)
+        else: self.hour = str(self.time.hour)
 
+<<<<<<< HEAD
         if not os.path.isdir(ROOT_PATH+'/'+cctv+'/'+str(year)+'/'): os.mkdir(ROOT_PATH+'/'+cctv+'/'+str(year)+'/')
         if not os.path.isdir(ROOT_PATH+'/'+cctv+'/'+str(year)+'/'+str(month)+'/'): os.mkdir(ROOT_PATH+'/'+cctv+'/'+str(year)+'/'+str(month)+'/')
         if not os.path.isdir(ROOT_PATH+'/'+cctv+'/'+str(year)+'/'+str(month)+'/'+str(day)+'/'): os.mkdir(ROOT_PATH+'/'+cctv+'/'+str(year)+'/'+str(month)+'/'+str(day)+'/')
+=======
+    def make_dir(self, cctv):
+        if not os.path.isdir(ROOT_PATH+'/'+cctv+'/'+self.year): os.mkdir(ROOT_PATH+'/'+cctv+'/'+self.year)
+        if not os.path.isdir(ROOT_PATH+'/'+cctv+'/'+self.year+'/'+self.month): os.mkdir(ROOT_PATH+'/'+cctv+'/'+self.year+'/'+self.month)
+        if not os.path.isdir(ROOT_PATH+'/'+cctv+'/'+self.year+'/'+self.month+'/'+self.day): os.mkdir(ROOT_PATH+'/'+cctv+'/'+self.year+'/'+self.month+'/'+self.day)
+>>>>>>> web_dev
 
     def run(self):
         for cctv in cctvname:
@@ -125,19 +144,12 @@ class SaveCSV(threading.Thread):
             df = pd.DataFrame( self.data[cctv], columns = ['Time', 'Count'] )
             print(df)
 
-            # 2자리 폴더명 & 파일명 생성을 위한 코드
-            if int(self.time.month) < 10: month = '0'+str(self.time.month)
-            else: month = str(self.time.month)
-            if int(self.time.day) < 10: day = '0'+str(self.time.day)
-            else: day = str(self.time.day)
-            if int(self.time.hour) < 10: hour = '0'+str(self.time.hour)
-            else: hour = str(self.time.hour)
+            df.to_csv(ROOT_PATH+'/'+cctv+'/'+self.year+'/'+self.month+'/'+self.day+'/'+self.hour+'.csv', mode='w')
 
-            df.to_csv(ROOT_PATH+'/'+cctv+'/'+str(self.time.year)+'/'+month+'/'+day+'/'+hour+'.csv', mode='w')
-
-class AnalyizeData(threading.Thread):
-    def __init__(self, measure, cctvname, start_time, end_time, user_id):
-        threading.Thread.__init__(self)
+# class AnalyizeData(threading.Thread):
+class AnalyizeData():
+    def __init__(self, measure, cctvname, start_time, end_time):
+        # threading.Thread.__init__(self)
         self.measure = measure
         self.cctvname = cctvname
         self.start_time = start_time
@@ -145,7 +157,6 @@ class AnalyizeData(threading.Thread):
         #split time with date and hour
         self.start_date, self.start_hour = self.start_time.split('_')
         self.end_date, self.end_hour = self.end_time.split('_')
-        self.user_id = user_id
 
 
     # csv 파일 경로 리스트 반환
@@ -203,12 +214,9 @@ class AnalyizeData(threading.Thread):
         img_buf = io.BytesIO()
         plt.savefig(img_buf, format='png')
 
-        print("\n\n\n\n")
-        print(self.user_id)
+        return img_buf
+
         # print(img_buf.getvalue())
-        # return img_buf
-        # sio.emit('res_plot', img_buf.getvalue())
-        emitPlot(self.user_id, img_buf)
 
         
 
@@ -217,6 +225,8 @@ if __name__ == "__main__":
     if not os.path.isdir(ROOT_PATH):
         os.mkdir(ROOT_PATH)
     make_cctv_dir()
+
+    matplotlib.use('agg')
 
     # wrap Flask application with engineio's middleware
     app = socketio.Middleware(sio, app)

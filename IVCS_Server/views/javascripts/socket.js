@@ -30,12 +30,48 @@ function req_counting_flag() {
     }, 2000);
 }
 
+let sendData = () => {
+    let xhr = new XMLHttpRequest();
+
+    xhr.open("POST", "http://localhost:4000/req_plot", true);
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.onload = () => {
+
+        // print JSON response
+        if (xhr.status >= 200 && xhr.status < 300) {
+            // parse JSON
+            const response = JSON.parse(xhr.responseText);
+            console.log(response);
+        }
+
+        else console.log("POST to Flask Accepted");
+    };
+
+    let data = {
+        "measure_method": measure_unit.value,
+        "cameraid": analysis_camera.value,
+        "start" : start_date.value+"_"+start_time.value,
+        "end" : end_date.value+"_"+end_time.value,
+    };
+    // console.log(data)
+
+    xhr.send(JSON.stringify(data));
+}
+
 function analysis(){
     // console.log(measure_unit.value)
     // console.log(analysis_camera.value)
     // console.log(start_date.value+"-"+start_time.value)
     // console.log(end_date.value+"-"+end_time.value)
-    socket_data.emit('req_plot', measure_unit.value, analysis_camera.value, start_date.value+"_"+start_time.value, end_date.value+"_"+end_time.value);
+
+    // socket_data.emit('req_plot', measure_unit.value, analysis_camera.value, start_date.value+"_"+start_time.value, end_date.value+"_"+end_time.value);
+
+    let img_byte = sendData();
+    new Uint8Array(img_byte);
+
+    console.log(xhr.response)
 }
 
 socket.on('hls_res', (hls_url) => {
