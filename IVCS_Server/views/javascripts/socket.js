@@ -1,8 +1,9 @@
 const socket = io.connect('http://localhost:3000');
 const socket_data = io('http://localhost:4000');
 
+let xhr = new XMLHttpRequest();
+
 const selected_camera = document.getElementById('camera');
-// const live_stream = document.getElementById('hlsPlayEx');
 const count_text = document.getElementsByClassName('counting_text')[0]
 
 var analysis_camera = document.getElementById('analysis_camera_id');
@@ -31,23 +32,9 @@ function req_counting_flag() {
 }
 
 let sendData = () => {
-    let xhr = new XMLHttpRequest();
-
     xhr.open("POST", "http://localhost:4000/req_plot", true);
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
-
-    xhr.onload = () => {
-
-        // print JSON response
-        if (xhr.status >= 200 && xhr.status < 300) {
-            // parse JSON
-            const response = JSON.parse(xhr.responseText);
-            console.log(response);
-        }
-
-        else console.log("POST to Flask Accepted");
-    };
 
     let data = {
         "measure_method": measure_unit.value,
@@ -55,23 +42,19 @@ let sendData = () => {
         "start" : start_date.value+"_"+start_time.value,
         "end" : end_date.value+"_"+end_time.value,
     };
-    // console.log(data)
 
     xhr.send(JSON.stringify(data));
 }
 
 function analysis(){
-    // console.log(measure_unit.value)
-    // console.log(analysis_camera.value)
-    // console.log(start_date.value+"-"+start_time.value)
-    // console.log(end_date.value+"-"+end_time.value)
+    sendData();
 
-    // socket_data.emit('req_plot', measure_unit.value, analysis_camera.value, start_date.value+"_"+start_time.value, end_date.value+"_"+end_time.value);
-
-    let img_byte = sendData();
-    new Uint8Array(img_byte);
-
-    console.log(xhr.response)
+    xhr.responseType = "arraybuffer";
+    xhr.onload = function() {
+        var arrayBuffer = xhr.response;
+        var byteArray = new Uint8Array(arrayBuffer);
+        plot_img.src =  URL.createObjectURL( new Blob([byteArray.buffer], { type: 'image/png' } ));
+    }
 }
 
 socket.on('hls_res', (hls_url) => {
@@ -110,10 +93,4 @@ socket.on('hls_res', (hls_url) => {
 
 socket_data.on('res_counting', (count) => {
     count_text.innerHTML = count;
-})
-
-socket_data.on('res_plot', (img_byte) => {
-    var arrayBuffer = new Uint8Array(img_byte);
-    console.log(arrayBuffer)
-    plot_img.src =  URL.createObjectURL( new Blob([arrayBuffer.buffer], { type: 'image/png' } ));
 })
