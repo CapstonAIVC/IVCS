@@ -4,10 +4,11 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/drawable/radius_rec.xml" value="0.17083333333333334" />
-        <entry key="app/src/main/res/layout/activity_analysis.xml" value="0.14282775737672634" />
+        <entry key="app/src/main/res/layout/activity_analysis.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.14739583333333334" />
         <entry key="app/src/main/res/layout/activity_start.xml" value="0.10989583333333333" />
         <entry key="app/src/main/res/layout/activity_streaming.xml" value="0.11666666666666667" />
+        <entry key="app/src/main/res/layout/date_pick.xml" value="0.1" />
         <entry key="app/src/main/res/layout/my_cctv_pick.xml" value="0.23867753623188406" />
         <entry key="app/src/main/res/layout/my_date_pick.xml" value="0.23867753623188406" />
       </map>

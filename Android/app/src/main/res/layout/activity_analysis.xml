@@ -28,7 +28,8 @@
                 android:id="@+id/imageAnalysis"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp" />
+                android:layout_margin="10dp"
+                bind:imageBitmap="@{viewModel.analImage}"/>
         </HorizontalScrollView>
 
         <ScrollView
@@ -64,9 +65,9 @@
                     android:layout_margin="10dp"
                     android:background="@drawable/radius_rec"
                     android:padding="3dp"
-                    android:text="시작 날짜 :"
                     android:textColor="#000000"
-                    android:textSize="30dp" />
+                    android:textSize="30dp"
+                    android:text="@{viewModel.startText}"/>
 
                 <TextView
                     android:id="@+id/textEnd"
@@ -75,9 +76,9 @@
                     android:layout_margin="10dp"
                     android:background="@drawable/radius_rec"
                     android:padding="3dp"
-                    android:text="종료 날짜 :"
                     android:textColor="#000000"
-                    android:textSize="30dp" />
+                    android:textSize="30dp"
+                    android:text="@{viewModel.endText}"/>
 
                 <TextView
                     android:id="@+id/textCctvName"
@@ -86,7 +87,8 @@
                     android:layout_margin="10dp"
                     android:background="@drawable/radius_rec"
                     android:padding="3dp"
-                    android:text="CCTV : "
+                    android:text="@{viewModel.cctvText}"
+                    android:onClick="@{()->viewModel.cctvNameClicked()}"
                     android:textColor="#000000"
                     android:textSize="30dp" />
 
@@ -104,6 +106,7 @@
                         android:layout_weight="1"
                         android:background="@color/white"
                         android:text="시간단위"
+                        android:onClick="@{(view)->viewModel.radioClicked(view)}"
                         android:textColor="#000000"
                         android:textSize="20dp" />
 
@@ -115,6 +118,7 @@
                         android:layout_weight="1"
                         android:background="@color/white"
                         android:text="일단위"
+                        android:onClick="@{(view)->viewModel.radioClicked(view)}"
                         android:textColor="#000000"
                         android:textSize="20dp" />
 
@@ -126,6 +130,7 @@
                         android:layout_weight="1"
                         android:background="@color/white"
                         android:text="달단위"
+                        android:onClick="@{(view)->viewModel.radioClicked(view)}"
                         android:textColor="#000000"
                         android:textSize="20dp" />
                 </RadioGroup>
@@ -137,7 +142,8 @@
                     android:layout_gravity="end"
                     android:layout_margin="10dp"
                     android:background="@drawable/radius_rec"
-                    android:text="Button" />
+                    android:text="분석 요청"
+                    android:onClick="@{()->viewModel.requestBtClicked()}"/>
 
             </LinearLayout>
         </ScrollView>

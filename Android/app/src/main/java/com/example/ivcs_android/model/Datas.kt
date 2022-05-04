@@ -1,5 +1,6 @@
 package com.example.ivcs_android.model
 
+import android.app.Dialog
 import android.util.Log
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
@@ -27,36 +28,15 @@ class Datas {
     var changeCountText : BehaviorSubject<String> = BehaviorSubject.createDefault("차량 수: ")
 
     /** analysis 관련 */
-//    var analysisTypeChange : PublishSubject<Boolean> = PublishSubject.create()
     var analType = Consts.hour
     var analName = ""
     var analIndex = 0
     var startTimeInfo = arrayOf<Long>(2022,4,24,15)
     var endTimeInfo = arrayOf<Long>(2022,4,24,16)
-    // 처리중인 요청이 있으면 true
-    var analysisDataRequest : BehaviorSubject<Boolean> = BehaviorSubject.createDefault(false)
-    var analysisButtonSubject : PublishSubject<String> = PublishSubject.create()
+    var analImageHeight = 100
+    var changeAnalInfoSubj : PublishSubject<AnalysisEvent> = PublishSubject.create()
+}
 
-    fun setInfo(){
-        val url = Consts.localhost+Consts.getUrl
-        val client = OkHttpClient()
-        val request = Request.Builder().url(url).build()
-
-        client.newCall(request).enqueue(object: Callback {
-            override fun onFailure(call: Call, e: IOException){
-                Log.e("getNamesFailed",e.message.toString())
-            }
-            override fun onResponse(call: Call, response: Response) {
-                var jsonObj = JSONObject(response.body!!.string())
-                var jsonArrCctvName = jsonObj.getJSONArray("cctvname")
-                var jsonArrUrl = jsonObj.getJSONArray("cctvurl")
-                arrForListView = Array(jsonArrCctvName.length()) {""}
-                arrForUrl = Array(jsonArrCctvName.length()) {""}
-                for( i in 0 until jsonArrCctvName.length()){
-                    arrForListView[i] = jsonArrCctvName.getString(i)
-                    arrForUrl[i] = jsonArrUrl.getString(i)
-                }
-            }
-        })
-    }
+enum class AnalysisEvent {
+    ChangeStart, ChangeEnd, ChangeType, ChangeCctv
 }

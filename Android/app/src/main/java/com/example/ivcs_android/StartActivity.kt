@@ -1,6 +1,7 @@
 package com.example.ivcs_android
 
 import android.Manifest
+import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
@@ -14,7 +15,8 @@ import com.example.ivcs_android.viewModel.StartViewModel
 
 class StartActivity : AppCompatActivity() {
 
-    companion object {
+    // 수정을 위해 임시로 있는 context
+    companion object{
         lateinit var appContext : Context
     }
 
@@ -24,12 +26,13 @@ class StartActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // 수정인 위한 임시 context
+        appContext = applicationContext
+
         startBinding =
             DataBindingUtil.setContentView<ActivityStartBinding>(this, R.layout.activity_start)
         startBinding.lifecycleOwner = this // 라이브데이터 관찰을 위함
-        startBinding.viewModel = StartViewModel()
-
-        appContext = applicationContext
+        startBinding.viewModel = StartViewModel(application)
 
         checkPermissions()
     }
@@ -59,8 +62,9 @@ class StartActivity : AppCompatActivity() {
             ActivityCompat.requestPermissions(this, rejectedPermissionList.toArray(array), 100)
 
             checkPermissions()
-        } else {
-            Datas.instance.setInfo()
+        }
+        else{
+            startBinding.viewModel?.let{ it.setInfo()}
         }
     }
 }
