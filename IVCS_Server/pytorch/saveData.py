@@ -48,13 +48,8 @@ def get_data(sid, output):
     print(output)
     current_time = datetime.now(timezone("Asia/Seoul"))
 
-<<<<<<< HEAD
-    # if time_tmp.hour != current_time.hour:
-    if time_tmp.minute != current_time.minute:
-=======
     # if time_tmp.minute != current_time.minute: #테스트를 위한 1분 간격 저장
     if time_tmp.hour != current_time.hour: #1시간 간격 데이터  저저장
->>>>>>> web_dev
         time_tmp = current_time
         save_data = copy.deepcopy(data)
         for cctv in data.keys(): data[cctv]=[]
@@ -74,19 +69,18 @@ def get_data(sid, output):
         # tmp.append(output)
     latest = tmp
 
-<<<<<<< HEAD
 @sio.on('req_counting')
 def startCounting(sid, cctvIdx):
     global latest
     # sio.emit('res_counting', str(round(latest[int(cctvIdx)[0]], 3)), sid)
     sio.emit('res_counting', str(round(latest[int(cctvIdx)], 3)), sid)
-=======
+    
 @app.route('/req_plot', methods=['POST'])
 def res_plot_png():
     global cctvname
->>>>>>> web_dev
 
     params = request.get_json()
+    # print(params)
 
     measure_method = params['measure_method']
     cameraid = params['cameraid']
@@ -95,10 +89,9 @@ def res_plot_png():
 
     task = AnalyizeData(measure_method, cctvname[int(cameraid)], start, end)
     result = task.run()
+    print(type(result.getvalue()))
 
-    print(result.getvalue())
-
-    return "result.getvalue()"
+    return result.getvalue()
 
 # cctv ID에 따른 저장 경로 생성
 def make_cctv_dir():
@@ -126,16 +119,10 @@ class SaveCSV(threading.Thread):
         if int(self.time.hour) < 10: self.hour = '0'+str(self.time.hour)
         else: self.hour = str(self.time.hour)
 
-<<<<<<< HEAD
-        if not os.path.isdir(ROOT_PATH+'/'+cctv+'/'+str(year)+'/'): os.mkdir(ROOT_PATH+'/'+cctv+'/'+str(year)+'/')
-        if not os.path.isdir(ROOT_PATH+'/'+cctv+'/'+str(year)+'/'+str(month)+'/'): os.mkdir(ROOT_PATH+'/'+cctv+'/'+str(year)+'/'+str(month)+'/')
-        if not os.path.isdir(ROOT_PATH+'/'+cctv+'/'+str(year)+'/'+str(month)+'/'+str(day)+'/'): os.mkdir(ROOT_PATH+'/'+cctv+'/'+str(year)+'/'+str(month)+'/'+str(day)+'/')
-=======
     def make_dir(self, cctv):
         if not os.path.isdir(ROOT_PATH+'/'+cctv+'/'+self.year): os.mkdir(ROOT_PATH+'/'+cctv+'/'+self.year)
         if not os.path.isdir(ROOT_PATH+'/'+cctv+'/'+self.year+'/'+self.month): os.mkdir(ROOT_PATH+'/'+cctv+'/'+self.year+'/'+self.month)
         if not os.path.isdir(ROOT_PATH+'/'+cctv+'/'+self.year+'/'+self.month+'/'+self.day): os.mkdir(ROOT_PATH+'/'+cctv+'/'+self.year+'/'+self.month+'/'+self.day)
->>>>>>> web_dev
 
     def run(self):
         for cctv in cctvname:

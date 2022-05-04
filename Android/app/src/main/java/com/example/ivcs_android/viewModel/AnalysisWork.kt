@@ -17,12 +17,11 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import okhttp3.FormBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import org.json.JSONObject
 
-class AnalysisBind(context: Context, mBinding: ActivityAnalysisBinding) {
+class AnalysisWork(context: Context, mBinding: ActivityAnalysisBinding) {
 
     var context = context
     var analysisBinding = mBinding
@@ -54,8 +53,7 @@ class AnalysisBind(context: Context, mBinding: ActivityAnalysisBinding) {
             .observeOn(Schedulers.io())
             .subscribe(
                 {
-                    if(it){
-                        // false로 넘어오는 요청은 작업이 끝났다는 신호임
+                    if( !it ){
                         disposableSetUI = Disposable.empty()
                     }
                     else {
@@ -63,9 +61,9 @@ class AnalysisBind(context: Context, mBinding: ActivityAnalysisBinding) {
                         // 받은 응답을 mainthread를 이용하는 객체에 넘겨준다.
                         // mainthread를 이용하는 객체는 화면을 처리하고 falseㄹ 요청이 끝났음을 subject에 알려준다.
                         var startDate =
-                            Datas.instance.startTimeInfo[0].toString() + "_" + Datas.instance.startTimeInfo[1].toString() + "_" + Datas.instance.startTimeInfo[2].toString() + "_" + Datas.instance.startTimeInfo[3].toString()
+                            Datas.instance.startTimeInfo[0].toString() + "-" + String.format("%02d",Datas.instance.startTimeInfo[1]) + "-" + String.format("%02d",Datas.instance.startTimeInfo[2]) + "_" + String.format("%02d",Datas.instance.startTimeInfo[3])
                         var endDate =
-                            Datas.instance.endTimeInfo[0].toString() + "_" + Datas.instance.endTimeInfo[1].toString() + "_" + Datas.instance.endTimeInfo[2].toString() + "_" + Datas.instance.endTimeInfo[3].toString()
+                            Datas.instance.endTimeInfo[0].toString() + "-" + String.format("%02d",Datas.instance.endTimeInfo[1]) + "-" + String.format("%02d",Datas.instance.endTimeInfo[2]) + "_" + String.format("%02d",Datas.instance.endTimeInfo[3])
 
                         var jsonObj = JSONObject()
                         jsonObj.put("measure_method", Datas.instance.analType)
@@ -73,35 +71,45 @@ class AnalysisBind(context: Context, mBinding: ActivityAnalysisBinding) {
                         jsonObj.put("start", startDate)
                         jsonObj.put("end", endDate)
 
+                        var reqBody = RequestBody.create(
+                            "application/json; charset=utf-8".toMediaTypeOrNull(),
+                            jsonObj.toString()
+                        )
+
                         // 그림 요청
                         var client = OkHttpClient()
-                        var formBody = FormBody.Builder()
-                            .add("info",jsonObj.toString())
-                            .build()
                         var request = Request.Builder()
-                            .url("tmp")
-                            .post(formBody)
+                            .url(Consts.plotUrl)
+                            .post(reqBody)
                             .build()
                         var response = client.newCall(request).execute()
-
+                        var resbody = response.body!!.byteString()
+//
                         // response에서 얻은 이미지 가공
                         disposableSetUI = Observable
-                            .just(response)
+                            .just(resbody)
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribeOn(Schedulers.computation())
                             .map {
                                 // 여기서 bitmap으로 변환
-                                Log.e("analResponse", response.body!!.string())
-                                var bmp : Bitmap = BitmapFactory.decodeResource( context.resources, R.drawable.graph )
+                                var bArray = it.toByteArray()
+//                                Log.e("bArrSize", bArray.size.toString())
+                                var bmp = BitmapFactory.decodeByteArray( bArray, 0, bArray.size )
+//                                var bmp: Bitmap = BitmapFactory.decodeResource(context.resources,
+//                                    R.drawable.graph)
                                 val h = analysisBinding.imageAnalysis.layoutParams.height
-                                val w = h.toFloat() * (bmp.width.toFloat()/bmp.height.toFloat())
-                                Bitmap.createScaledBitmap(bmp, w.toInt(), h, true )
+                                val w = h.toFloat() * (bmp.width.toFloat() / bmp.height.toFloat())
+                                Bitmap.createScaledBitmap(bmp, w.toInt(), h, true)
                             }
-                            .subscribe {
-                                analysisBinding.imageAnalysis.setImageBitmap(it)
-                                Datas.instance.analysisDataRequest.onNext(false)
-                            }
+                            .subscribe(
+                                {
+                                    analysisBinding.imageAnalysis.setImageBitmap(it)
+                                    Datas.instance.analysisDataRequest.onNext(false)
+                                },
+                                { Log.e("disposableSetUIErr", it.message.toString()) }
+                            )
                     }
+
                 },
                 { Log.e("AnalysisRequestBindErr", it.message.toString())}
             )

@@ -2,76 +2,38 @@ package com.example.ivcs_android
 
 import android.Manifest
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.View
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.databinding.DataBindingUtil
 import com.example.ivcs_android.databinding.ActivityStartBinding
-import com.example.ivcs_android.model.Consts
 import com.example.ivcs_android.model.Datas
-import com.example.ivcs_android.viewModel.Msocket
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.kotlin.subscribeBy
-import okhttp3.*
-import org.json.JSONObject
-import java.io.IOException
-import java.util.concurrent.TimeUnit
+import com.example.ivcs_android.viewModel.StartViewModel
 
 class StartActivity : AppCompatActivity() {
 
-    companion object{
+    companion object {
         lateinit var appContext : Context
     }
-    lateinit var startBinding : ActivityStartBinding
+
+    lateinit var startBinding: ActivityStartBinding
+//    private val viewModel: StartViewModel = StartViewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        startBinding = ActivityStartBinding.inflate(layoutInflater)
-        setContentView(startBinding.root)
+
+        startBinding =
+            DataBindingUtil.setContentView<ActivityStartBinding>(this, R.layout.activity_start)
+        startBinding.lifecycleOwner = this // 라이브데이터 관찰을 위함
+        startBinding.viewModel = StartViewModel()
+
         appContext = applicationContext
 
         checkPermissions()
     }
 
-    fun setWithInternet(){
-//        Msocket.instance.setSocket()
-        Datas.instance.setInfo()
-    }
-
-    fun setBts(){
-        startBinding.btGoToStreaming.setOnClickListener {
-            if(checkInternetResources()) {
-                val intent = Intent(applicationContext, StreamingActivity::class.java)
-                startActivity(intent)
-            }
-        }
-        startBinding.btGoToAnalysis.setOnClickListener {
-            if(checkInternetResources()) {
-                val intent = Intent(applicationContext, AnalysisActivity::class.java)
-                startActivity(intent)
-            }
-        }
-    }
-
-    private fun checkInternetResources() : Boolean{
-//        if(!Msocket.instance.mSocket.connected()){
-//            Msocket.instance.setSocket()
-//            Toast.makeText(this,"소켓 연결중, 잠시 후 시도",Toast.LENGTH_SHORT).show()
-//            return false
-//        }
-//        else
-            if (Datas.instance.arrForUrl.isEmpty()) {
-            Datas.instance.setInfo()
-            Toast.makeText(this, "서버 정보 요청중", Toast.LENGTH_SHORT).show()
-            return false
-        }
-        return true
-    }
 
     //퍼미션 체크 및 권한 요청 함수
     private fun checkPermissions() {
@@ -82,23 +44,23 @@ class StartActivity : AppCompatActivity() {
         var rejectedPermissionList = ArrayList<String>()
 
         //필요한 퍼미션들을 하나씩 끄집어내서 현재 권한을 받았는지 체크
-        for(permission in requiredPermissions){
-            if(ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+        for (permission in requiredPermissions) {
+            if (ContextCompat.checkSelfPermission(this,
+                    permission) != PackageManager.PERMISSION_GRANTED
+            ) {
                 //만약 권한이 없다면 rejectedPermissionList에 추가
                 rejectedPermissionList.add(permission)
             }
         }
         //거절된 퍼미션이 있다면...
-        if(rejectedPermissionList.isNotEmpty()){
+        if (rejectedPermissionList.isNotEmpty()) {
             //권한 요청!
             val array = arrayOfNulls<String>(rejectedPermissionList.size)
             ActivityCompat.requestPermissions(this, rejectedPermissionList.toArray(array), 100)
 
             checkPermissions()
-        }
-        else{
-            setWithInternet()
-            setBts()
+        } else {
+            Datas.instance.setInfo()
         }
     }
 }

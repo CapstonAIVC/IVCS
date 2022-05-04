@@ -31,8 +31,8 @@ class Datas {
     var analType = Consts.hour
     var analName = ""
     var analIndex = 0
-    var startTimeInfo = arrayOf<Long>(2022,4,26,15)
-    var endTimeInfo = arrayOf<Long>(2022,4,26,15)
+    var startTimeInfo = arrayOf<Long>(2022,4,24,15)
+    var endTimeInfo = arrayOf<Long>(2022,4,24,16)
     // 처리중인 요청이 있으면 true
     var analysisDataRequest : BehaviorSubject<Boolean> = BehaviorSubject.createDefault(false)
     var analysisButtonSubject : PublishSubject<String> = PublishSubject.create()

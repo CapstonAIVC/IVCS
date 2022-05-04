@@ -16,7 +16,7 @@ import okhttp3.*
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
-class StreamingBind(streaming : Streaming, mBinding : ActivityStreamingBinding) {
+class StreamingWork(streaming : Streaming, mBinding : ActivityStreamingBinding) {
     var streaming = streaming
     var mBinding = mBinding
 

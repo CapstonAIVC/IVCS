@@ -11,7 +11,7 @@ import com.example.ivcs_android.model.Datas
 import com.example.ivcs_android.view.streaming.SetStreamingViews
 import com.example.ivcs_android.view.streaming.Streaming
 import com.example.ivcs_android.viewModel.Msocket
-import com.example.ivcs_android.viewModel.StreamingBind
+import com.example.ivcs_android.viewModel.StreamingWork
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 
@@ -21,7 +21,7 @@ class StreamingActivity : AppCompatActivity() {
     lateinit var mBinding : ActivityStreamingBinding
     lateinit var setStreamingViews : SetStreamingViews
     lateinit var mStreaming: Streaming
-    lateinit var streamingBind: StreamingBind
+    lateinit var streamingWork: StreamingWork
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,8 +51,8 @@ class StreamingActivity : AppCompatActivity() {
         mStreaming = Streaming(this,mBinding)
         mStreaming.initializePlayer()
 
-        streamingBind = StreamingBind(mStreaming, mBinding)
-        streamingBind.initStreamingBind()
+        streamingWork = StreamingWork(mStreaming, mBinding)
+        streamingWork.initStreamingBind()
     }
 
     override fun onDestroy() {
