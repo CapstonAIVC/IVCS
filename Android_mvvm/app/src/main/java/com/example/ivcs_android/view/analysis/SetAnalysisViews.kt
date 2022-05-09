@@ -5,8 +5,9 @@ import android.widget.*
 import com.example.ivcs_android.databinding.ActivityAnalysisBinding
 import com.example.ivcs_android.model.Consts
 import com.example.ivcs_android.model.Datas
+import io.reactivex.rxjava3.subjects.PublishSubject
 
-class SetAnalysisViews(context: Context, mBinding: ActivityAnalysisBinding) {
+class SetAnalysisViews(context: Context, mBinding: ActivityAnalysisBinding, eventSubject : PublishSubject<String>) {
 
     /*
     * AnalysisActivity의 cctv선택, 그래프 규격 선택 등을 담당
@@ -14,6 +15,7 @@ class SetAnalysisViews(context: Context, mBinding: ActivityAnalysisBinding) {
 
     var context = context
     var binding = mBinding
+    var eventSubject = eventSubject
 
     fun setViews(){
         setTextBts()
@@ -23,19 +25,19 @@ class SetAnalysisViews(context: Context, mBinding: ActivityAnalysisBinding) {
 
     fun setTextBts(){
         binding.textStart.setOnClickListener {
-            Datas.instance.analysisButtonSubject.onNext(Consts.setStart)
+            eventSubject.onNext(Consts.setStart)
         }
         binding.textEnd.setOnClickListener {
-            Datas.instance.analysisButtonSubject.onNext(Consts.setEnd)
+            eventSubject.onNext(Consts.setEnd)
         }
         binding.textCctvName.setOnClickListener {
-            Datas.instance.analysisButtonSubject.onNext(Consts.setCctv)
+            eventSubject.onNext(Consts.setCctv)
         }
     }
 
     fun setBts(){
         binding.btRequest.setOnClickListener {
-            Datas.instance.analysisButtonSubject.onNext(Consts.requestAnal)
+            eventSubject.onNext(Consts.requestAnal)
         }
     }
 
@@ -46,7 +48,7 @@ class SetAnalysisViews(context: Context, mBinding: ActivityAnalysisBinding) {
         binding.rBtMonth.tag = Consts.month
 
         binding.rBtGroup.setOnCheckedChangeListener { _, checkedViewId ->
-            Datas.instance.analType = binding.root.findViewById<RadioButton>(checkedViewId).tag as String
+            eventSubject.onNext( binding.root.findViewById<RadioButton>(checkedViewId).tag as String )
         }
 
         binding.rBtHour.performClick()

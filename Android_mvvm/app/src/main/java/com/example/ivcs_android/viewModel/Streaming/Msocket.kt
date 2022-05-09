@@ -1,6 +1,5 @@
-package com.example.ivcs_android.viewModel
+package com.example.ivcs_android.viewModel.Streaming
 
-import android.app.Activity
 import android.content.Context
 import android.util.Log
 import android.widget.Toast

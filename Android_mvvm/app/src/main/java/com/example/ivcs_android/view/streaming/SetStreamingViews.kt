@@ -4,8 +4,7 @@ import android.content.Context
 import android.widget.Switch
 import com.example.ivcs_android.databinding.ActivityStreamingBinding
 import com.example.ivcs_android.model.Datas
-import com.example.ivcs_android.viewModel.Msocket
-import okhttp3.*
+import com.example.ivcs_android.viewModel.Streaming.Msocket
 
 class SetStreamingViews(context: Context, mBinding: ActivityStreamingBinding) {
 

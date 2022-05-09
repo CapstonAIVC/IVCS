@@ -1,10 +1,8 @@
-package com.example.ivcs_android.viewModel
+package com.example.ivcs_android.viewModel.Streaming
 
 import android.app.Activity
 import android.util.Log
 import android.view.View
-import android.widget.Toast
-import com.example.ivcs_android.StreamingActivity
 import com.example.ivcs_android.databinding.ActivityStreamingBinding
 import com.example.ivcs_android.model.Datas
 import com.example.ivcs_android.view.streaming.Streaming
@@ -12,8 +10,6 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import okhttp3.*
-import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 class StreamingBind(streaming : Streaming, mBinding : ActivityStreamingBinding) {
@@ -49,7 +45,7 @@ class StreamingBind(streaming : Streaming, mBinding : ActivityStreamingBinding) 
                         countData = Observable.interval(1500,TimeUnit.MILLISECONDS)
                             .observeOn(Schedulers.io()) // 인터넷 처리를위한 스케쥴러 할당
                             .subscribe (
-                                {Msocket.instance.mSocket.emit("req_counting",Datas.instance.cctvIdx)},
+                                { Msocket.instance.mSocket.emit("req_counting",Datas.instance.cctvIdx)},
                                 {
                                     (streaming as Activity).finish()
                                 }

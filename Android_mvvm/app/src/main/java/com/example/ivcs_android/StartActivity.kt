@@ -7,27 +7,23 @@ import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.ivcs_android.databinding.ActivityStartBinding
 import com.example.ivcs_android.model.Consts
 import com.example.ivcs_android.model.Datas
-import com.example.ivcs_android.viewModel.Msocket
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.kotlin.subscribeBy
 import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
-import java.util.concurrent.TimeUnit
 
 class StartActivity : AppCompatActivity() {
 
-    companion object{
-        lateinit var appContext : Context
+    companion object {
+        lateinit var appContext: Context
     }
-    lateinit var startBinding : ActivityStartBinding
+
+    lateinit var startBinding: ActivityStartBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,39 +34,63 @@ class StartActivity : AppCompatActivity() {
         checkPermissions()
     }
 
-    fun setWithInternet(){
+    fun setWithInternet() {
 //        Msocket.instance.setSocket()
-        Datas.instance.setInfo()
+        setInfo()
     }
 
-    fun setBts(){
+    fun setBts() {
         startBinding.btGoToStreaming.setOnClickListener {
-            if(checkInternetResources()) {
+            if (checkInternetResources()) {
                 val intent = Intent(applicationContext, StreamingActivity::class.java)
                 startActivity(intent)
             }
         }
         startBinding.btGoToAnalysis.setOnClickListener {
-            if(checkInternetResources()) {
+            if (checkInternetResources()) {
                 val intent = Intent(applicationContext, AnalysisActivity::class.java)
                 startActivity(intent)
             }
         }
     }
 
-    private fun checkInternetResources() : Boolean{
+    private fun checkInternetResources(): Boolean {
 //        if(!Msocket.instance.mSocket.connected()){
 //            Msocket.instance.setSocket()
 //            Toast.makeText(this,"소켓 연결중, 잠시 후 시도",Toast.LENGTH_SHORT).show()
 //            return false
 //        }
 //        else
-            if (Datas.instance.arrForUrl.isEmpty()) {
-            Datas.instance.setInfo()
+        if (Datas.instance.arrForUrl.isEmpty()) {
+            setInfo()
             Toast.makeText(this, "서버 정보 요청중", Toast.LENGTH_SHORT).show()
             return false
         }
         return true
+    }
+
+
+    fun setInfo(){
+        val url = Consts.localhost+ Consts.getUrl
+        val client = OkHttpClient()
+        val request = Request.Builder().url(url).build()
+
+        client.newCall(request).enqueue(object: Callback {
+            override fun onFailure(call: Call, e: IOException){
+                Log.e("getNamesFailed",e.message.toString())
+            }
+            override fun onResponse(call: Call, response: Response) {
+                var jsonObj = JSONObject(response.body!!.string())
+                var jsonArrCctvName = jsonObj.getJSONArray("cctvname")
+                var jsonArrUrl = jsonObj.getJSONArray("cctvurl")
+                Datas.instance.arrForListView = Array(jsonArrCctvName.length()) {""}
+                Datas.instance.arrForUrl = Array(jsonArrCctvName.length()) {""}
+                for( i in 0 until jsonArrCctvName.length()){
+                    Datas.instance.arrForListView[i] = jsonArrCctvName.getString(i)
+                    Datas.instance.arrForUrl[i] = jsonArrUrl.getString(i)
+                }
+            }
+        })
     }
 
     //퍼미션 체크 및 권한 요청 함수
@@ -82,21 +102,22 @@ class StartActivity : AppCompatActivity() {
         var rejectedPermissionList = ArrayList<String>()
 
         //필요한 퍼미션들을 하나씩 끄집어내서 현재 권한을 받았는지 체크
-        for(permission in requiredPermissions){
-            if(ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+        for (permission in requiredPermissions) {
+            if (ContextCompat.checkSelfPermission(this,
+                    permission) != PackageManager.PERMISSION_GRANTED
+            ) {
                 //만약 권한이 없다면 rejectedPermissionList에 추가
                 rejectedPermissionList.add(permission)
             }
         }
         //거절된 퍼미션이 있다면...
-        if(rejectedPermissionList.isNotEmpty()){
+        if (rejectedPermissionList.isNotEmpty()) {
             //권한 요청!
             val array = arrayOfNulls<String>(rejectedPermissionList.size)
             ActivityCompat.requestPermissions(this, rejectedPermissionList.toArray(array), 100)
 
             checkPermissions()
-        }
-        else{
+        } else {
             setWithInternet()
             setBts()
         }

@@ -7,7 +7,7 @@ class Consts {
         const val localhost_DataServer = "http://10.0.2.2:4000"
         const val hlstest = "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8"
         const val getUrl = "/getUrl_mobile"
-        const val plotUrl = "http://10.0.2.2:5000/test"
+        const val plotUrl = "http://10.0.2.2:4000/req_plot"
 
         // 시간, 날,월
         const val hour : String = "hour"
