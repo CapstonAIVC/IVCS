@@ -17,7 +17,6 @@ import io.reactivex.rxjava3.core.Observable
 
 class StreamingActivity : AppCompatActivity() {
 
-//    lateinit var mBinding : ActivityMainBinding
     lateinit var mBinding : ActivityStreamingBinding
     lateinit var setStreamingViews : SetStreamingViews
     lateinit var mStreaming: Streaming
@@ -36,29 +35,28 @@ class StreamingActivity : AppCompatActivity() {
     }
 
     private fun setAdapter(){
+        // context때문에 Activity에서 처리
         var mAdapter = ArrayAdapter<String>(this, R.layout.simple_list_item_1, Datas.instance.arrForListView)
         Observable.just(mAdapter)
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {mBinding.cctvList.adapter = mAdapter}
+            .subscribe {mBinding.cctvList.adapter = it}
     }
 
     private fun initStreamingActivity(){
-        Msocket.instance.setSocket()
-
-        setStreamingViews = SetStreamingViews(this, mBinding)
-        setStreamingViews.setViews()
-
         mStreaming = Streaming(this,mBinding)
         mStreaming.initializePlayer()
 
         streamingBind = StreamingBind(mStreaming, mBinding)
         streamingBind.initStreamingBind()
+
+        setStreamingViews = SetStreamingViews(this, mBinding, streamingBind.eventSubject)
+        setStreamingViews.setViews()
     }
 
     override fun onDestroy() {
-        Msocket.instance.releaseSocket()
+        streamingBind.mSocket.releaseSocket()
+        streamingBind.countSwitchSubject.onNext(false)
         mStreaming.releasePlayer()
-        Datas.instance.countSwitchSubject.onNext(false)
         super.onDestroy()
     }
 

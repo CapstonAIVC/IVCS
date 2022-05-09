@@ -14,6 +14,12 @@ class Consts {
         const val day : String = "day"
         const val month : String = "month"
 
+        // 스트리밍 화면 버튼 글릭 이벤트
+        const val switchDensity = -1
+        const val switchCounting = -2
+        // 리스트뷰 클릭은 클릭된 index를 보낸다.
+
+
         // 분석화면 버튼들
         const val setStart = "setStart"
         const val setEnd = "setEnd"

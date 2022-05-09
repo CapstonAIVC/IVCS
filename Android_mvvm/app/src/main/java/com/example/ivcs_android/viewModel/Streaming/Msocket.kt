@@ -5,19 +5,19 @@ import android.util.Log
 import android.widget.Toast
 import com.example.ivcs_android.model.Consts
 import com.example.ivcs_android.model.Datas
+import io.reactivex.rxjava3.subjects.BehaviorSubject
+import io.reactivex.rxjava3.subjects.PublishSubject
 import io.socket.client.IO
 import io.socket.client.Socket
 import java.net.URISyntaxException
 
 class Msocket {
 
-    companion object{
-        var instance = Msocket()
-    }
-
     lateinit var mSocket : Socket
+    lateinit var textChangeEvent : BehaviorSubject<String>
 
-    fun setSocket(){
+    fun setSocket(changeCountTextSubj : BehaviorSubject<String>){
+        textChangeEvent = changeCountTextSubj
         try {
             mSocket = IO.socket(Consts.localhost_DataServer)
             mSocket.connect()
@@ -27,20 +27,13 @@ class Msocket {
 
         mSocket.on("res_counting") {
             Log.e("Listen", "res_counting")
-            Datas.instance.changeCountText.onNext( "차량 수: "+it[0].toString() )
+            textChangeEvent.onNext( "차량 수: "+it[0].toString() )
         }
     }
 
     fun releaseSocket(){
         mSocket.disconnect()
         mSocket.close()
-    }
-
-    fun checkSocket(context : Context) : Boolean{
-        if(!instance.mSocket.connected()){
-            Toast.makeText(context,"소켓 연결중 입니다.", Toast.LENGTH_SHORT).show()
-        }
-        return instance.mSocket.connected()
     }
 
 }
