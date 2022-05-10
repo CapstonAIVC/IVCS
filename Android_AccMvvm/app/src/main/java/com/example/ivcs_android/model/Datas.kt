@@ -1,5 +1,7 @@
 package com.example.ivcs_android.model
 
+import android.graphics.Bitmap
+import androidx.lifecycle.MutableLiveData
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 
@@ -21,6 +23,9 @@ class Datas {
     var densitySwitchSubject : BehaviorSubject<Boolean> = BehaviorSubject.createDefault(false)
     var changeCountText : BehaviorSubject<String> = BehaviorSubject.createDefault("차량 수: ")
 
+}
+
+class DataAnal(){
     /** analysis 관련 */
     var analType = Consts.hour
     var analName = ""
@@ -28,7 +33,12 @@ class Datas {
     var startTimeInfo = arrayOf<Long>(2022,4,24,15)
     var endTimeInfo = arrayOf<Long>(2022,4,24,16)
     var analImageHeight = 100
-    var changeAnalInfoSubj : PublishSubject<AnalysisEvent> = PublishSubject.create()
+//    var changeAnalInfoSubj : PublishSubject<AnalysisEvent> = PublishSubject.create()
+
+    var startText: MutableLiveData<String> = MutableLiveData("시작 날짜 : ")
+    var endText: MutableLiveData<String> = MutableLiveData("종료 날짜 : ")
+    var cctvText: MutableLiveData<String> = MutableLiveData("CCTV : ")
+    var analImage: MutableLiveData<Bitmap> = MutableLiveData()
 }
 
 enum class AnalysisEvent {

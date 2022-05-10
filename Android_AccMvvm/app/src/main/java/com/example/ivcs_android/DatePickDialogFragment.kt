@@ -9,10 +9,12 @@ import android.widget.NumberPicker
 import androidx.fragment.app.DialogFragment
 import com.example.ivcs_android.databinding.DatePickBinding
 import com.example.ivcs_android.model.AnalysisEvent
+import com.example.ivcs_android.model.DataAnal
 import com.example.ivcs_android.model.Datas
 
-class DatePickDialogFragment : DialogFragment() {
+class DatePickDialogFragment(dataAnal : DataAnal) : DialogFragment() {
 
+    var dataAnal = dataAnal
     private lateinit var binding: DatePickBinding
     private var isStart: Boolean = true
 
@@ -45,11 +47,13 @@ class DatePickDialogFragment : DialogFragment() {
             binding.hourPicker.value.toLong())
 
         if (isStart) { //여기아래 text바꾸는거 데이터바인딩으로 바꾸자
-            Datas.instance.startTimeInfo = tmpTimeInfo
-            Datas.instance.changeAnalInfoSubj.onNext(AnalysisEvent.ChangeStart)
+            dataAnal.startTimeInfo = tmpTimeInfo
+            dataAnal.startText.value = (dataAnal.startTimeInfo[0]).toString() + "년 " + (dataAnal.startTimeInfo[1]).toString() + "월 " + (dataAnal.startTimeInfo[2]).toString() + "일 " + (dataAnal.startTimeInfo[3]).toString() + "시"
+//            Datas.instance.changeAnalInfoSubj.onNext(AnalysisEvent.ChangeStart)
         } else {
-            Datas.instance.endTimeInfo = tmpTimeInfo
-            Datas.instance.changeAnalInfoSubj.onNext(AnalysisEvent.ChangeEnd)
+            dataAnal.endTimeInfo = tmpTimeInfo
+            dataAnal.endText.value = (dataAnal.endTimeInfo[0]).toString() + "년 " + (dataAnal.endTimeInfo[1]).toString() + "월 " + (dataAnal.endTimeInfo[2]).toString() + "일 " + (dataAnal.endTimeInfo[3]).toString() + "시"
+//            Datas.instance.changeAnalInfoSubj.onNext(AnalysisEvent.ChangeEnd)
         }
         this.dismiss()
     }
@@ -82,15 +86,15 @@ class DatePickDialogFragment : DialogFragment() {
 
         // 시작 날짜 설정
         if (isStart) {
-            binding.yearPicker.value = Datas.instance.startTimeInfo[0].toInt()
-            binding.monthPicker.value = Datas.instance.startTimeInfo[1].toInt()
-            binding.datePicker.value = Datas.instance.startTimeInfo[2].toInt()
-            binding.hourPicker.value = Datas.instance.startTimeInfo[3].toInt()
+            binding.yearPicker.value = dataAnal.startTimeInfo[0].toInt()
+            binding.monthPicker.value = dataAnal.startTimeInfo[1].toInt()
+            binding.datePicker.value = dataAnal.startTimeInfo[2].toInt()
+            binding.hourPicker.value = dataAnal.startTimeInfo[3].toInt()
         } else {
-            binding.yearPicker.value = Datas.instance.endTimeInfo[0].toInt()
-            binding.monthPicker.value = Datas.instance.endTimeInfo[1].toInt()
-            binding.datePicker.value = Datas.instance.endTimeInfo[2].toInt()
-            binding.hourPicker.value = Datas.instance.endTimeInfo[3].toInt()
+            binding.yearPicker.value = dataAnal.endTimeInfo[0].toInt()
+            binding.monthPicker.value = dataAnal.endTimeInfo[1].toInt()
+            binding.datePicker.value = dataAnal.endTimeInfo[2].toInt()
+            binding.hourPicker.value = dataAnal.endTimeInfo[3].toInt()
         }
     }
 

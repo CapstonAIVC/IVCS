@@ -29,7 +29,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                bind:imageBitmap="@{viewModel.analImage}"/>
+                bindImageBitmap="@{viewModel.dataAnal.analImage}"/>
         </HorizontalScrollView>
 
         <ScrollView
@@ -67,7 +67,8 @@
                     android:padding="3dp"
                     android:textColor="#000000"
                     android:textSize="30dp"
-                    android:text="@{viewModel.startText}"/>
+                    android:text="@{viewModel.dataAnal.startText}"
+                    android:onClick="@{()->viewModel.clickStartText()}"/>
 
                 <TextView
                     android:id="@+id/textEnd"
@@ -78,7 +79,8 @@
                     android:padding="3dp"
                     android:textColor="#000000"
                     android:textSize="30dp"
-                    android:text="@{viewModel.endText}"/>
+                    android:text="@{viewModel.dataAnal.endText}"
+                    android:onClick="@{()->viewModel.clickEndText()}"/>
 
                 <TextView
                     android:id="@+id/textCctvName"
@@ -87,7 +89,7 @@
                     android:layout_margin="10dp"
                     android:background="@drawable/radius_rec"
                     android:padding="3dp"
-                    android:text="@{viewModel.cctvText}"
+                    android:text="@{viewModel.dataAnal.cctvText}"
                     android:onClick="@{()->viewModel.cctvNameClicked()}"
                     android:textColor="#000000"
                     android:textSize="30dp" />
