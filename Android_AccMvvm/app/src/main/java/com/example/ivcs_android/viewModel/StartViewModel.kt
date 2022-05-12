@@ -5,11 +5,8 @@ import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.util.Log
 import android.widget.Toast
-import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import com.example.ivcs_android.AnalysisActivity
-import com.example.ivcs_android.StartActivity
 import com.example.ivcs_android.StreamingActivity
 import com.example.ivcs_android.model.Consts
 import com.example.ivcs_android.model.Datas

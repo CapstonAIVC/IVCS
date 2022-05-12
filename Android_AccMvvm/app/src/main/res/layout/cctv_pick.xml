@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    
+    <data>
+        <variable
+            name="Frag"
+            type="com.example.ivcs_android.viewModel.analysis.CctvPickDialogFragment" />
+    </data>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -15,14 +20,15 @@
             android:id="@+id/listViewCctvName"
             android:layout_width="wrap_content"
             android:layout_height="300dp"
-            android:layout_margin="3dp" />
+            android:layout_margin="3dp"
+            />
 
         <TextView
             android:id="@+id/textSelected"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="3dp"
-            android:text="선택해 주세요"
+            android:text="@{Frag.selectedText}"
             android:textColor="#000000"
             android:textSize="20dp" />
 
@@ -32,6 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_margin="3dp"
-            android:text="확인" />
+            android:text="확인"
+            android:onClick="@{(view)->Frag.clickConfirm(view)}"/>
     </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

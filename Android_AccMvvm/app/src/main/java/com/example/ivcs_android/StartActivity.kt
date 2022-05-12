@@ -1,16 +1,14 @@
 package com.example.ivcs_android
 
 import android.Manifest
-import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.example.ivcs_android.databinding.ActivityStartBinding
-import com.example.ivcs_android.model.Datas
 import com.example.ivcs_android.viewModel.StartViewModel
 
 class StartActivity : AppCompatActivity() {
@@ -21,7 +19,6 @@ class StartActivity : AppCompatActivity() {
     }
 
     lateinit var startBinding: ActivityStartBinding
-//    private val viewModel: StartViewModel = StartViewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
