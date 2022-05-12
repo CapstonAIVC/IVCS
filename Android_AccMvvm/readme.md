@@ -1,5 +1,3 @@
-# 수정중 입니다.  
-
 ## 안드로이드 클라이언트  
 <img src="../android_screen.png" width="300" height="300"/>  
 
