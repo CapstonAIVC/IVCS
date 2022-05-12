@@ -1,10 +1,9 @@
-package com.example.ivcs_android
+package com.example.ivcs_android.viewModel.analysis
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.MutableLiveData

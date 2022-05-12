@@ -3,19 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+        <import type="android.view.View"/>
+        <variable
+            name="viewModel"
+            type="com.example.ivcs_android.viewModel.streaming.StreamingViewModel" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#EAEAEA"
         tools:context=".StreamingActivity">
-
-        <!--    <com.google.android.exoplayer2.ui.PlayerView-->
-        <!--        android:id="@+id/exoPlayerView"-->
-        <!--        android:layout_width="match_parent"-->
-        <!--        android:layout_height="400dp"-->
-        <!--        app:layout_constraintEnd_toEndOf="parent"-->
-        <!--        app:layout_constraintStart_toStartOf="parent"-->
-        <!--        app:layout_constraintTop_toTopOf="parent" />-->
 
         <TextureView
             android:id="@+id/textureView"
@@ -25,14 +24,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <!--    <com.google.android.exoplayer2.ui.StyledPlayerView-->
-        <!--        android:id="@+id/exoPlayerView"-->
-        <!--        android:layout_width="match_parent"-->
-        <!--        android:layout_height="400dp"-->
-        <!--        app:layout_constraintEnd_toEndOf="parent"-->
-        <!--        app:layout_constraintStart_toStartOf="parent"-->
-        <!--        app:layout_constraintTop_toTopOf="parent" />-->
 
         <ScrollView
             android:layout_width="0dp"
@@ -61,14 +52,17 @@
                         android:layout_width="wrap_content"
                         android:layout_height="48dp"
                         android:layout_weight="1"
-                        android:text="실시간 교통량 측정" />
+                        android:text="실시간 교통량 측정"
+                        android:onClick="@{(view)->viewModel.clickCountSwitch(view)}"/>
 
                     <Switch
                         android:id="@+id/densitySwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="48dp"
                         android:layout_weight="1"
-                        android:text="마스크" />
+                        android:text="마스크"
+                        android:onClick="@{(view)->viewModel.clickDensitySwitch(view)}"/>
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -81,16 +75,18 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="0"
+                        android:text="@{viewModel.dataStreaming.textCount}"
                         android:textAlignment="center"
-                        android:textSize="34sp" />
+                        android:textSize="34sp"
+                        android:visibility="@{viewModel.dataStreaming.textCountShow ? View.VISIBLE : View.GONE}"/>
 
                     <ImageView
                         android:id="@+id/imageViewDensity"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        app:srcCompat="@drawable/ic_launcher_background" />
+                        app:srcCompat="@drawable/ic_launcher_background"
+                        android:visibility="@{viewModel.dataStreaming.densityImageShow ? View.VISIBLE : View.GONE}"/>
                 </LinearLayout>
 
                 <ListView

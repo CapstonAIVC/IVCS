@@ -1,23 +1,19 @@
-package com.example.ivcs_android.view.streaming
+package com.example.ivcs_android.viewModel.streaming
 
 import android.content.Context
 import android.util.Log
-import android.widget.Toast
-import com.example.ivcs_android.StartActivity
-import com.example.ivcs_android.StreamingActivity
 import com.example.ivcs_android.databinding.ActivityStreamingBinding
-import com.example.ivcs_android.model.Datas
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 
-class Streaming(context: Context, mBinding: ActivityStreamingBinding) {
+class MyPlayer(context: Context) {
     private var player: ExoPlayer? = null
     var mContext : Context = context
-    var mBinding : ActivityStreamingBinding = mBinding
+//    var mBinding : ActivityStreamingBinding = mBinding
 
-    fun initializePlayer() {
+    fun initializePlayer(mBinding : ActivityStreamingBinding) {
         releasePlayer()
         // exoplayerView의 player 생성 및 지정
         player = ExoPlayer.Builder(mContext)
@@ -33,9 +29,9 @@ class Streaming(context: Context, mBinding: ActivityStreamingBinding) {
             player!!.prepare()
             player!!.playWhenReady = true
         }catch( e : Exception ) {
-            Toast.makeText(StartActivity.appContext,"url을 위해 다시 클릭해주세요",Toast.LENGTH_SHORT).show()
-            Datas.instance.arrForListView = Array<String>(0){""}
-            (mContext as StreamingActivity).finish()
+//            Toast.makeText(StartActivity.appContext,"url을 위해 다시 클릭해주세요",Toast.LENGTH_SHORT).show()
+//            Datas.instance.arrForListView = Array<String>(0){""}
+//            (mContext as StreamingActivity).finish()
         }
     }
 
@@ -44,7 +40,7 @@ class Streaming(context: Context, mBinding: ActivityStreamingBinding) {
             override fun onPlayerError(error: PlaybackException) {
                 super.onPlayerError(error)
                 Log.e("player에러",error.message.toString())
-                Toast.makeText(mContext, "영상 끊김, 잠시 후 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(mContext, "영상 끊김, 잠시 후 다시 시도해주세요", Toast.LENGTH_SHORT).show()
             }
         } )
     }

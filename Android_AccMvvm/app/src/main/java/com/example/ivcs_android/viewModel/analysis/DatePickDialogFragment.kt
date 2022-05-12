@@ -1,16 +1,13 @@
-package com.example.ivcs_android
+package com.example.ivcs_android.viewModel.analysis
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.NumberPicker
 import androidx.fragment.app.DialogFragment
 import com.example.ivcs_android.databinding.DatePickBinding
-import com.example.ivcs_android.model.AnalysisEvent
 import com.example.ivcs_android.model.DataAnal
-import com.example.ivcs_android.model.Datas
 
 class DatePickDialogFragment(dataAnal : DataAnal) : DialogFragment() {
 

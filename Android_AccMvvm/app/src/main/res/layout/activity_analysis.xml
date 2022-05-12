@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.example.ivcs_android.viewModel.AnalysisViewModel" />
+            type="com.example.ivcs_android.viewModel.analysis.AnalysisViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

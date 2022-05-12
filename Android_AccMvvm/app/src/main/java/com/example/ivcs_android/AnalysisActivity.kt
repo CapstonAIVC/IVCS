@@ -3,29 +3,26 @@ package com.example.ivcs_android
 import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModel
 import com.example.ivcs_android.databinding.ActivityAnalysisBinding
 import com.example.ivcs_android.model.Consts
-import com.example.ivcs_android.model.Datas
-import com.example.ivcs_android.viewModel.AnalysisViewModel
+import com.example.ivcs_android.viewModel.analysis.AnalysisViewModel
 
 class AnalysisActivity : AppCompatActivity() {
 
     lateinit var analysisBinding : ActivityAnalysisBinding
-    lateinit var viewModel : AnalysisViewModel
+    lateinit var analysisViewModel : AnalysisViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         analysisBinding = DataBindingUtil.setContentView(this, R.layout.activity_analysis)
         analysisBinding.lifecycleOwner = this
-        viewModel = AnalysisViewModel(application, supportFragmentManager)
-        analysisBinding.viewModel = viewModel
+        analysisViewModel = AnalysisViewModel(application, supportFragmentManager)
+        analysisBinding.viewModel = analysisViewModel
         setRadioBts()
-        viewModel.dataAnal.analImageHeight = resources.displayMetrics.heightPixels/5*2
+        analysisViewModel.dataAnal.analImageHeight = resources.displayMetrics.heightPixels/5*2
     }
 
     fun setRadioBts(){
