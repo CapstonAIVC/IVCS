@@ -1,7 +1,8 @@
 ## 안드로이드 클라이언트  
 <img src="../android_screen.png" width="300" height="300"/>  
 
-> mvvm 패턴
+> mvp 패턴  
+> > mvvm 패턴이라고 생각하고 구현했지만 mvp에 더 가까운 것 같아서 수정함.
 > 
 > 스트리밍 화면  
 > > cctv 스트리밍, 현재 교통량 정보 요청 기능  
