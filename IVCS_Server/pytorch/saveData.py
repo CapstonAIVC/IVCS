@@ -67,13 +67,15 @@ def get_data(sid, output):
 @sio.on('req_counting')
 def startCounting(sid, cctvIdx):
     global latest
+    # sio.emit('res_counting', str(round(latest[int(cctvIdx)[0]], 3)), sid)
     sio.emit('res_counting', str(round(latest[int(cctvIdx)], 3)), sid)
-
+    
 @app.route('/req_plot', methods=['POST'])
 def res_plot_png():
     global cctvname
 
     params = request.get_json()
+    # print(params)
 
     measure_method = params['measure_method']
     cameraid = params['cameraid']
@@ -82,6 +84,7 @@ def res_plot_png():
 
     task = AnalyizeData(measure_method, cctvname[int(cameraid)], start, end)
     result = task.run()
+    print(type(result.getvalue()))
 
     # move to beginning of file so `send_file()` it will read from start 
     result.seek(0)
@@ -124,6 +127,7 @@ class SaveCSV(threading.Thread):
             self.make_dir(cctv)
 
             df = pd.DataFrame( self.data[cctv], columns = ['Time', 'Count'] )
+            print(df)
 
             df.to_csv(ROOT_PATH+'/'+cctv+'/'+self.year+'/'+self.month+'/'+self.day+'/'+self.hour+'.csv', mode='w')
 

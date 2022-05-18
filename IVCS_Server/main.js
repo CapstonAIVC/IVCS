@@ -29,6 +29,11 @@ app.get("/getUrl_mobile", (req, res) => {
     res.send(information);
 })
 
+//for test
+app.post("/test", (req, res) => {
+    res.send()
+})
+
 // socket
 io.on('connection',function(socket){
     const req = socket.request;
