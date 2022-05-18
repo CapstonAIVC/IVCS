@@ -1,5 +1,5 @@
 import time
-from model import FCN_rLSTM
+from model import FCN_BLA, FCN, Encoder, Decoder
 import torch
 import requests
 import json
@@ -80,7 +80,8 @@ def setmodel():
        "weight_decay":0, "use_cuda":False, "use_tensorboard":True, "tb_img_shape":[120,160], "n2show":2, "seed":42,
        "log_dir":'./log'}
 
-    model = FCN_rLSTM(temporal=True, image_dim=(torch.zeros([120,160], dtype=torch.int32).shape))
+    # model = FCN_rLSTM(temporal=True, image_dim=(torch.zeros([120,160], dtype=torch.int32).shape))
+    model = FCN_BLA(FCN, Encoder, Decoder, image_dim=args['img_shape'])
     model.load_state_dict(torch.load('./model.pth', map_location=torch.device('cpu')))
     print("model loaded")
 
@@ -222,9 +223,12 @@ if __name__ == '__main__':
     mask = Image.open('./our_mask.png').convert('L')
     mask = np.array(mask)
     mask = torch.Tensor(mask)
+    mask = mask/255
     mask_tmp = torch.Tensor(mask)
     for i in range(4): mask = torch.cat((mask, mask_tmp), 0)
+    mask = torch.reshape(mask, (5, 120, 160))
     mask = mask.unsqueeze(1)
+    mask = mask.unsqueeze(0)
 
     for i in range(5):
         addFramesByTensor(-1)
@@ -247,10 +251,15 @@ if __name__ == '__main__':
             for j in range(0, index): ## 0부터 index까지
                 X = torch.cat((X,tensorList[i][j]), 0)
 
+            X = X.transpose(0, 1)
+
             with torch.no_grad():
                 density_pred, count_pred = model(X, mask=mask)
+
+            print(count_pred)
             
-            result.append(count_pred.tolist()[4][0])
+            # result.append(count_pred.tolist()[4][0])
+            result.append(count_pred.tolist()[0][0])
 
 
         result_json = json.dumps(result)
