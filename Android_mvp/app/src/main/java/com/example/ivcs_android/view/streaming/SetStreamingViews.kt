@@ -1,12 +1,8 @@
 package com.example.ivcs_android.view.streaming
 
 import android.content.Context
-import android.util.Log
-import android.widget.Switch
 import com.example.ivcs_android.databinding.ActivityStreamingBinding
 import com.example.ivcs_android.model.Consts
-import com.example.ivcs_android.model.Datas
-import com.example.ivcs_android.viewModel.Streaming.Msocket
 import io.reactivex.rxjava3.subjects.PublishSubject
 
 class SetStreamingViews(context: Context, mBinding: ActivityStreamingBinding, eventSubject : PublishSubject<Int>) {

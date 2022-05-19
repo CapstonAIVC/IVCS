@@ -85,17 +85,16 @@ class StreamingViewModel(application: Application) : AndroidViewModel(applicatio
             )
     }
 
-    fun clickCountSwitch(view : View){
-        if( !mSocket.checkSocket() || dataStreaming.cctvIdx == -1){
-            ( view as Switch).isChecked = false
-        }
-        else {
+    fun clickCountSwitch(view: View) {
+        if (!mSocket.checkSocket() || dataStreaming.cctvIdx == -1) {
+            (view as Switch).isChecked = false
+        } else {
             dataStreaming.countSwitchSubject.onNext((view as Switch).isChecked)
         }
     }
 
-    fun clickDensitySwitch(view : View){
-        dataStreaming.densitySwitchSubject.onNext( (view as Switch).isChecked )
+    fun clickDensitySwitch(view: View) {
+        dataStreaming.densitySwitchSubject.onNext((view as Switch).isChecked)
     }
 
 }

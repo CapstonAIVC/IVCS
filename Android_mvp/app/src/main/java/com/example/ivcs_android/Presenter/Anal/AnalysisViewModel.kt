@@ -1,4 +1,4 @@
-package com.example.ivcs_android.viewModel.Anal
+package com.example.ivcs_android.Presenter.Anal
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -12,7 +12,7 @@ import android.widget.*
 import com.example.ivcs_android.R
 import com.example.ivcs_android.databinding.ActivityAnalysisBinding
 import com.example.ivcs_android.model.Consts
-import com.example.ivcs_android.model.DataAnalysis
+import com.example.ivcs_android.model.AnalysisData
 import com.example.ivcs_android.model.Datas
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
@@ -35,7 +35,7 @@ class AnalysisViewModel(context: Context, mBinding: ActivityAnalysisBinding) {
     var analysisDataRequest : BehaviorSubject<Boolean> = BehaviorSubject.createDefault(false)
     var analysisButtonSubject : PublishSubject<String> = PublishSubject.create()
 
-    var dataAnal = DataAnalysis()
+    var dataAnal = AnalysisData()
 
     fun getBtSubject() : PublishSubject<String>{
         return analysisButtonSubject

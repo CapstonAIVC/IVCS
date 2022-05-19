@@ -1,12 +1,10 @@
-package com.example.ivcs_android.viewModel.Streaming
+package com.example.ivcs_android.Presenter.Streaming
 
-import android.app.Activity
 import android.util.Log
 import android.view.View
-import android.widget.Switch
 import com.example.ivcs_android.databinding.ActivityStreamingBinding
 import com.example.ivcs_android.model.Consts
-import com.example.ivcs_android.model.DataStreaming
+import com.example.ivcs_android.model.StreamingData
 import com.example.ivcs_android.model.Datas
 import com.example.ivcs_android.view.streaming.Streaming
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -20,7 +18,7 @@ import java.util.concurrent.TimeUnit
 class StreamingBind(streaming: Streaming, mBinding: ActivityStreamingBinding) {
     var streaming = streaming
     var mBinding = mBinding
-    var dataStreaming = DataStreaming()
+    var dataStreaming = StreamingData()
 
     var countData: Disposable = Disposable.empty()
 
