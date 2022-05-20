@@ -13,7 +13,7 @@ import threading
 import socketio
 import eventlet
 import eventlet.wsgi
-from flask import Flask, request, Response, jsonify
+from flask import Flask, request, send_file
 from flask_cors import CORS
 
 import pandas as pd
@@ -21,9 +21,6 @@ import matplotlib.pyplot as plt
 import matplotlib
 import io
 
-# app = Flask(__name__)
-# socketio = SocketIO(app)
-# sio = socketio.Server(cors_allowed_origins='*', async_mode='threading')
 sio = socketio.Server(cors_allowed_origins='*')
 app = Flask(__name__)
 CORS(app, resource={r"/req_plot":{"origins":"*"}})
@@ -55,8 +52,6 @@ def get_data(sid, output):
         for cctv in data.keys(): data[cctv]=[]
         saveThread=SaveCSV(save_data, time_tmp)
         saveThread.start()
-        
-        
     
     time_info = str(current_time.minute) + '-' + str(current_time.second)
 
@@ -91,7 +86,10 @@ def res_plot_png():
     result = task.run()
     print(type(result.getvalue()))
 
-    return result.getvalue()
+    # move to beginning of file so `send_file()` it will read from start 
+    result.seek(0)
+
+    return send_file(result, mimetype='image/png')
 
 # cctv ID에 따른 저장 경로 생성
 def make_cctv_dir():
@@ -203,12 +201,9 @@ class AnalyizeData():
 
         return img_buf
 
-        # print(img_buf.getvalue())
-
         
 
 if __name__ == "__main__":
-    # if time_tmp == -1: time_tmp = datetime.now(timezone("Asia/Seoul"))
     if not os.path.isdir(ROOT_PATH):
         os.mkdir(ROOT_PATH)
     make_cctv_dir()
@@ -220,5 +215,4 @@ if __name__ == "__main__":
 
     # deploy as an eventlet WSGI server
     eventlet.wsgi.server(eventlet.listen(('', PORT)), app)
-    # socketio.run(app, debug=True, host=HOST, port=PORT)
 

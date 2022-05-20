@@ -18,6 +18,10 @@ app.get("/client", (req, res) => {
     res.render("client",{})
 })
 
+app.get("/main", (req, res) => {
+    res.render("index",{})
+})
+
 app.get("/getUrl", (req, res) => {
     res.json(information);
 })

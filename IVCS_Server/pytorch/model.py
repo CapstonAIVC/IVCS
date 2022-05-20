@@ -1,32 +1,18 @@
 from collections import OrderedDict
+from turtle import forward
 
 import torch
 from torch import nn
 from torch.nn.utils import rnn
+import torch.nn.functional as F
 
-
-class FCN_rLSTM(nn.Module):
-    r"""
-    Implementation of the model FCN-rLSTM, as described in the paper:
-    Zhang et al., "FCN-rLSTM: Deep spatio-temporal neural networks for vehicle counting in city cameras", ICCV 2017.
-    """
-
-    def __init__(self, temporal=False, image_dim=None):
-        r"""
-        Args:
-            temporal: whether to have or not the LSTM block in the network (default: `False`).
-            image_dim: tuple (height, width) with image dimensions, only needed if `temporal` is `True` (default: `None`).
-            dataset: name of the dataset to use (default: `TRANCOS`).
-        """
-        super(FCN_rLSTM, self).__init__()
-
-        if temporal and (image_dim is None):
-            raise Exception('If `temporal` is `True`, `image_dim` must be provided')
-
-        self.temporal = temporal
-
-        self.conv_blocks = nn.ModuleList()
-        self.conv_blocks.append(
+class FCN(nn.Module):
+    def __init__(self, image_dim = None):
+        super(FCN, self).__init__()
+        self.image_dim = image_dim
+        # FCN layer
+        self.fcn_blocks = nn.ModuleList()
+        self.fcn_blocks.append(
             nn.Sequential(OrderedDict([
                 ('Conv1_1', nn.Conv2d(3, 64, (3, 3), padding=1)),
                 ('ReLU1_1', nn.ReLU()),
@@ -39,7 +25,7 @@ class FCN_rLSTM(nn.Module):
                 ('ReLU2_2', nn.ReLU()),
                 ('MaxPool2', nn.MaxPool2d((2, 2))),
             ])))
-        self.conv_blocks.append(
+        self.fcn_blocks.append(
             nn.Sequential(OrderedDict([
                 ('Conv3_1', nn.Conv2d(128, 256, (3, 3), padding=1)),
                 ('ReLU3_1', nn.ReLU()),
@@ -48,7 +34,7 @@ class FCN_rLSTM(nn.Module):
                 ('Atrous1', nn.Conv2d(256, 256, (3, 3), dilation=2, padding=2)),
                 ('ReLU_A1', nn.ReLU()),
             ])))
-        self.conv_blocks.append(
+        self.fcn_blocks.append(
             nn.Sequential(OrderedDict([
                 ('Conv4_1', nn.Conv2d(256, 256, (3, 3), padding=1)),
                 ('ReLU4_1', nn.ReLU()),
@@ -57,14 +43,14 @@ class FCN_rLSTM(nn.Module):
                 ('Atrous2', nn.Conv2d(256, 512, (3, 3), dilation=2, padding=2)),
                 ('ReLU_A2', nn.ReLU()),
             ])))
-        self.conv_blocks.append(
+        self.fcn_blocks.append(
             nn.Sequential(OrderedDict([
                 ('Atrous3', nn.Conv2d(512, 512, (3, 3), dilation=2, padding=2)),
                 ('ReLU_A3', nn.ReLU()),
                 ('Atrous4', nn.Conv2d(512, 512, (3, 3), dilation=2, padding=2)),
                 ('ReLU_A4', nn.ReLU()),
             ])))
-        self.conv_blocks.append(
+        self.fcn_blocks.append(
             nn.Sequential(OrderedDict([
                 ('Conv5', nn.Conv2d(1408, 512, (1, 1))),  # 1408 = 128 + 256 + 512 + 512 (hyper-atrous combination)
                 ('ReLU5', nn.ReLU()),
@@ -74,82 +60,98 @@ class FCN_rLSTM(nn.Module):
                 ('ReLU_D2', nn.ReLU()),
                 ('Conv6', nn.Conv2d(64, 1, (1, 1))),
             ])))
+    
+    def forward(self, X, mask=None):
+        
+        # X shape = N, L, C, H ,W 
+        N, L, C, H, W = X.shape
+        X = X.reshape(N*L,C,H,W)
+        if mask is not None :
+            mask = mask.reshape(N*L,1,H,W)
+            X = X * mask
+            
+        h1 = self.fcn_blocks[0](X)
+        h2 = self.fcn_blocks[1](h1)
+        h3 = self.fcn_blocks[2](h2)
+        h4 = self.fcn_blocks[3](h3)
+        h = torch.cat((h1, h2, h3, h4), dim=1) # hyper-atrous combination
+        h = self.fcn_blocks[4](h)
+        density = h.reshape(N,L,1,H,W)
+        if mask is not None :
+            h = h * mask
+        
+        return density, h.sum(dim=(1,2,3)).reshape(N,L) # density & count
+    
+class Encoder(nn.Module):
+    def __init__(self, image_dim = None):
+        super(Encoder, self).__init__()
+        self.image_dim = image_dim
+        # Bidirectional LSTM layer
+        H,W = self.image_dim
+        # lstm, input size = H*W, hidden state size = 100 but bidirectional so double
+        self.lstm_block = nn.LSTM(H*W,100,num_layers = 3, bidirectional = True, batch_first=True) 
+        self.fc = nn.Linear(200,100) # (enc_hid_dim * 2, dec_hid_dim)
+        
+    def forward(self, density):
+        # X shape = N, L, 1, H, W
+        # count shape = N, L
+        N,L,C,H,W = density.shape
+        # count_FCN = density.sum(dim=(2,3,4)).reshape(N,L)
+        
+        h = density.reshape(N,L,-1)
+        h, (hidden, cell) = self.lstm_block(h)
+        # hidden [-2,:,:] = forward last hidden state, hidden[-1,:,:] = backward last hidden state
+        
+        return h, hidden, cell
 
-        if self.temporal:
-            H, W = image_dim
-            self.lstm_block = nn.LSTM(H*W, 100, num_layers=3, batch_first=False)
-            self.final_layer = nn.Linear(100, 1)
+class Decoder(nn.Module):
+    def __init__(self, image_dim = None):
+        super(Decoder, self).__init__()
+        self.image_dim = image_dim
+        H,W = self.image_dim
+        self.lstm_block = nn.LSTM(H*W,100,num_layers = 3, bidirectional = True, batch_first=True)
+        
+        
+    def forward(self, density, hidden, cell):
+        # density shape = N, L, 1, H, W 
+        # count shape = N, L
+        N,L,C,H,W = density.shape
+       
+        h = density.reshape(N,L,-1)
+        h, (hidden, cell) = self.lstm_block(h, (hidden, cell))
+        
+        return h, hidden, cell
+       
+        
+class FCN_BLA(nn.Module):
+    def __init__(self, FCN, Encoder, Decoder, image_dim = None):
+        super(FCN_BLA, self).__init__()
+        self.image_dim = image_dim
+        self.FCN = FCN(image_dim = image_dim)
+        self.Encoder = Encoder(image_dim = image_dim)
+        self.Decoder = Decoder(image_dim = image_dim)
 
-    def init_hidden(self, batch_size):
-        """
-        Provides Gaussian samples to be used as initial values for the hidden states of the LSTM.
+        self.W = nn.Linear(400,200)
+        self.tanh = nn.Tanh()
+        self.v = nn.Linear(200,1)
+    
+    def forward(self, X, mask):
+        # X shape = N, L, C, H, W
+        # mask shape = N, L
+        density, count = self.FCN(X,mask)
+        en_h, en_hidden, en_cell = self.Encoder(density[:,:-1])
+        de_h, de_hidden, de_cell = self.Decoder(density[:,-1].unsqueeze(1), en_hidden, en_cell)
+        # Add attention
+        de_h_view = de_h.view(de_h.shape[0], de_h.shape[2], -1)
+        score = torch.bmm(en_h, de_h_view)
+        att_dis = F.softmax(score, dim=1)
+        att_val = torch.sum(en_h * att_dis, dim=1)
+        con = torch.cat((att_val, de_h.squeeze(1)), dim=1)
+        out = self.v(self.tanh(self.W(con)))
 
-        Args:
-            batch_size: the size of the current batch.
-
-        Returns:
-            h0: tensor with shape (num_layers, batch_size, hidden_dim).
-            c0: tensor with shape (num_layers, batch_size, hidden_dim).
-        """
-        h0, c0 = torch.randn(3, batch_size, 100), torch.randn(3, batch_size, 100)  # each LSTM state has shape (num_layers, batch_size, hidden_dim)
-        device = next(self.parameters()).device
-        h0, c0 = h0.to(device), c0.to(device)
-        return h0, c0
-
-    def forward(self, X, mask=None, lengths=None):
-        r"""
-        Args:
-            X: tensor with shape (seq_len, batch_size, channels, height, width) if `temporal` is `True` or (batch_size, channels, height, width) otherwise.
-            mask: binary tensor with same shape as X to mask values outside the active region;
-                if `None`, no masking is applied (default: `None`).
-            lengths: tensor with shape (batch_size,) containing the lengths of each sequence, which must be in decreasing order;
-                if `None`, all sequences are assumed to have maximum length (default: `None`).
-
-        Returns:
-            density: predicted density map, tensor with shape (seq_len, batch_size, 1, height, width) if `temporal` is `True` or (batch_size, 1, height, width) otherwise.
-            count: predicted number of vehicles in each image, tensor with shape (seq_len, batch_size) if `temporal` is `True` or (batch_size) otherwise.
-        """
-
-        if self.temporal:  # X has shape (T, N, C, H, W)
-            T, N, C, H, W = X.shape
-            X = X.reshape(T*N, C, H, W)
-            if mask is not None:
-                mask = mask.reshape(T*N, 1, H, W)
-        # else X has shape (N, C, H, W)
-
-        if mask is not None:
-            X = X * mask  # zero input values outside the active region
-
-        h1 = self.conv_blocks[0](X)
-        h2 = self.conv_blocks[1](h1)
-        h3 = self.conv_blocks[2](h2)
-        h4 = self.conv_blocks[3](h3)
-        h = torch.cat((h1, h2, h3, h4), dim=1)  # hyper-atrous combination
-        h = self.conv_blocks[4](h)
-        if mask is not None:
-            h = h * mask  # zero output values outside the active region
-
-        if self.temporal:
-            density = h.reshape(T, N, 1, H, W)  # predicted density map
-
-            h = h.reshape(T, N, -1)
-            count_fcn = h.sum(dim=2)
-
-            if lengths is not None:
-                # pack padded sequence so that padded items in the sequence are not shown to the LSTM
-                h = rnn.pack_padded_sequence(h, lengths, batch_first=False, enforce_sorted=True)
-
-            h0 = self.init_hidden(N)
-            h, _ = self.lstm_block(h, h0)
-
-            if lengths is not None:
-                # undo the packing operation
-                h, _ = torch.nn.utils.rnn.pad_packed_sequence(h, batch_first=False, total_length=T)
-
-            count_lstm = self.final_layer(h.reshape(T*N, -1)).reshape(T, N)
-            count = count_fcn + count_lstm  # predicted vehicle count
-        else:
-            density = h  # predicted density map
-            count = h.sum(dim=(1, 2, 3))  # predicted vehicle count
-
-        return density, count
+        pred = count[:,-1].unsqueeze(1) + out
+        return density, pred
+        
+    
+        
+        
