@@ -4,7 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.ivcs_android.databinding.ActivityAnalysisBinding
 import com.example.ivcs_android.view.analysis.SetAnalysisViews
-import com.example.ivcs_android.viewModel.Anal.AnalysisViewModel
+import com.example.ivcs_android.Presenter.Anal.AnalysisViewModel
 
 class AnalysisActivity : AppCompatActivity() {
 

@@ -10,8 +10,7 @@ import com.example.ivcs_android.databinding.ActivityStreamingBinding
 import com.example.ivcs_android.model.Datas
 import com.example.ivcs_android.view.streaming.SetStreamingViews
 import com.example.ivcs_android.view.streaming.Streaming
-import com.example.ivcs_android.viewModel.Streaming.Msocket
-import com.example.ivcs_android.viewModel.Streaming.StreamingBind
+import com.example.ivcs_android.Presenter.Streaming.StreamingBind
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 

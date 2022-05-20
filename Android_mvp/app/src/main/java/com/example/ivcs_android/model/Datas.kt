@@ -15,7 +15,7 @@ class Datas {
 
 }
 
-class DataAnalysis(){
+class AnalysisData(){
     /** analysis 관련 */
     var analType = Consts.hour
     var analName = Datas.instance.arrForListView[0]
@@ -24,7 +24,7 @@ class DataAnalysis(){
     var endTimeInfo = arrayOf<Long>(2022,4,24,16)
 }
 
-class DataStreaming(){
+class StreamingData(){
     /** Streaming 관련 */
     var cctvName = ""
     var cctvIdx = 0
