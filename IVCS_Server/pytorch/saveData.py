@@ -59,7 +59,7 @@ def get_data(sid, output):
     for idx, cctv in enumerate(cctvname):
         data[cctv].append([time_info, output[idx]])
         tmp.append(output[idx])
-        break
+        # break
         # data[cctv].append([time_info, output])
         # tmp.append(output)
     latest = tmp
