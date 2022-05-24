@@ -30,8 +30,9 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:background="@drawable/radius_rec"
+                android:onClick="@{ () -> viewModel.btGoToStreamingClicked() }"
                 android:text="Streaming"
-                android:onClick="@{ () -> viewModel.btGoToStreamingClicked() }"/>
+                android:textColor="#000000" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btGoToAnalysis"
@@ -39,8 +40,9 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:background="@drawable/radius_rec"
+                android:onClick="@{()->viewModel.btGoToAnalysisClicked()}"
                 android:text="Analysys"
-                android:onClick="@{()->viewModel.btGoToAnalysisClicked()}"/>
+                android:textColor="#000000" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

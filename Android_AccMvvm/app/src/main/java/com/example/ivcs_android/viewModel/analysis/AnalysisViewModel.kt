@@ -157,7 +157,7 @@ class AnalysisViewModel(application: Application, fragmentManager: FragmentManag
                 // 그림 요청
                 var client = OkHttpClient()
                 var request = Request.Builder()
-                    .url(Consts.plotUrl)
+                    .url(Consts.serverDataUrl+Consts.plotUrl)
                     .post(reqBody)
                     .build()
                 var response = client.newCall(request).execute()

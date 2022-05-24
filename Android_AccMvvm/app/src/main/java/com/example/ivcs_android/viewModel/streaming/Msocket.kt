@@ -20,7 +20,8 @@ class Msocket(var dataStreaming: DataStreaming) {
 
     private fun setSocket(){
         try {
-            mSocket = IO.socket(Consts.localhost_DataServer)
+//            mSocket = IO.socket(Consts.localhost_DataServer)
+            mSocket = IO.socket(Consts.serverDataUrl)
             mSocket.connect()
         } catch (e: URISyntaxException) {
             Log.e("ERR_setsocket", e.toString())

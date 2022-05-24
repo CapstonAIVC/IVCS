@@ -40,13 +40,13 @@ class StartViewModel(application: Application) : AndroidViewModel(application) {
             Toast.makeText(context, "서버 정보 요청중", Toast.LENGTH_SHORT).show()
             return false
         } else {
-            setInfo()
             return true
         }
     }
 
     fun setInfo() {
-        val url = Consts.localhost + Consts.getUrl
+//        val url = Consts.localhost + Consts.getUrl
+        val url = Consts.serverMainUrl + Consts.getUrl
         val client = OkHttpClient()
         val request = Request.Builder().url(url).build()
 
@@ -65,6 +65,7 @@ class StartViewModel(application: Application) : AndroidViewModel(application) {
                     Datas.instance.arrForListView[i] = jsonArrCctvName.getString(i)
                     Datas.instance.arrForUrl[i] = jsonArrUrl.getString(i)
                 }
+                Log.e("urlTest", Datas.instance.arrForUrl[0])
             }
         })
     }

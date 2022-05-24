@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Switch
 import androidx.lifecycle.AndroidViewModel
+import com.example.ivcs_android.model.Consts
 import com.example.ivcs_android.model.DataStreaming
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
@@ -80,6 +81,7 @@ class StreamingViewModel(application: Application) : AndroidViewModel(applicatio
             .subscribe(
                 {
                     myPlayer.setPlayerURL(it)
+//                    myPlayer.setPlayerURL(Consts.hlstest)
                 },
                 { Log.e("bindForUrlErr", it.message.toString()) }
             )

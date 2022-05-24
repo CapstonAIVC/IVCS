@@ -38,7 +38,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_margin="3dp"
+            android:onClick="@{(view)->Frag.clickConfirm(view)}"
             android:text="확인"
-            android:onClick="@{(view)->Frag.clickConfirm(view)}"/>
+            android:textColor="#FFFFFF" />
     </LinearLayout>
 </layout>

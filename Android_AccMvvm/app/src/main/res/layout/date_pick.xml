@@ -66,16 +66,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:onClick="@{()->Frag.cancelClicked()}"
                 android:text="취소"
-                android:onClick="@{()->Frag.cancelClicked()}"/>
+                android:textColor="#FFFFFF" />
 
             <Button
                 android:id="@+id/btConfirm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:onClick="@{()->Frag.confirmCilcked()}"
                 android:text="확인"
-                android:onClick="@{()->Frag.confirmCilcked()}"/>
+                android:textColor="#FFFFFF" />
         </LinearLayout>
     </LinearLayout>
 </layout>
