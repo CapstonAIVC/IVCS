@@ -57,7 +57,7 @@ class StreamingViewModel(application: Application) : AndroidViewModel(applicatio
                             .observeOn(Schedulers.io()) // 인터넷 처리를위한 스케쥴러 할당
                             .subscribe(
                                 {
-                                    mSocket.mSocket.emit("req_counting",
+                                    mSocket.mSocket.emit("req_counting_mobile",
                                         dataStreaming.cctvIdx)
                                 },
                                 {
