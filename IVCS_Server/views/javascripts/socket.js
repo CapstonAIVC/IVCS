@@ -1,77 +1,104 @@
 const socket = io.connect('http://localhost:3000');
 const socket_data = io('http://localhost:4000');
 
-const selected_camera = document.getElementById('camera');
-// const live_stream = document.getElementById('hlsPlayEx');
-const count_text = document.getElementsByClassName('counting_text')[0]
+let xhr = new XMLHttpRequest();
+
+const play_camera = document.getElementsByName('play_button')[0];
+const selected_camera = document.getElementsByName('count-camera-id')[0];
+
+const count_text = document.getElementsByClassName('counting_text')[0];
 
 var analysis_camera = document.getElementById('analysis_camera_id');
-var measure_unit = document.getElementById('measure_unit')
-var start_date = document.getElementById('start_date')
-var end_date = document.getElementById('end_date')
-var start_time = document.getElementById('start_time')
-var end_time = document.getElementById('end_time')
+var measure_unit = document.getElementById('measure_unit');
+var start_date = document.getElementById('start_date');
+var end_date = document.getElementById('end_date');
+var start_time = document.getElementById('start_time');
+var end_time = document.getElementById('end_time');
 
-var plot_img = document.getElementById('analysis_result')
+var camera_list = document.getElementsByTagName('ul')[1];
 
-var counting_camera = [];
+var camera_json;
+var plot_img = document.getElementById('analysis_result');
+var screen_shot_img = document.getElementById('screen_shot_result');
+var density_img = document.getElementById('density_map_result');
 
-selected_camera.addEventListener('submit', (e) => {
-    e.preventDefault();
-    var camera_id = e.target.camera_id.value
-    counting_camera.push(e.target.camera_id.value);
-    socket.emit('hls_req', camera_id);
-    e.target.camera_id.value = '';
-})
+var hls;
+
+var req_counting_interval;
+
+var hls_flag = false;
+var img_flag = false;
+var count_flag = false;
+
+$.getJSON('http://localhost:3000/getUrl', function(data) {
+    camera_json = JSON.parse(data.replace(/'/g, '"'))
+    for(var i=0; i<camera_json['cctvname'].length; i++){
+        const li = document.createElement("li");
+        li.className = "nav-item";
+        li.setAttribute('value', i);
+        if(i==0) li.innerHTML = '<a class="nav-link active" id='+i+' data-toggle="tab" href="#business-1" role="tab">'+camera_json['cctvname'][i]+'</a>';
+        else li.innerHTML = '<a class="nav-link" id='+i+' data-toggle="tab" href="#business-1" role="tab">'+camera_json['cctvname'][i]+'</a>';
+        camera_list.appendChild(li);
+        li.addEventListener('click', function(){
+            if(count_flag){
+                count_flag = false;
+                clearInterval(req_counting_interval);
+                count_text.innerHTML = "---";
+                screen_shot_img.src = "";
+                density_img.src = "";
+            }
+
+            if(hls_flag){
+                hls.detachMedia();;
+                hls_flag = false;
+            }
+
+            if(img_flag){
+                plot_img.src = "";
+                img_flag = false;
+            }
+        });
+        if(i==1) break; // 데모를 위해 2개만 보여줌
+    }
+});
+
+function get_camera_id(){
+    socket.emit('hls_req', document.getElementsByClassName("active")[1].id);
+}
 
 function req_counting_flag() {
-    setInterval(function () { 
-        socket_data.emit('req_counting', counting_camera[counting_camera.length-1]); 
+    count_flag = true;
+    req_counting_interval = setInterval(function () { 
+        socket_data.emit('req_counting', document.getElementsByClassName("active")[1].id);
+        console.log("plz");
     }, 2000);
 }
 
 let sendData = () => {
-    let xhr = new XMLHttpRequest();
-
     xhr.open("POST", "http://localhost:4000/req_plot", true);
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
 
-    xhr.onload = () => {
-
-        // print JSON response
-        if (xhr.status >= 200 && xhr.status < 300) {
-            // parse JSON
-            const response = JSON.parse(xhr.responseText);
-            console.log(response);
-        }
-
-        else console.log("POST to Flask Accepted");
-    };
-
     let data = {
         "measure_method": measure_unit.value,
-        "cameraid": analysis_camera.value,
+        "cameraid": document.getElementsByClassName("active")[1].id,
         "start" : start_date.value+"_"+start_time.value,
         "end" : end_date.value+"_"+end_time.value,
     };
-    // console.log(data)
 
     xhr.send(JSON.stringify(data));
 }
 
 function analysis(){
-    // console.log(measure_unit.value)
-    // console.log(analysis_camera.value)
-    // console.log(start_date.value+"-"+start_time.value)
-    // console.log(end_date.value+"-"+end_time.value)
+    sendData();
 
-    // socket_data.emit('req_plot', measure_unit.value, analysis_camera.value, start_date.value+"_"+start_time.value, end_date.value+"_"+end_time.value);
-
-    let img_byte = sendData();
-    new Uint8Array(img_byte);
-
-    console.log(xhr.response)
+    xhr.responseType = "arraybuffer";
+    xhr.onload = function() {
+        var arrayBuffer = xhr.response;
+        var byteArray = new Uint8Array(arrayBuffer);
+        plot_img.src =  URL.createObjectURL( new Blob([byteArray.buffer], { type: 'image/png' } ));
+        img_flag = true;
+    }
 }
 
 socket.on('hls_res', (hls_url) => {
@@ -102,18 +129,17 @@ socket.on('hls_res', (hls_url) => {
         // If no native HLS support, check if HLS.js is supported
         //
     } else if (Hls.isSupported()) {
-        var hls = new Hls();
+        hls = new Hls();
         hls.loadSource(videoSrc);
         hls.attachMedia(video);
+        hls_flag = true;
     }
 })
 
-socket_data.on('res_counting', (count) => {
-    count_text.innerHTML = count;
-})
-
-socket_data.on('res_plot', (img_byte) => {
-    var arrayBuffer = new Uint8Array(img_byte);
-    console.log(arrayBuffer)
-    plot_img.src =  URL.createObjectURL( new Blob([arrayBuffer.buffer], { type: 'image/png' } ));
+socket_data.on('res_counting_web', (count, input_bytes, density_bytes) => {
+    count_text.innerHTML = String(count);
+    var inputBytes = new Uint8Array(input_bytes);
+    var densityBytes = new Uint8Array(density_bytes);
+    screen_shot_img.src =  URL.createObjectURL( new Blob([inputBytes.buffer], { type: 'image/png' } ));
+    density_img.src =  URL.createObjectURL( new Blob([densityBytes.buffer], { type: 'image/png' } ));
 })
