@@ -2,6 +2,7 @@ package com.example.ivcs_android.viewModel.streaming
 
 import android.app.Application
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.View
@@ -42,9 +43,9 @@ class StreamingViewModel(application: Application) : AndroidViewModel(applicatio
 
         dataStreaming.changeInput
             .subscribeOn(Schedulers.io())
-            .map { it.toByteArray() }
             .map {
-                BitmapFactory.decodeByteArray(it, 0, it.size)
+                val bmp = BitmapFactory.decodeByteArray(it, 0, it.size)
+                Bitmap.createScaledBitmap(bmp,400,300,true)
             }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -54,9 +55,9 @@ class StreamingViewModel(application: Application) : AndroidViewModel(applicatio
 
         dataStreaming.changeDensity
             .subscribeOn(Schedulers.io())
-            .map { it.toByteArray() }
             .map {
-                BitmapFactory.decodeByteArray(it, 0, it.size)
+                val bmp = BitmapFactory.decodeByteArray(it, 0, it.size)
+                Bitmap.createScaledBitmap(bmp,400,300,true)
             }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -71,12 +72,12 @@ class StreamingViewModel(application: Application) : AndroidViewModel(applicatio
                 {
                     if (it) {
                         dataStreaming.textCountShow.value = true
-                        countData = Observable.interval(1500, TimeUnit.MILLISECONDS)
+                        countData = Observable.interval(3000, TimeUnit.MILLISECONDS)
                             .observeOn(Schedulers.io()) // 인터넷 처리를위한 스케쥴러 할당
                             .subscribe(
                                 {
-                                    mSocket.mSocket.emit("req_counting_mobile",
-                                        dataStreaming.cctvIdx)
+//                                    mSocket.mSocket.emit("req_counting_mobile", dataStreaming.cctvIdx)
+                                    mSocket.mSocket.emit("req_counting", dataStreaming.cctvIdx)
                                 },
                                 {
                                     Log.e("socketEmitErr", it.message.toString())

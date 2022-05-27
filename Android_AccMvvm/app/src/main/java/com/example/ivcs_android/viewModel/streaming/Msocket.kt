@@ -30,9 +30,10 @@ class Msocket(var dataStreaming: DataStreaming) {
 
         mSocket.on("res_counting") {
             Log.e("res_counting0",it[0].toString())
+//            Log.e("res_counting1",((it[1] as ByteArray).contentToString()))
             dataStreaming.changeCountText.onNext( "차량 수: "+it[0].toString() )
-            dataStreaming.changeInput.onNext(it[1].toString())
-            dataStreaming.changeDensity.onNext(it[2].toString())
+            dataStreaming.changeInput.onNext((it[1] as ByteArray))
+            dataStreaming.changeDensity.onNext((it[2] as ByteArray))
         }
     }
 
