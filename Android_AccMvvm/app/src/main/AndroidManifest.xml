@@ -14,6 +14,9 @@
         android:theme="@style/Theme.IVCS_Android"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".TestActivity"
+            android:exported="false" />
+        <activity
             android:name=".AnalysisActivity"
             android:exported="false" />
         <activity
