@@ -39,12 +39,30 @@ class StreamingViewModel(application: Application) : AndroidViewModel(applicatio
                 },
                 { Log.e("changeCountTextERR", it.message.toString()) }
             )
-//        dataStreaming.changeInput
-//            .subscribeOn(Schedulers.io())
-//            .map {  }
-//            .map {
-//                BitmapFactory.decodeByteArray(it, 0, it.length);
-//            }
+
+        dataStreaming.changeInput
+            .subscribeOn(Schedulers.io())
+            .map { it.toByteArray() }
+            .map {
+                BitmapFactory.decodeByteArray(it, 0, it.size)
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { dataStreaming.inputImage.value = it },
+                { Log.e("changeInputErr",it.message.toString()) }
+            )
+
+        dataStreaming.changeDensity
+            .subscribeOn(Schedulers.io())
+            .map { it.toByteArray() }
+            .map {
+                BitmapFactory.decodeByteArray(it, 0, it.size)
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { dataStreaming.densityImage.value = it },
+                { Log.e("changeDensityErr",it.message.toString()) }
+            )
     }
 
     fun bindForSwitch() {
@@ -102,7 +120,9 @@ class StreamingViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun clickDensitySwitch(view: View) {
-        dataStreaming.debugSwitchSubject.onNext((view as Switch).isChecked)
+        if(dataStreaming.countSwitchSubject.value) {
+            dataStreaming.debugSwitchSubject.onNext((view as Switch).isChecked)
+        }
     }
 
 }

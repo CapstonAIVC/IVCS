@@ -7,6 +7,7 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.socket.client.IO
 import io.socket.client.Socket
+import okio.ByteString
 import java.net.URISyntaxException
 
 class Msocket(var dataStreaming: DataStreaming) {
@@ -29,8 +30,6 @@ class Msocket(var dataStreaming: DataStreaming) {
 
         mSocket.on("res_counting") {
             Log.e("res_counting0",it[0].toString())
-            Log.e("res_counting1",it[1].toString())
-            Log.e("res_counting2",it[2].toString())
             dataStreaming.changeCountText.onNext( "차량 수: "+it[0].toString() )
             dataStreaming.changeInput.onNext(it[1].toString())
             dataStreaming.changeDensity.onNext(it[2].toString())
