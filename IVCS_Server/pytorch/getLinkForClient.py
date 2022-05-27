@@ -22,8 +22,6 @@ if __name__ == '__main__':
         data = json.loads(url.read().decode())
 
     cctvinfo_dict = {"cctvname":[], "cctvurl":[]}
-
-    flag=0 #for demo
     
     cctvinfo_dict['cctvname'].append('[남해선]초전2교')
     cctvinfo_dict['cctvname'].append('[경부선]판교1')
