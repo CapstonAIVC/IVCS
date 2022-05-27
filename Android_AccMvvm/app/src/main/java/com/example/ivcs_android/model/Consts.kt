@@ -12,6 +12,7 @@ class Consts {
         const val hlstest = "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8"
 
         // 시간, 날,월
+        
         const val hour : String = "hour"
         const val day : String = "day"
         const val month : String = "month"

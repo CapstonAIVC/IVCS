@@ -74,7 +74,7 @@ server.listen(3000,()=>{
         
         information = data.toString().split("\n")[0]
         information_json = JSON.parse(information.replace(/'/g, '"'))
-
+	console.log(information_json)
         console.log(' The info is ready!!');
     });
     console.log('Socket IO server listening on port ');
