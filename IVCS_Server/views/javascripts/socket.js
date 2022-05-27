@@ -136,7 +136,7 @@ socket.on('hls_res', (hls_url) => {
     }
 })
 
-socket_data.on('res_counting_web', (count, input_bytes, density_bytes) => {
+socket_data.on('res_counting', (count, input_bytes, density_bytes) => {
     count_text.innerHTML = String(count);
     var inputBytes = new Uint8Array(input_bytes);
     var densityBytes = new Uint8Array(density_bytes);

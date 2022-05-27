@@ -106,7 +106,7 @@ def get_data(sid, count_result_json, input_img_result, density_result):
 def startCounting(sid, cctvIdx):
     global count, input_img, density
     # sio.emit('res_counting', str(round(latest[int(cctvIdx)[0]], 3)), sid)
-    sio.emit('res_counting_web', data=(str(round(count[int(cctvIdx)])), input_img[int(cctvIdx)], density[int(cctvIdx)]), room=sid)
+    sio.emit('res_counting', data=(str(round(count[int(cctvIdx)])), input_img[int(cctvIdx)], density[int(cctvIdx)]), room=sid)
     
 @app.route('/req_plot', methods=['POST'])
 def res_plot_png():

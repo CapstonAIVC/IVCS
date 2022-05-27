@@ -11,7 +11,6 @@ from torchvision import transforms
 import numpy as np
 from PIL import Image
 import io
-import base64
 
 import socketio
 
@@ -103,7 +102,7 @@ class ThreadedCamera(threading.Thread):
             #     (self.status, tmp) = self.capture.read()
             #     if self.status:
             #         self.frame = tmp
-            #     cv2.waitKey(1)
+            #     cv2.waitKey(2000)
             # time.sleep(0.5)
 
     def get_frame(self):
@@ -225,24 +224,6 @@ if __name__ == '__main__':
     mask = torch.reshape(mask, (TOTAL_CCTV_NUM, MAX_LEN, 1, 120, 160))
     print(mask.shape)
 
-    # mask = Image.open('./[남해선]초전2교_mask.png').convert('L')
-    # mask = np.array(mask)
-    # mask = torch.Tensor(mask)
-    # mask = mask/255
-    # mask_tmp = torch.Tensor(mask)
-    # for i in range(4): mask = torch.cat((mask, mask_tmp), 0)
-    # mask = torch.reshape(mask, (5, 120, 160))
-    # mask = mask.unsqueeze(1)
-    # # mask = mask.unsqueeze(0)
-    # mask = Image.open('./[경부선]판교1_mask.png').convert('L')
-    # mask = np.array(mask)
-    # mask = torch.Tensor(mask)
-    # mask = mask/255
-    # mask_tmp = torch.Tensor(mask)
-    # for i in range(4): mask = torch.cat((mask, mask_tmp), 0)
-    # mask = torch.reshape(mask, (5, 120, 160))
-    # mask = mask.unsqueeze(1)
-
     for i in range(MAX_LEN):
         addFramesByTensor(-1)
 
@@ -272,7 +253,6 @@ if __name__ == '__main__':
                 for j in range(0, index+1): ## 0부터 index까지
                     X = torch.cat((X,tensorList[i][j]), 0)
 
-        # X = X.transpose(0,1)
         X = torch.reshape(X, (TOTAL_CCTV_NUM, MAX_LEN, 3, 120, 160))
 
         with torch.no_grad():
@@ -287,11 +267,10 @@ if __name__ == '__main__':
         #     print(count_pred)
         #     break
         
-        # result.append(count_pred.tolist()[4][0])
         for idx in range(TOTAL_CCTV_NUM):
             input_tmp = io.BytesIO()
             density_tmp = io.BytesIO()
-            torchvision.utils.save_image(X[idx,-1,:,:,:], input_tmp, format='png')
+            torchvision.utils.save_image(X[idx,-1,-1,:,:]*mask[idx,-1,:,:,:], input_tmp, format='png')
             torchvision.utils.save_image(density_pred[idx,-1,:,:,:], density_tmp, format='png')
             
             input_img.append(input_tmp.getvalue())
