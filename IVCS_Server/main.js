@@ -91,7 +91,7 @@ server.listen(3000,()=>{
             getUrl_result.stderr.on('data', function(data) { console.log(data.toString()); });
             
             information_client = data.toString().split("\n")[0]
-            // information_json = JSON.parse(information.replace(/'/g, '"'))
+            information_json = JSON.parse(information.replace(/'/g, '"'))
             // console.log(information_json)
             console.log(' The Client info is ready!!\n');
         });
