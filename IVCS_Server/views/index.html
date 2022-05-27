@@ -53,7 +53,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/main">
                 <span class="icon-bg"><i class="mdi mdi-cube menu-icon"></i></span>
-                <span class="menu-title">Dashboard</span>
+                <span class="menu-title">Counting</span>
               </a>
             </li>
           </ul>
@@ -172,17 +172,43 @@
                           </div>
                         </div>
                       </div>
+                      <div class="col">
 
-                      <div class="col-sm-6  grid-margin stretch-card">
-                        <div class="card">
-                          <div class="card-header" style="text-align:center">
-                            <h2 class="card-title" style="margin-bottom:0px; font-size:1.5rem">Vehicle Count Analytics</h2>
+                        <div class="col-sm-12 grid-margin">
+                          <div class="card" style="height:225px">
+                            <div class="card-header" style="text-align:center">
+                              <h2 class="card-title" style="margin-bottom:0px; font-size:1.3rem">Screen Shot</h2>
+                            </div>
+                            <div class="" id="screen_shot_div" style="text-align:center">
+                              <img id="screen_shot_result" src="" width="40%" style="margin-top:0.3rem">
+                            </div>
                           </div>
-                          <div class="" id="analysis_div">
+                        </div>
+
+                        <div class="col-sm-12 grid-margin">
+                          <div class="card" style="height:225px">
+                            <div class="card-header" style="text-align:center">
+                              <h2 class="card-title" style="margin-bottom:0px; font-size:1.3rem">Density Map</h2>
+                            </div>
+                            <div class="" id="density_map_div" style="text-align:center">
+                              <img id="density_map_result" src="" width="40%" style="margin-top:0.3rem">
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+                      
+                      <div class="col-sm-12  grid-margin stretch-card">
+                        <div class="card">
+                          <div class="card-body">
                             <div class="d-xl-flex justify-content-between mb-2">
+                              <h4 class="card-title">Vehicle Count Analytics</h4>
                               <div class="graph-custom-legend primary-dot" id="pageViewAnalyticLengend"></div>
                             </div>
-                            <img id="analysis_result" src="" width="100%">
+                            <!-- <canvas id="page-view-analytic"></canvas> -->
+                            <div class="" id="analysis_div">
+                              <img id="analysis_result" src="" width="100%">
+                            </div>
                           </div>
                         </div>
                       </div>

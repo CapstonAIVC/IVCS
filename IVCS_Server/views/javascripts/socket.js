@@ -19,6 +19,8 @@ var camera_list = document.getElementsByTagName('ul')[1];
 
 var camera_json;
 var plot_img = document.getElementById('analysis_result');
+var screen_shot_img = document.getElementById('screen_shot_result');
+var density_img = document.getElementById('density_map_result');
 
 var hls;
 
@@ -42,6 +44,8 @@ $.getJSON('http://localhost:3000/getUrl', function(data) {
                 count_flag = false;
                 clearInterval(req_counting_interval);
                 count_text.innerHTML = "---";
+                screen_shot_img.src = "";
+                density_img.src = "";
             }
 
             if(hls_flag){
@@ -132,6 +136,10 @@ socket.on('hls_res', (hls_url) => {
     }
 })
 
-socket_data.on('res_counting', (count) => {
+socket_data.on('res_counting_web', (count, input_bytes, density_bytes) => {
     count_text.innerHTML = String(count);
+    var inputBytes = new Uint8Array(input_bytes);
+    var densityBytes = new Uint8Array(density_bytes);
+    screen_shot_img.src =  URL.createObjectURL( new Blob([inputBytes.buffer], { type: 'image/png' } ));
+    density_img.src =  URL.createObjectURL( new Blob([densityBytes.buffer], { type: 'image/png' } ));
 })
