@@ -58,7 +58,6 @@ $.getJSON('http://119.207.210.53:7008/getUrl', function(data) {
                 img_flag = false;
             }
         });
-        if(i==1) break; // 데모를 위해 2개만 보여줌
     }
 });
 
