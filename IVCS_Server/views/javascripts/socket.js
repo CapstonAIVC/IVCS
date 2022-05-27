@@ -1,5 +1,5 @@
-const socket = io.connect('http://localhost:3000');
-const socket_data = io('http://localhost:4000');
+const socket = io.connect('http://119.207.210.53:7008');
+const socket_data = io('http://119.207.210.53:7009');
 
 let xhr = new XMLHttpRequest();
 
@@ -30,7 +30,7 @@ var hls_flag = false;
 var img_flag = false;
 var count_flag = false;
 
-$.getJSON('http://localhost:3000/getUrl', function(data) {
+$.getJSON('http://119.207.210.53:7008/getUrl', function(data) {
     camera_json = JSON.parse(data.replace(/'/g, '"'))
     for(var i=0; i<camera_json['cctvname'].length; i++){
         const li = document.createElement("li");
@@ -75,7 +75,7 @@ function req_counting_flag() {
 }
 
 let sendData = () => {
-    xhr.open("POST", "http://localhost:4000/req_plot", true);
+    xhr.open("POST", "http://119.207.210.53:7009/req_plot", true);
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
 
