@@ -30,9 +30,13 @@ var hls_flag = false;
 var img_flag = false;
 var count_flag = false;
 
-$.getJSON('http://localhost:3000/getUrl', function(data) {
+$.getJSON('http://localhost:3000/getUrl_web', function(data) {
     camera_json = JSON.parse(data.replace(/'/g, '"'))
+    var xmlHttp = new XMLHttpRequest();
     for(var i=0; i<camera_json['cctvname'].length; i++){
+        xmlHttp.open( "GET", camera_json['cctvurl'][i], false );
+        xmlHttp.send( null );
+        camera_json['cctvurl'][i] = xmlHttp.responseURL
         const li = document.createElement("li");
         li.className = "nav-item";
         li.setAttribute('value', i);
@@ -63,7 +67,20 @@ $.getJSON('http://localhost:3000/getUrl', function(data) {
 });
 
 function get_camera_id(){
-    socket.emit('hls_req', document.getElementsByClassName("active")[1].id);
+    // socket.emit('hls_req', document.getElementsByClassName("active")[1].id);
+    // console.log("live_stream.src : "+hls_url);
+
+    var video = document.getElementById('hlsPlayEx');
+    var videoSrc = camera_json['cctvurl'][document.getElementsByClassName("active")[1].id];
+    
+    if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = videoSrc;
+    } else if (Hls.isSupported()) {
+        hls = new Hls();
+        hls.loadSource(videoSrc);
+        hls.attachMedia(video);
+        hls_flag = true;
+    }
 }
 
 function req_counting_flag() {
@@ -101,40 +118,40 @@ function analysis(){
     }
 }
 
-socket.on('hls_res', (hls_url) => {
-    console.log("live_stream.src : "+hls_url);
+// socket.on('hls_res', (hls_url) => {
+//     console.log("live_stream.src : "+hls_url);
 
-    // videojs MP4 Dynamic Streaming
-    // if (videojs.getPlayers()[`hlsPlayEx`]) {
-    //     // hls-video is the id of the video tag
-    //     delete videojs.getPlayers()[`hlsPlayEx`];
-    // }
-    // videojs(`#hlsPlayEx`).src({
-    //     src: hls_url,   // dynamic link
-    //     type: "video/mp4",  // type
-    // });
+//     // videojs MP4 Dynamic Streaming
+//     // if (videojs.getPlayers()[`hlsPlayEx`]) {
+//     //     // hls-video is the id of the video tag
+//     //     delete videojs.getPlayers()[`hlsPlayEx`];
+//     // }
+//     // videojs(`#hlsPlayEx`).src({
+//     //     src: hls_url,   // dynamic link
+//     //     type: "video/mp4",  // type
+//     // });
 
-    // var player = videojs('hlsPlayEx');
-    // player.controlBar.show();
-    // player.play();
+//     // var player = videojs('hlsPlayEx');
+//     // player.controlBar.show();
+//     // player.play();
 
-    var video = document.getElementById('hlsPlayEx');
-    var videoSrc = hls_url;
-    //
-    // First check for native browser HLS support
-    //
-    if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = videoSrc;
-        //
-        // If no native HLS support, check if HLS.js is supported
-        //
-    } else if (Hls.isSupported()) {
-        hls = new Hls();
-        hls.loadSource(videoSrc);
-        hls.attachMedia(video);
-        hls_flag = true;
-    }
-})
+//     var video = document.getElementById('hlsPlayEx');
+//     var videoSrc = hls_url;
+//     //
+//     // First check for native browser HLS support
+//     //
+//     if (video.canPlayType('application/vnd.apple.mpegurl')) {
+//         video.src = videoSrc;
+//         //
+//         // If no native HLS support, check if HLS.js is supported
+//         //
+//     } else if (Hls.isSupported()) {
+//         hls = new Hls();
+//         hls.loadSource(videoSrc);
+//         hls.attachMedia(video);
+//         hls_flag = true;
+//     }
+// })
 
 socket_data.on('res_counting', (count, input_bytes, density_bytes) => {
     count_text.innerHTML = String(count);

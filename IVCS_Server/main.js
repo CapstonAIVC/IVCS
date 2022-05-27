@@ -25,8 +25,11 @@ app.get("/main", (req, res) => {
 app.get("/getUrl", (req, res) => {
     res.json(information);
 })
-app.get("/getUrl_mobile", (req, res) => {
-    res.send(information);
+app.get("/getUrl_web", (req, res) => {
+    res.json(information_client);
+})
+app.get("/getUrl_client", (req, res) => {
+    res.send(information_client);
 })
 
 //for test
@@ -78,8 +81,18 @@ server.listen(3000,()=>{
         
         information = data.toString().split("\n")[0]
         information_json = JSON.parse(information.replace(/'/g, '"'))
-	console.log(information_json)
-        console.log(' The info is ready!!');
+	    // console.log(information_json)
+        console.log(' The info is ready!!\n');
+
+        const getUrl_client_spawn = require('child_process').spawn;
+        const getUrl_client_result = getUrl_client_spawn('python3', ['./pytorch/getLinkForClient.py', '1', api_key]);
+        getUrl_client_result.stdout.on('data', (data) => {
+            getUrl_client_result.stderr.on('data', function(data) { console.log(data.toString()); });
+            
+            information_client = data.toString().split("\n")[0]
+            console.log(' The Client info is ready!!\n');
+        });
     });
+
     console.log('Socket IO server listening on port ');
 });
