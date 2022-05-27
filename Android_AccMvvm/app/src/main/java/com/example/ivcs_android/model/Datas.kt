@@ -24,11 +24,17 @@ class DataStreaming(){
 
     /** 교통량 측정 관련 */
     var countSwitchSubject : BehaviorSubject<Boolean> = BehaviorSubject.createDefault(false)
-    var densitySwitchSubject : BehaviorSubject<Boolean> = BehaviorSubject.createDefault(false)
+    var debugSwitchSubject : BehaviorSubject<Boolean> = BehaviorSubject.createDefault(false)
     var changeCountText : BehaviorSubject<String> = BehaviorSubject.createDefault("차량 수: ")
+    var changeDensity : PublishSubject<String> = PublishSubject.create()
+    var changeInput : PublishSubject<String> = PublishSubject.create()
     var textCount : MutableLiveData<String> = MutableLiveData("")
     var textCountShow : MutableLiveData<Boolean> = MutableLiveData(false)
-    var densityImageShow : MutableLiveData<Boolean> = MutableLiveData(false)
+    var debugImageShow : MutableLiveData<Boolean> = MutableLiveData(false)
+
+    var densityImage: MutableLiveData<Bitmap> = MutableLiveData()
+    var inputImage: MutableLiveData<Bitmap> = MutableLiveData()
+
 }
 
 class DataAnal(){

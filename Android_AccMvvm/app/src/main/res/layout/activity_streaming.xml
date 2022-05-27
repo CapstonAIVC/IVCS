@@ -62,7 +62,7 @@
                         android:layout_height="48dp"
                         android:layout_weight="1"
                         android:onClick="@{(view)->viewModel.clickDensitySwitch(view)}"
-                        android:text="마스크"
+                        android:text="디버깅"
                         android:textColor="#000000" />
 
                 </LinearLayout>
@@ -88,7 +88,17 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         app:srcCompat="@drawable/ic_launcher_background"
-                        android:visibility="@{viewModel.dataStreaming.densityImageShow ? View.VISIBLE : View.GONE}"/>
+                        bindImageBitmap="@{viewModel.dataStreaming.densityImage}"
+                        android:visibility="@{viewModel.dataStreaming.debugImageShow ? View.VISIBLE : View.GONE}"/>
+
+                    <ImageView
+                        android:id="@+id/imageViewInput"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:srcCompat="@drawable/ic_launcher_background"
+                        bindImageBitmap="@{viewModel.dataStreaming.inputImage}"
+                        android:visibility="@{viewModel.dataStreaming.debugImageShow ? View.VISIBLE : View.GONE}"/>/>
                 </LinearLayout>
 
                 <ListView

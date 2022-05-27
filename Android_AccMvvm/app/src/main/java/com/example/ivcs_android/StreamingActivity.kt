@@ -1,12 +1,15 @@
 package com.example.ivcs_android
 
 import android.R
+import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import android.widget.Switch
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.BindingAdapter
 import com.example.ivcs_android.databinding.ActivityStreamingBinding
 import com.example.ivcs_android.model.Datas
 import com.example.ivcs_android.viewModel.streaming.StreamingViewModel

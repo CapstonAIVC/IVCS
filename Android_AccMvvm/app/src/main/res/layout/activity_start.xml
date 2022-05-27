@@ -43,6 +43,7 @@
                 android:onClick="@{()->viewModel.btGoToAnalysisClicked()}"
                 android:text="Analysys"
                 android:textColor="#000000" />
+
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

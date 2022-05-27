@@ -2,11 +2,11 @@ package com.example.ivcs_android.viewModel.streaming
 
 import android.app.Application
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.View
 import android.widget.Switch
 import androidx.lifecycle.AndroidViewModel
-import com.example.ivcs_android.model.Consts
 import com.example.ivcs_android.model.DataStreaming
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
@@ -26,10 +26,10 @@ class StreamingViewModel(application: Application) : AndroidViewModel(applicatio
     init {
         bindForUrl()
         bindForSwitch()
-        bindchangeCount()
+        bindForChange()
     }
 
-    fun bindchangeCount() {
+    fun bindForChange() {
         dataStreaming.changeCountText
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -39,6 +39,12 @@ class StreamingViewModel(application: Application) : AndroidViewModel(applicatio
                 },
                 { Log.e("changeCountTextERR", it.message.toString()) }
             )
+//        dataStreaming.changeInput
+//            .subscribeOn(Schedulers.io())
+//            .map {  }
+//            .map {
+//                BitmapFactory.decodeByteArray(it, 0, it.length);
+//            }
     }
 
     fun bindForSwitch() {
@@ -65,11 +71,11 @@ class StreamingViewModel(application: Application) : AndroidViewModel(applicatio
                 },
                 { Log.e("countSubjectErr", it.message.toString()) }
             )
-        dataStreaming.densitySwitchSubject
+        dataStreaming.debugSwitchSubject
 //            .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 {
-                    dataStreaming.densityImageShow.value = it
+                    dataStreaming.debugImageShow.value = it
                 },
                 { Log.e("densitySubjectErr", it.message.toString()) }
             )
@@ -96,7 +102,7 @@ class StreamingViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun clickDensitySwitch(view: View) {
-        dataStreaming.densitySwitchSubject.onNext((view as Switch).isChecked)
+        dataStreaming.debugSwitchSubject.onNext((view as Switch).isChecked)
     }
 
 }
