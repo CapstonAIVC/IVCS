@@ -40,8 +40,8 @@ $.getJSON('http://119.207.210.53:7008/getUrl_web', function(data) {
         const li = document.createElement("li");
         li.className = "nav-item";
         li.setAttribute('value', i);
-        if(i==0) li.innerHTML = '<a class="nav-link active" id='+i+' data-toggle="tab" href="/business-1" role="tab">'+camera_json['cctvname'][i]+'</a>';
-        else li.innerHTML = '<a class="nav-link" id='+i+' data-toggle="tab" href="/business-1" role="tab">'+camera_json['cctvname'][i]+'</a>';
+        if(i==0) li.innerHTML = '<a class="nav-link active" id='+i+' data-toggle="tab" href="#business-1" role="tab">'+camera_json['cctvname'][i]+'</a>';
+        else li.innerHTML = '<a class="nav-link" id='+i+' data-toggle="tab" href="#business-1" role="tab">'+camera_json['cctvname'][i]+'</a>';
         camera_list.appendChild(li);
         li.addEventListener('click', function(){
             if(count_flag){
