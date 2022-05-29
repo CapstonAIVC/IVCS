@@ -195,7 +195,6 @@ class AnalyizeData():
         end_year, end_month, end_day = self.end_date.split('-')
         start_path = os.path.join(ROOT_PATH, self.cctvname, start_year, start_month, start_day)
         end_path = os.path.join(ROOT_PATH, self.cctvname, end_year, end_month, end_day)
-        print(start_path)
 
         for path in os.listdir(start_path):
             start_hour = int(self.start_hour.split(':')[0])
