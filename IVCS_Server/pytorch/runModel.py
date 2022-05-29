@@ -229,12 +229,14 @@ if __name__ == '__main__':
 
     ## index는 tensorList 안의 list에 이번에 교체할 위치이다.
     index = 0
+    flag = False
     while True:
         addFramesByTensor(index)
         if index == MAX_LEN-1:
             index = 0
         else:
             index += 1
+            flag = True
 
         input_img = []
         result = []
@@ -259,11 +261,22 @@ if __name__ == '__main__':
             density_pred, count_pred = model(X, mask=mask)
 
         # if flag and index == 0:
-        #     print(X[0,-1,:,:,:].shape)
         #     torchvision.utils.save_image(X[0,-1,:,:,:], './1.png')
         #     torchvision.utils.save_image(X[1,-1,:,:,:], './2.png')
-        #     torchvision.utils.save_image(density_pred[0,-1,:,:,:], './1_density.png')
-        #     torchvision.utils.save_image(density_pred[1,-1,:,:,:], './2_density.png')
+        #     torchvision.utils.save_image(X[0,-1,-1,:,:]*mask[0,-1,:,:,:], './1_masking.png')
+        #     torchvision.utils.save_image(X[1,-1,-1,:,:]*mask[1,-1,:,:,:], './2_masking.png')
+        #     torchvision.utils.save_image(density_pred[0,-1,:,:,:]*5, './1_density.png')
+        #     torchvision.utils.save_image(density_pred[1,-1,:,:,:]*5, './2_density.png')
+        #     ferret_1 = cv2.imread('./1_density.png')
+        #     HSV = cv2.cvtColor(ferret_1, cv2.COLOR_BGR2HSV)
+        #     highlight = cv2.bitwise_not(HSV)
+        #     cv2.imwrite('1_density_hsv.png',HSV)
+        #     cv2.imwrite('1_density_hl.png',highlight)
+        #     ferret_2 = cv2.imread('./2_density.png')
+        #     HSV = cv2.cvtColor(ferret_2, cv2.COLOR_BGR2HSV)
+        #     highlight = cv2.bitwise_not(HSV)
+        #     cv2.imwrite('2_density_hsv.png',HSV)
+        #     cv2.imwrite('2_density_hl.png',highlight)
         #     print(count_pred)
         #     break
         
@@ -271,7 +284,7 @@ if __name__ == '__main__':
             input_tmp = io.BytesIO()
             density_tmp = io.BytesIO()
             torchvision.utils.save_image(X[idx,-1,-1,:,:]*mask[idx,-1,:,:,:], input_tmp, format='png')
-            torchvision.utils.save_image(density_pred[idx,-1,:,:,:], density_tmp, format='png')
+            torchvision.utils.save_image(density_pred[idx,-1,:,:,:]*5, density_tmp, format='png')
             
             input_img.append(input_tmp.getvalue())
             result.append(count_pred.tolist()[idx][0])
@@ -281,6 +294,7 @@ if __name__ == '__main__':
         result_json = json.dumps(result)
 
         sio_saveData.emit('model_output', data=(result_json, input_img, density_result))
+        time.sleep(1)
         # sio_saveData.emit('model_output', result_json)
 
         # print(str(result[0])+"\n")

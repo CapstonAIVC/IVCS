@@ -122,7 +122,6 @@ def res_plot_png():
 
     task = AnalyizeData(measure_method, cctvname[int(cameraid)], start, end)
     result = task.run()
-    print(type(result.getvalue()))
 
     # move to beginning of file so `send_file()` it will read from start 
     result.seek(0)
