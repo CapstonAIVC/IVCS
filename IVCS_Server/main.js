@@ -8,7 +8,7 @@ const api_key = "94643db94d744a2a850cdf9663965164"
 
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
-app.use(express.static(__dirname + "./"))
+app.use(express.static(__dirname + "/"))
 // console.log(__dirname)
 // app.use("/", express.static('./'));
 
