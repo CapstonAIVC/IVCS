@@ -92,18 +92,17 @@ class ThreadedCamera(threading.Thread):
 
     def run(self):
         while True:
-            self.cap = cv2.VideoCapture(self.src)
-            if self.cap.isOpened():
-                (self.status, tmp) = self.cap.read()
+            # self.cap = cv2.VideoCapture(self.src)
+            # if self.cap.isOpened():
+            #     (self.status, tmp) = self.cap.read()
+            #     if self.status:
+            #         self.frame = tmp
+            # time.sleep(0.5)
+            if self.capture.isOpened():
+                (self.status, tmp) = self.capture.read()
                 if self.status:
                     self.frame = tmp
             time.sleep(0.5)
-            # if self.capture.isOpened():
-            #     (self.status, tmp) = self.capture.read()
-            #     if self.status:
-            #         self.frame = tmp
-            #     cv2.waitKey(2000)
-            # time.sleep(0.5)
 
     def get_frame(self):
         return self.frame
