@@ -114,7 +114,7 @@ def startCounting(sid, cctvIdx):
     # sio.emit('res_counting', str(round(latest[int(cctvIdx)[0]], 3)), sid)
     sio.emit('res_counting', data=(str(round(count[int(cctvIdx)])), str(input_img[int(cctvIdx)]), str(density[int(cctvIdx)])), room=sid)
     
-@app.route('/req_plot', methods=['POST'])
+@app.route('/req_plot', methods=['GET', 'POST'])
 def res_plot_png():
     global cctvname
 
