@@ -89,7 +89,7 @@ function req_counting_flag() {
 }
 
 let sendData = () => {
-    xhr.open("POST", "http://119.207.210.53:7009/req_plot", true);
+    xhr.open("POST", "http://119.207.210.53:4000/req_plot", true);
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
 
