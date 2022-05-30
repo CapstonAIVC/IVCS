@@ -270,7 +270,7 @@ if __name__ == '__main__':
             input_tmp = io.BytesIO()
             density_tmp = io.BytesIO()
             torchvision.utils.save_image(X[idx,-1,-1,:,:]*mask[idx,-1,:,:,:], input_tmp, format='png')
-            torchvision.utils.save_image(density_pred[idx,-1,:,:,:], density_tmp, format='png')
+            torchvision.utils.save_image(density_pred[idx,-1,:,:,:]*5, density_tmp, format='png')
             
             input_img.append(input_tmp.getvalue())
             result.append(count_pred.tolist()[idx][0])
