@@ -49,7 +49,9 @@ class StreamingViewModel(application: Application) : AndroidViewModel(applicatio
             }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { dataStreaming.inputImage.value = it },
+                {
+                    dataStreaming.inputImage.value = it
+                },
                 { Log.e("changeInputErr",it.message.toString()) }
             )
 
@@ -61,7 +63,9 @@ class StreamingViewModel(application: Application) : AndroidViewModel(applicatio
             }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { dataStreaming.densityImage.value = it },
+                {
+                    dataStreaming.densityImage.value = it
+                },
                 { Log.e("changeDensityErr",it.message.toString()) }
             )
     }
@@ -72,7 +76,7 @@ class StreamingViewModel(application: Application) : AndroidViewModel(applicatio
                 {
                     if (it) {
                         dataStreaming.textCountShow.value = true
-                        countData = Observable.interval(3000, TimeUnit.MILLISECONDS)
+                        countData = Observable.interval(1500, TimeUnit.MILLISECONDS)
                             .observeOn(Schedulers.io()) // 인터넷 처리를위한 스케쥴러 할당
                             .subscribe(
                                 {
@@ -123,6 +127,9 @@ class StreamingViewModel(application: Application) : AndroidViewModel(applicatio
     fun clickDensitySwitch(view: View) {
         if(dataStreaming.countSwitchSubject.value) {
             dataStreaming.debugSwitchSubject.onNext((view as Switch).isChecked)
+        }
+        else{
+            (view as Switch).isChecked = false
         }
     }
 

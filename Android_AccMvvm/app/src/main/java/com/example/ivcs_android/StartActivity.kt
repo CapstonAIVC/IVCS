@@ -4,11 +4,14 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import com.example.ivcs_android.databinding.ActivityStartBinding
 import com.example.ivcs_android.viewModel.StartViewModel
@@ -64,6 +67,18 @@ class StartActivity : AppCompatActivity() {
         }
         else{
             startBinding.viewModel?.let{ it.setInfo()}
+        }
+    }
+
+    object BindAdapter{
+        // xml에 바인딩 하기 위함
+        @BindingAdapter("bindImageBitmap")
+        @JvmStatic
+        fun loadImage(iv : ImageView, bitmap : Bitmap?) {
+            // bitmap이 null이 아닐때만 실행됨
+            bitmap?.let {
+                iv.setImageBitmap(it)
+            }
         }
     }
 }

@@ -42,8 +42,8 @@ class DataAnal(){
     var analType = Consts.hour
     var analName = ""
     var analIndex = 0
-    var startTimeInfo = arrayOf<Long>(2022,4,24,15)
-    var endTimeInfo = arrayOf<Long>(2022,4,24,16)
+    var startTimeInfo = arrayOf<Long>(2022,5,30,15)
+    var endTimeInfo = arrayOf<Long>(2022,5,30,17)
     var analImageHeight = 100
 //    var changeAnalInfoSubj : PublishSubject<AnalysisEvent> = PublishSubject.create()
 
