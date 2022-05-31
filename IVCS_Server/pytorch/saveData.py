@@ -114,7 +114,7 @@ def startCounting(sid, cctvIdx):
 #     # sio.emit('res_counting', str(round(latest[int(cctvIdx)[0]], 3)), sid)
 #     sio.emit('res_counting', data=(str(round(count[int(cctvIdx)])), str(input_img[int(cctvIdx)]), str(density[int(cctvIdx)])), room=sid)
     
-@app.route('/req_plot', methods=['POST'])
+@app.route('/req_plot', methods=['GET', 'POST'])
 def res_plot_png():
     global cctvname
 
@@ -218,7 +218,7 @@ class AnalyizeData():
 
         # 'Time' column value 중 'min-sec' 을 'year-month-day hour:min:sec'으로 바꾸기
         df['Time'] = df['Time'].apply(lambda x: year + '-' + month + '-' + day + ' ' + hour + ':' + x.split('-')[0] + ':' + x.split('-')[1])
-        df['Count'] = df['Count'].apply(lambda x: round(float(x.replace('[','').replace(']','')),3))
+        df['Count'] = df['Count'].apply(lambda x: round(float(str(x).replace('[','').replace(']','')),3))
         return df
 
 
