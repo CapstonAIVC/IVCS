@@ -69,7 +69,7 @@ trans = transforms.Compose([transforms.Resize((120,160)),
 #                 (self.status, tmp) = self.capture.read()
 #                 if self.status:
 #                     self.frame = tmp
-#             time.sleep(0.5)
+#                 time.sleep(0.5)
 
 #     def get_frame(self):
 #         return self.frame
@@ -87,26 +87,27 @@ class ThreadedCamera(threading.Thread):
         self.FPS = 1/self.capture.get(cv2.CAP_PROP_FPS)
         self.FPS_MS = int(self.FPS * 1000)
 
-        self.capture.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+        self.capture.set(cv2.CAP_PROP_BUFFERSIZE, 0)
         self.capture.set(cv2.CAP_PROP_FPS, self.FPS)
 
     def run(self):
         while True:
-            self.cap = cv2.VideoCapture(self.src)
-            if self.cap.isOpened():
-                (self.status, tmp) = self.cap.read()
-                if self.status:
-                    self.frame = tmp
-            time.sleep(0.5)
-            # if self.capture.isOpened():
-            #     (self.status, tmp) = self.capture.read()
+            # self.cap = cv2.VideoCapture(self.src)
+            # if self.cap.isOpened():
+            #     (self.status, tmp) = self.cap.read()
             #     if self.status:
             #         self.frame = tmp
-            #     cv2.waitKey(2000)
             # time.sleep(0.5)
+            if self.capture.isOpened():
+                self.status, tmp = self.capture.read()
+                if self.status:
+                    self.frame = tmp
+                else: break
+            # time.sleep(1)
 
     def get_frame(self):
         return self.frame
+
 
 def setmodel():
     # model = FCN_rLSTM(temporal=True, image_dim=(torch.zeros([120,160], dtype=torch.int32).shape))
@@ -133,14 +134,14 @@ def setInfo():
     
 def setStreaming():
     global cctvurl, cctvname
-    # for url in cctvurl:
-    #     streamingList.append(ThreadedCamera(url))
-    for idx, url in enumerate(cctvurl):
-        streamingList.append(ThreadedCamera(url, cctvname[idx]))
+    for url in cctvurl:
+        streamingList.append(ThreadedCamera(url))
+    # for idx, url in enumerate(cctvurl):
+    #     streamingList.append(ThreadedCamera(url, cctvname[idx]))
 
-        # Start frame retrieval thread
-        streamingList[idx].setDaemon(True)
-        streamingList[idx].start()
+    #     # Start frame retrieval thread
+    #     streamingList[idx].setDaemon(True)
+    #     streamingList[idx].start()
 
 def addFramesByTensor(index):
     global tensorList, TOTAL_CCTV_NUM, MAX_LEN
@@ -161,49 +162,6 @@ def popFrames():
 
     for i in range(0,TOTAL_CCTV_NUM):
         tensorList[i].pop(0)
-
-############################################################################################################
-# [경부선] 공세육교 24시간 데이터 수집을 위한 코드
-
-# async def main(model):
-#     mask = Image.open('./our_mask.png').convert('L')
-#     mask = np.array(mask)
-#     mask = torch.Tensor(mask)
-#     mask_tmp = torch.Tensor(mask)
-#     for i in range(4): mask = torch.cat((mask, mask_tmp), 0)
-#     mask = mask.unsqueeze(1)
-
-#     for i in range(5):
-#         addFramesByTensor(-1)
-
-#     ## index는 tensorList 안의 list에 이번에 교체할 위치이다.
-#     index = 0
-#     while True:
-#         addFramesByTensor(index)
-#         if index == 4:
-#             index = 0
-#         else:
-#             index += 1
-
-#         result = []
-#         for i in range(TOTAL_CCTV_NUM):
-#             ## queue 
-#             X = tensorList[i][index] ## 리스트 중 첫 프레임
-#             for j in range(index+1, 5): ## 두번째부터 4까지
-#                 X = torch.cat((X,tensorList[i][j]), 0)
-#             for j in range(0, index): ## 0부터 index까지
-#                 X = torch.cat((X,tensorList[i][j]), 0)
-
-#             with torch.no_grad():
-#                 density_pred, count_pred = model(X, mask=mask)
-            
-#             result.append(count_pred.tolist()[0])
-
-
-#         result_json = json.dumps(result)
-#         await sio_saveData.emit('model_output', result_json)
-
-#         print(str(result[0])+"\n")
 
 if __name__ == '__main__':
     setInfo()

@@ -211,7 +211,8 @@ class AnalyizeData():
 
         # 'Time' column value 중 'min-sec' 을 'year-month-day hour:min:sec'으로 바꾸기
         df['Time'] = df['Time'].apply(lambda x: year + '-' + month + '-' + day + ' ' + hour + ':' + x.split('-')[0] + ':' + x.split('-')[1])
-        df['Count'] = df['Count'].apply(lambda x: round(float(x.replace('[','').replace(']','')),3))
+        # df['Count'] = df['Count'].apply(lambda x: round(float(str(x).replace('[','').replace(']','')),3))
+        df['Count'] = df['Count'].apply(lambda x: round(float(x),3))
         return df
 
 
@@ -224,14 +225,31 @@ class AnalyizeData():
         df = pd.concat(df_list)
         return df
 
+    def make_x_y(self, df):
+        if self.measure == 'minute':
+            x = []
+            x_tmp = df['Time'].values[0].split['-'][1][:11]
+            min_tmp = int(df['Time'].values[0].split[':'][1].split[':'][0])
+            count_tmp = 0
+            for idx in range(df['Time'].values):
+                if int(df['Time'].values[idx].split[':'][1].split[':'][0]) < min_tmp+10:
+                    count_tmp += round(float(df['Count'][idx]))
+        elif self.measure == 'hour': x = list(set(x[5:13] for x in df['Time'].values))
+        else: x = x = list(set(x[5:10] for x in df['Time'].values))
+
+        return x, y
+
 
     def run(self):
         csv_path_list = self.get_csv_path_list()
         df = self.get_dataframe(csv_path_list)
         df = df.drop(['Unnamed: 0'], axis=1)
+
+        x, y = self.make_x_y(df)
         
         plt.figure(figsize=(15,5))
         plt.plot(df['Count'])
+        plt.xticks(rotation=45)
         
         img_buf = io.BytesIO()
         plt.savefig(img_buf, format='png')
