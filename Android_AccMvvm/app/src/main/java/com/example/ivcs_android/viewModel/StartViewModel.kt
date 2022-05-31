@@ -56,7 +56,6 @@ class StartViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             override fun onResponse(call: Call, response: Response) {
-                Log.e("fromMainServerLink",response.body!!.string())
                 var jsonObj = JSONObject(response.body!!.string())
                 var jsonArrCctvName = jsonObj.getJSONArray("cctvname")
                 var jsonArrUrl = jsonObj.getJSONArray("cctvurl")

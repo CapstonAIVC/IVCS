@@ -76,7 +76,7 @@ class StreamingViewModel(application: Application) : AndroidViewModel(applicatio
                 {
                     if (it) {
                         dataStreaming.textCountShow.value = true
-                        countData = Observable.interval(1500, TimeUnit.MILLISECONDS)
+                        countData = Observable.interval(5000, TimeUnit.MILLISECONDS)
                             .observeOn(Schedulers.io()) // 인터넷 처리를위한 스케쥴러 할당
                             .subscribe(
                                 {

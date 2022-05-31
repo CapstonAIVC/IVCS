@@ -11,7 +11,6 @@ from torchvision import transforms
 import numpy as np
 from PIL import Image
 import io
-import queue
 
 import socketio
 
@@ -52,7 +51,7 @@ class ThreadedCamera(threading.Thread):
         self.tmp = None
         self.th_name = th_name
         self.src = src
-        self.q = queue.Queue()
+        self.q = None
 
         self.capture = cv2.VideoCapture(self.src)
         self.FPS = 1/self.capture.get(cv2.CAP_PROP_FPS)
@@ -64,16 +63,13 @@ class ThreadedCamera(threading.Thread):
     def run(self):
         (self.status, tmp) = self.capture.read()
         self.frame = tmp
-        count = 5
-        while count > 0:
-            self.q.put(tmp)
-            count -= 1
+        self.q = [tmp,tmp,tmp,tmp,tmp]
         while True:
-            if self.capture.isOpened():
-                while self.status:
-                    (self.status, tmp) = self.capture.read()
-            self.frame = self.q.get()
-            self.q.put(tmp)
+            while self.status:
+                (self.status, tmp) = self.capture.read()
+            self.frame = self.q[0]
+            self.q.remove(0)
+            self.q.append(tmp)
             time.sleep(1)
 
     def get_frame(self):
