@@ -14,6 +14,7 @@ app.use(express.static(__dirname + "/"))
 
 information = ""
 information_client = ""
+information_android = ""
 
 app.get("/client", (req, res) => {
     res.render("client",{})
@@ -31,6 +32,9 @@ app.get("/getUrl_web", (req, res) => {
 })
 app.get("/getUrl_client", (req, res) => {
     res.send(information_client);
+})
+app.get("/getUrl_android", (req, res) => {
+    res.send(information_android);
 })
 
 //for test
@@ -91,6 +95,8 @@ server.listen(3000,()=>{
             getUrl_client_result.stderr.on('data', function(data) { console.log(data.toString()); });
             
             information_client = data.toString().split("\n")[0]
+            information_android = data.toString().split("\n")[0]
+            information_android.replaceAll("\'","\"")
             console.log(' The Client info is ready!!\n');
         });
     });
