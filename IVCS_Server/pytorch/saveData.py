@@ -187,6 +187,7 @@ class AnalyizeData():
         csv_path_list = self.get_csv_path_list()
         df = self.get_dataframe(csv_path_list)
         df = df.drop(['Unnamed: 0'], axis=1)
+        print(df)
         
         plt.figure(figsize=(15,5))
         plt.plot(df['Count'])
