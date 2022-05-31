@@ -230,7 +230,7 @@ local.properties
 
 # Created by git when using merge tools for conflicts
 *.BACKUP.*
-*.BASE.*
+# *.BASE.*
 *.LOCAL.*
 *.REMOTE.*
 *_BACKUP_*.txt
@@ -450,3 +450,6 @@ dist
 # All __pycache__ directories
 __pycache__/
 ./IVCS_Server/pytorch/__pycache__/model.cpython-38.pyc
+
+# model file
+*.pth

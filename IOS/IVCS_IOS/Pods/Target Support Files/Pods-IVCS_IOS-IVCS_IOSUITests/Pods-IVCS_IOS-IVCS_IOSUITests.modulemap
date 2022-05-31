@@ -1,6 +1,0 @@
-framework module Pods_IVCS_IOS_IVCS_IOSUITests {
-  umbrella header "Pods-IVCS_IOS-IVCS_IOSUITests-umbrella.h"
-
-  export *
-  module * { export * }
-}

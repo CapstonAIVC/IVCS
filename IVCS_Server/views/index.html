@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>AiVC</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="/views/assets/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="/views/assets/vendors/flag-icon-css/css/flag-icon.min.css">
+    <link rel="stylesheet" href="/views/assets/vendors/css/vendor.bundle.base.css">
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <link rel="stylesheet" href="/views/assets/vendors/font-awesome/css/font-awesome.min.css" />
+
+    <!-- Layout styles -->
+    <link rel="stylesheet" type="text/css" href="/views/assets/css/style.css">
+    <!-- End layout styles -->
+    <link rel="shortcut icon" href="/views/assets/images/favicon.png" />
+    <!-- jquery -->
+    <script src="/views/assets/vendors/jquery/jquery-3.6.0.min.js"></script>
+
+    <!-- Hls Player -->
+    <link href="https://vjs.zencdn.net/7.18.1/video-js.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+    <!-- custom javascript -->
+    <script defer src="/socket.io/socket.io.js"></script>
+    <script defer src="/views/javascripts/socket.js"></script>
+
+    </head>
+  <body>
+    <div class="container-scroller">
+      <!-- partial:partials/_navbar.html -->
+      <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+        <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+        </div>
+        <div class="navbar-menu-wrapper d-flex align-items-stretch">
+          <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+            <span class="mdi mdi-menu"></span>
+          </button>
+          <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+            <span class="mdi mdi-menu"></span>
+          </button>
+        </div>
+      </nav>
+      <!-- partial -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- partial:partials/_sidebar.html -->
+        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+          <ul class="nav">
+            <li class="nav-item nav-category">Main</li>
+            <li class="nav-item">
+              <a class="nav-link" href="/main">
+                <span class="icon-bg"><i class="mdi mdi-cube menu-icon"></i></span>
+                <span class="menu-title">Counting</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        <!-- partial -->
+        <div class="main-panel">
+          <div class="content-wrapper">
+            <div class="row" id="proBanner">
+              <div class="col-12">
+                <span class="d-flex align-items-center purchase-popup">
+                  <p>CCTV 영상이 궁금하다면? ITS 국가 교통 정보 센터 가기</p>
+                  <a href="https://github.com/BootstrapDash/ConnectPlusAdmin-Free-Bootstrap-Admin-Template" target="_blank" class="ml-auto download-button btn purchase-button">ITS 국가교통 정보 센터</a>
+                </span>
+              </div>
+            </div>
+            <div class="d-xl-flex justify-content-between align-items-start">
+              <h2 class="text-dark font-weight-bold mb-2"> 교통량 분석 </h2>
+              <div class="d-sm-flex justify-content-xl-between align-items-center mb-2">
+                
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="d-sm-flex justify-content-between align-items-center transaparent-tab-border">
+                  <ul class="nav nav-tabs tab-transparent" role="tablist" id="'camera_list"></ul>
+
+                  <div class="btn-group bg-white p-3 col-md-auto" role="group" aria-label="Basic example">
+                    <button type="button" class="btn btn-link py-0 border-right" name="play_button" onclick="get_camera_id()">실시간 영상 재생</button>
+                    <button type="button" class="btn btn-link py-1" name="count-camera-id" onclick="req_counting_flag()">분석 시작</button>
+                  </div>
+                  <div class="col-md-auto">
+                    <h6>분석 단위</h6>
+                    <select id="measure_unit">
+                        <option value="period">기간별</option>
+                        <option value="hour">시간별</option>
+                    </select>
+                  </div>
+                  <div class="input-daterange input-group col-sm-3">
+
+                      <h6>분석 시작 날짜 & 시간</h6>
+                      <input class="datepicker", id="start_date" name="start_date">
+                      <script>
+                        $(function () {
+                        $('.datepicker').datepicker();
+                        document.getElementById("start_date").value = $('input[name=start_date]').val()
+                        });
+                      </script>
+                      <select id="start_time" name="start_time">
+                        <script>
+                            var strHours = '';
+                            var time = '';
+                            
+                            for(var i = 0 ; i < 24; i++){
+                                if( i < 10){
+                                    time = '0'+ i;
+                                    strHours += '<option value="'+time+'">'+time+'시</option>';
+                                }else{
+                                    time = i;
+                                    strHours += '<option value="'+time+'">'+time+'시</option>';
+                                }
+                            }
+                          $("#start_time").html(strHours);
+                        </script>
+                      </select>
+
+                      <h6>분석 끝 날짜 & 시간</h6>
+                      <input class="datepicker" id="end_date" name="end_date">
+                      <script>
+                        $(function () {
+                        $('.datepicker').datepicker();
+                        document.getElementById("end_date").value = $('input[name=end_date]').val()
+                        });
+                      </script>
+                      <select id="end_time" name="end_time">
+                        <script>
+                            var strHours = '';
+                            var time = '';
+                            
+                            for(var i = 0 ; i < 24; i++){
+                                if( i < 10){
+                                    time = '0'+ i;
+                                    strHours += '<option value="'+time+'">'+time+'시</option>';
+                                }else{
+                                    time = i;
+                                    strHours += '<option value="'+time+'">'+time+'시</option>';
+                                }
+                            }
+                          $("#end_time").html(strHours);
+                        </script>
+                      </select>
+                  </div>
+                  <div class="btn-group bg-white p-3 col-md-auto" role="group" aria-label="Basic example">
+                    <button type="button" class="btn btn-link py-0 border-right" onclick="analysis()">분석 그래프 출력</button>
+                  </div>
+                </div>
+
+                <div class="tab-content tab-transparent-content">
+                  <div class="tab-pane fade show active" id="business-1" role="tabpanel" aria-labelledby="business-tab">
+                    <div class="row">
+
+                      <div class="col-sm-6 grid-margin stretch-card">
+                        <div class="card card-danger-gradient">
+                          <div class="card-body mb-4">
+                            <!-- <canvas id="account-retension"></canvas> -->
+                            <video autoplay="true" id="hlsPlayEx" muted="muted" width="100%"><source id="video"></video>
+                          </div>
+                          <div class="card-body bg-white pt-4">
+                            <div class="row pt-4">
+                              <div class="col-sm-12">
+                                <div class="text-center border-md-0">
+                                  <h4>Predicted Count</h4>
+                                  <h1 class="text-dark font-weight-bold mb-md-3"> <span class="counting_text">---</span> </h1>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col">
+
+                        <div class="col-sm-12 grid-margin">
+                          <div class="card" style="height:225px">
+                            <div class="card-header" style="text-align:center">
+                              <h2 class="card-title" style="margin-bottom:0px; font-size:1.3rem">Screen Shot</h2>
+                            </div>
+                            <div class="" id="screen_shot_div" style="text-align:center">
+                              <img id="screen_shot_result" src="" width="40%" style="margin-top:0.3rem">
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-sm-12 grid-margin">
+                          <div class="card" style="height:225px">
+                            <div class="card-header" style="text-align:center">
+                              <h2 class="card-title" style="margin-bottom:0px; font-size:1.3rem">Density Map</h2>
+                            </div>
+                            <div class="" id="density_map_div" style="text-align:center">
+                              <img id="density_map_result" src="" width="40%" style="margin-top:0.3rem">
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+                      
+                      <div class="col-sm-12  grid-margin stretch-card">
+                        <div class="card">
+                          <div class="card-body">
+                            <div class="d-xl-flex justify-content-between mb-2">
+                              <h4 class="card-title">Vehicle Count Analytics</h4>
+                              <div class="graph-custom-legend primary-dot" id="pageViewAnalyticLengend"></div>
+                            </div>
+                            <!-- <canvas id="page-view-analytic"></canvas> -->
+                            <div class="" id="analysis_div">
+                              <img id="analysis_result" src="" width="100%">
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <!-- content-wrapper ends -->
+          <!-- partial:partials/_footer.html -->
+          <footer class="footer">
+            <div class="footer-inner-wraper">
+              <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                <!-- <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © bootstrapdash.com 2020</span> -->
+                <!-- <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Free <a href="https://www.bootstrapdash.com/" target="_blank">Bootstrap dashboard templates</a> from Bootstrapdash.com</span> -->
+              </div>
+            </div>
+          </footer>
+          <!-- partial -->
+        </div>
+        <!-- main-panel ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+    <!-- container-scroller -->
+    <!-- plugins:js -->
+    <script src="/views/assets/vendors/js/vendor.bundle.base.js"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page -->
+    <script src="/views/assets/vendors/chart.js/Chart.min.js"></script>
+    <script src="/views/assets/vendors/jquery-circle-progress/js/circle-progress.min.js"></script>
+    <!-- End plugin js for this page -->
+    <!-- inject:js -->
+    <script src="/views/assets/js/off-canvas.js"></script>
+    <script src="/views/assets/js/hoverable-collapse.js"></script>
+    <script src="/views/assets/js/misc.js"></script>
+    <!-- endinject -->
+    <!-- Custom js for this page -->
+    <script src="/views/assets/js/dashboard.js"></script>
+    <!-- End custom js for this page -->
+  </body>
+
+  <!-- bootstrap-datapicker -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" integrity="sha512-uto9mlQzrs59VwILcLiRYeLKPPbS/bT71da/OEBYEwcdNUk8jYIy+D176RYoop1Da+f9mvkYrmj5MCLZWEtQuA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" integrity="sha512-aOG0c6nPNzGk+5zjwyJaoRUgCdOrfSDhmMID2u4+OIslr0GjpLKo7Xm0Ao3xmpM4T8AmIouRkqwj1nrdVsLKEQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script>
+    $.datepicker.setDefaults({
+        dateFormat: 'yy-mm-dd',
+        prevText: '이전 달',
+        nextText: '다음 달',
+        monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+        monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+        dayNames: ['일', '월', '화', '수', '목', '금', '토'],
+        dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
+        dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+        showMonthAfterYear: true,
+        yearSuffix: '년'
+      });
+  </script>
+</html>

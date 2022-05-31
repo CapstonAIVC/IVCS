@@ -13,7 +13,7 @@ import threading
 import socketio
 import eventlet
 import eventlet.wsgi
-from flask import Flask, request, Response, jsonify
+from flask import Flask, request, send_file
 from flask_cors import CORS
 
 import pandas as pd
@@ -21,9 +21,6 @@ import matplotlib.pyplot as plt
 import matplotlib
 import io
 
-# app = Flask(__name__)
-# socketio = SocketIO(app)
-# sio = socketio.Server(cors_allowed_origins='*', async_mode='threading')
 sio = socketio.Server(cors_allowed_origins='*')
 app = Flask(__name__)
 CORS(app, resource={r"/req_plot":{"origins":"*"}})
@@ -37,15 +34,43 @@ total_info = eval(json.loads(response.text))
 cctvname = total_info['cctvname']
 data = {}
 latest = [-1,-1,-1,-1,-1]
+count = [-1,-1,-1,-1,-1]
+input_img = [-1,-1,-1,-1,-1]
+density = [-1,-1,-1,-1,-1]
 
 # time_tmp = -1 # 이전 시간 정보 저장
 time_tmp = datetime.now(timezone("Asia/Seoul"))
 
+# @sio.on('model_output')
+# def get_data(sid, output):
+#     global time_tmp, data, latest, cctvname
+#     output = json.loads(output)
+#     print(output)
+#     current_time = datetime.now(timezone("Asia/Seoul"))
+
+#     # if time_tmp.minute != current_time.minute: #테스트를 위한 1분 간격 저장
+#     if time_tmp.hour != current_time.hour: #1시간 간격 데이터  저저장
+#         time_tmp = current_time
+#         save_data = copy.deepcopy(data)
+#         for cctv in data.keys(): data[cctv]=[]
+#         saveThread=SaveCSV(save_data, time_tmp)
+#         saveThread.start()
+    
+#     time_info = str(current_time.minute) + '-' + str(current_time.second)
+
+#     tmp = []
+#     for idx, cctv in enumerate(cctvname):
+#         data[cctv].append([time_info, output[idx]])
+#         tmp.append(output[idx])
+#     latest = tmp
+
 @sio.on('model_output')
-def get_data(sid, output):
-    global time_tmp, data, latest, cctvname
-    output = json.loads(output)
-    print(output)
+def get_data(sid, count_result_json, input_img_result, density_result):
+    global time_tmp, data, count, input_img, density
+    count_result = json.loads(count_result_json)
+    # input_img_result = json.loads(input_img_result_json)
+    # density_result = json.loads(density_result_json)
+    print(count_result)
     current_time = datetime.now(timezone("Asia/Seoul"))
 
     # if time_tmp.minute != current_time.minute: #테스트를 위한 1분 간격 저장
@@ -55,25 +80,40 @@ def get_data(sid, output):
         for cctv in data.keys(): data[cctv]=[]
         saveThread=SaveCSV(save_data, time_tmp)
         saveThread.start()
-        
-        
     
     time_info = str(current_time.minute) + '-' + str(current_time.second)
 
-    tmp = []
+    count_tmp = []
+    input_img_tmp = []
+    density_tmp = []
     for idx, cctv in enumerate(cctvname):
-        data[cctv].append([time_info, output[idx]])
-        tmp.append(output[idx])
-        break
-        # data[cctv].append([time_info, output])
-        # tmp.append(output)
-    latest = tmp
+        data[cctv].append([time_info, count_result[idx]])
+        count_tmp.append(count_result[idx])
+        input_img_tmp.append(input_img_result[idx])
+        density_tmp.append(density_result[idx])
 
+    count = count_tmp
+    input_img = input_img_tmp
+    density = density_tmp
+
+# @sio.on('req_counting')
+# def startCounting(sid, cctvIdx):
+#     global count, input_img, density
+#     # sio.emit('res_counting', str(round(latest[int(cctvIdx)[0]], 3)), sid)
+#     sio.emit('res_counting', str(round(count[int(cctvIdx)])), sid)
+
+@sio.on('req_counting')
+def startCounting(sid, cctvIdx):
+    global count, input_img, density
+    # sio.emit('res_counting', str(round(latest[int(cctvIdx)[0]], 3)), sid)
+    sio.emit('res_counting', data=(str(round(count[int(cctvIdx)])), input_img[int(cctvIdx)], density[int(cctvIdx)]), room=sid)
+    
 @app.route('/req_plot', methods=['POST'])
 def res_plot_png():
     global cctvname
 
     params = request.get_json()
+    # print(params)
 
     measure_method = params['measure_method']
     cameraid = params['cameraid']
@@ -83,9 +123,10 @@ def res_plot_png():
     task = AnalyizeData(measure_method, cctvname[int(cameraid)], start, end)
     result = task.run()
 
-    print(result.getvalue())
+    # move to beginning of file so `send_file()` it will read from start 
+    result.seek(0)
 
-    return "result.getvalue()"
+    return send_file(result, mimetype='image/png')
 
 # cctv ID에 따른 저장 경로 생성
 def make_cctv_dir():
@@ -123,6 +164,7 @@ class SaveCSV(threading.Thread):
             self.make_dir(cctv)
 
             df = pd.DataFrame( self.data[cctv], columns = ['Time', 'Count'] )
+            print(df)
 
             df.to_csv(ROOT_PATH+'/'+cctv+'/'+self.year+'/'+self.month+'/'+self.day+'/'+self.hour+'.csv', mode='w')
 
@@ -197,12 +239,9 @@ class AnalyizeData():
 
         return img_buf
 
-        # print(img_buf.getvalue())
-
         
 
 if __name__ == "__main__":
-    # if time_tmp == -1: time_tmp = datetime.now(timezone("Asia/Seoul"))
     if not os.path.isdir(ROOT_PATH):
         os.mkdir(ROOT_PATH)
     make_cctv_dir()
@@ -214,5 +253,4 @@ if __name__ == "__main__":
 
     # deploy as an eventlet WSGI server
     eventlet.wsgi.server(eventlet.listen(('', PORT)), app)
-    # socketio.run(app, debug=True, host=HOST, port=PORT)
 

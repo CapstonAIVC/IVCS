@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    
+    <data>
+        <variable
+            name="Frag"
+            type="com.example.ivcs_android.viewModel.analysis.CctvPickDialogFragment" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ListView
+            android:id="@+id/listViewCctvName"
+            android:layout_width="wrap_content"
+            android:layout_height="300dp"
+            android:layout_margin="3dp"
+            />
+
+        <TextView
+            android:id="@+id/textSelected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:text="@{Frag.selectedText}"
+            android:textColor="#000000"
+            android:textSize="20dp" />
+
+        <Button
+            android:id="@+id/btConfirmCctv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_margin="3dp"
+            android:onClick="@{(view)->Frag.clickConfirm(view)}"
+            android:text="확인"
+            android:textColor="#FFFFFF" />
+    </LinearLayout>
+</layout>
