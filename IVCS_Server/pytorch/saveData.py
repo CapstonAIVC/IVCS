@@ -211,7 +211,7 @@ class AnalyizeData():
 
         # 'Time' column value 중 'min-sec' 을 'year-month-day hour:min:sec'으로 바꾸기
         df['Time'] = df['Time'].apply(lambda x: year + '-' + month + '-' + day + ' ' + hour + ':' + x.split('-')[0] + ':' + x.split('-')[1])
-        df['Count'] = df['Count'].apply(lambda x: round(float(x.replace('[','').replace(']','')),3))
+        df['Count'] = df['Count'].apply(lambda x: round(float(str(x).replace('[','').replace(']','')),3))
         return df
 
 
@@ -229,6 +229,7 @@ class AnalyizeData():
         csv_path_list = self.get_csv_path_list()
         df = self.get_dataframe(csv_path_list)
         df = df.drop(['Unnamed: 0'], axis=1)
+
         
         plt.figure(figsize=(15,5))
         plt.plot(df['Count'])
