@@ -99,7 +99,7 @@ class ThreadedCamera(threading.Thread):
         while True:
             if self.capture.isOpened():
                 self.status, tmp = self.capture.read()
-            count = self.capture.get(cv2.CAP_PROP_FPS)
+            count = 100
             print(self.th_name)
             while count > 0:
                 (self.status, f) = self.capture.read()
