@@ -112,6 +112,9 @@ class ThreadedCamera(threading.Thread):
             q.append(tmp2)
             time.sleep(1)
 
+    def get_frame(self):
+        return self.frame
+
 def setmodel():
     # model = FCN_rLSTM(temporal=True, image_dim=(torch.zeros([120,160], dtype=torch.int32).shape))
     model = FCN_BLA(FCN, Encoder, Decoder, image_dim=[120,160])
