@@ -42,37 +42,6 @@ trans = transforms.Compose([transforms.Resize((120,160)),
                         transforms.ToTensor(),
                         ])
 
-# class ThreadedCamera(object):
-#     def __init__(self, src=0):
-#         self.frame = None
-#         self.status = None
-#         self.tmp = None
-
-
-#         self.capture = cv2.VideoCapture(src)
-#         # FPS = 1/X
-#         # X = desired FPS
-#         self.FPS = 1/self.capture.get(cv2.CAP_PROP_FPS)
-#         self.FPS_MS = int(self.FPS * 1000)
-
-#         self.capture.set(cv2.CAP_PROP_BUFFERSIZE, 2)
-#         self.capture.set(cv2.CAP_PROP_FPS, self.FPS)
-
-#         # Start frame retrieval thread
-#         self.thread = Thread(target=self.update, args=())
-#         self.thread.daemon = True
-#         self.thread.start()
-
-#     def update(self):
-#         while True:
-#             if self.capture.isOpened():
-#                 (self.status, tmp) = self.capture.read()
-#                 if self.status:
-#                     self.frame = tmp
-#                 time.sleep(0.5)
-
-#     def get_frame(self):
-#         return self.frame
 
 class ThreadedCamera(threading.Thread):
     def __init__(self, src, th_name):
@@ -82,28 +51,64 @@ class ThreadedCamera(threading.Thread):
         self.tmp = None
         self.th_name = th_name
         self.src = src
+        self.tmp = None
 
         self.capture = cv2.VideoCapture(self.src)
         self.FPS = 1/self.capture.get(cv2.CAP_PROP_FPS)
         self.FPS_MS = int(self.FPS * 1000)
 
-        self.capture.set(cv2.CAP_PROP_BUFFERSIZE, 0)
-        self.capture.set(cv2.CAP_PROP_FPS, self.FPS)
+        self.capture.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+        # self.capture.set(cv2.CAP_PROP_FPS, self.FPS)
+
+    # def run(self):
+    #     (self.status, tmp) = self.capture.read()
+    #     count = 4
+    #     while count > 0:
+    #         self.q.put(tmp)
+    #         count -= 1
+    #     while True:
+    #         # self.cap = cv2.VideoCapture(self.src)
+    #         # if self.cap.isOpened():
+    #         #     (self.status, tmp) = self.cap.read()
+    #         #     if self.status:
+    #         #         self.frame = tmp
+    #         # time.sleep(1)
+    #         # if self.capture.isOpened():
+    #         #     (self.status, tmp) = self.capture.read()
+    #         #     if self.status:
+    #         #         self.frame = tmp
+    #         # time.sleep(0.5)
+    #         while True:
+    #             (self.status, tmp) = self.capture.read()
+    #             if self.status:
+    #                 self.frame = tmp
+    #             else:
+    #                 break
+    #         time.sleep(1)
+
+    # def get_frame(self):
+    #     self.q.put(self.frame)
+    #     return self.q.get()
 
     def run(self):
+        (self.status, tmp) = self.capture.read()
+        self.frame = tmp
+        q = []
+        for _ in range(5): q.append(self.frame)
+        tmp2 = None
         while True:
-            # self.cap = cv2.VideoCapture(self.src)
-            # if self.cap.isOpened():
-            #     (self.status, tmp) = self.cap.read()
-            #     if self.status:
-            #         self.frame = tmp
-            # time.sleep(0.5)
-            if self.capture.isOpened():
-                self.status, tmp = self.capture.read()
+            count = 100
+            print(self.th_name)
+            while count > 0:
+                (self.status, f) = self.capture.read()
                 if self.status:
-                    self.frame = tmp
-                else: break
-            # time.sleep(1)
+                    tmp2 = f
+                else:
+                    break
+                count -= 1
+            self.frame = q.pop(0)
+            q.append(tmp2)
+            time.sleep(1)
 
     def get_frame(self):
         return self.frame
@@ -134,14 +139,14 @@ def setInfo():
     
 def setStreaming():
     global cctvurl, cctvname
-    for url in cctvurl:
-        streamingList.append(ThreadedCamera(url))
-    # for idx, url in enumerate(cctvurl):
-    #     streamingList.append(ThreadedCamera(url, cctvname[idx]))
+    # for url in cctvurl:
+    #     streamingList.append(ThreadedCamera(url))
+    for idx, url in enumerate(cctvurl):
+        streamingList.append(ThreadedCamera(url, cctvname[idx]))
 
-    #     # Start frame retrieval thread
-    #     streamingList[idx].setDaemon(True)
-    #     streamingList[idx].start()
+        # Start frame retrieval thread
+        streamingList[idx].setDaemon(True)
+        streamingList[idx].start()
 
 def addFramesByTensor(index):
     global tensorList, TOTAL_CCTV_NUM, MAX_LEN
@@ -253,7 +258,3 @@ if __name__ == '__main__':
 
         sio_saveData.emit('model_output', data=(result_json, input_img, density_result))
         time.sleep(1)
-        # sio_saveData.emit('model_output', result_json)
-
-        # print(str(result[0])+"\n")
-############################################################################################################

@@ -226,8 +226,9 @@ class AnalyizeData():
         return df
 
     def make_x_y(self, df):
+        y=[]
+        x = []
         if self.measure == 'minute':
-            x = []
             x_tmp = df['Time'].values[0].split['-'][1][:11]
             min_tmp = int(df['Time'].values[0].split[':'][1].split[':'][0])
             count_tmp = 0
