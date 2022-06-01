@@ -77,6 +77,7 @@ trans = transforms.Compose([transforms.Resize((120,160)),
 
 class ThreadedCamera(threading.Thread):
     def __init__(self, src, th_name):
+        threading.Thread.__init__(self)
         self.tmp = None
         self.th_name = th_name
         self.src = src
