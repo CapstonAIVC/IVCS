@@ -43,37 +43,73 @@ trans = transforms.Compose([transforms.Resize((120,160)),
                         ])
 
 
+# class ThreadedCamera(threading.Thread):
+#     def __init__(self, src, th_name):
+#         threading.Thread.__init__(self)
+#         self.frame = None
+#         self.status = None
+#         self.tmp = None
+#         self.th_name = th_name
+#         self.src = src
+#         self.q = None
+
+#         self.capture = cv2.VideoCapture(self.src)
+#         self.FPS = 1/self.capture.get(cv2.CAP_PROP_FPS)
+#         self.FPS_MS = int(self.FPS * 1000)
+
+#         self.capture.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+#         self.capture.set(cv2.CAP_PROP_FPS, self.FPS)
+
+#     def run(self):
+#         (self.status, tmp) = self.capture.read()
+#         self.frame = tmp
+#         self.q = [tmp,tmp,tmp,tmp,tmp]
+#         while True:
+#             while self.status:
+#                 (self.status, tmp) = self.capture.read()
+#             self.frame = self.q[0]
+#             self.q.remove(0)
+#             self.q.append(tmp)
+#             time.sleep(1)
+
+#     def get_frame(self):
+#         return self.frame
+
 class ThreadedCamera(threading.Thread):
     def __init__(self, src, th_name):
-        threading.Thread.__init__(self)
-        self.frame = None
-        self.status = None
         self.tmp = None
         self.th_name = th_name
         self.src = src
-        self.q = None
+        self.tmp = None
 
         self.capture = cv2.VideoCapture(self.src)
         self.FPS = 1/self.capture.get(cv2.CAP_PROP_FPS)
         self.FPS_MS = int(self.FPS * 1000)
 
-        self.capture.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+        self.capture.set(cv2.CAP_PROP_BUFFERSIZE, 0)
         self.capture.set(cv2.CAP_PROP_FPS, self.FPS)
+        self.capture.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
     def run(self):
         (self.status, tmp) = self.capture.read()
         self.frame = tmp
-        self.q = [tmp,tmp,tmp,tmp,tmp]
+        q = []
+        for _ in range(5): q.append(self.frame)
         while True:
-            while self.status:
-                (self.status, tmp) = self.capture.read()
-            self.frame = self.q[0]
-            self.q.remove(0)
-            self.q.append(tmp)
+            if self.capture.isOpened():
+                self.status, tmp = self.capture.read()
+            count = self.capture.get(cv2.CAP_PROP_FPS)
+            print(self.th_name)
+            while count > 0:
+                (self.status, f) = self.capture.read()
+                if self.status:
+                    tmp2 = f
+                else:
+                    break
+                count -= 1
+            self.frame = q.pop(0)
+            q.append(tmp2)
             time.sleep(1)
-
-    def get_frame(self):
-        return self.frame
 
 def setmodel():
     # model = FCN_rLSTM(temporal=True, image_dim=(torch.zeros([120,160], dtype=torch.int32).shape))
@@ -206,7 +242,3 @@ if __name__ == '__main__':
 
         sio_saveData.emit('model_output', data=(result_json, input_img, density_result))
         time.sleep(1)
-        # sio_saveData.emit('model_output', result_json)
-
-        # print(str(result[0])+"\n")
-############################################################################################################
