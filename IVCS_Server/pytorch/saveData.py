@@ -17,9 +17,11 @@ from flask import Flask, request, send_file
 from flask_cors import CORS
 
 import pandas as pd
+import io
+
 import matplotlib.pyplot as plt
 import matplotlib
-import io
+
 
 sio = socketio.Server(cors_allowed_origins='*')
 app = Flask(__name__)
@@ -32,6 +34,8 @@ ROOT_PATH = './DATA'
 response = requests.get('http://localhost:3000/getUrl')
 total_info = eval(json.loads(response.text))
 cctvname = total_info['cctvname']
+# test
+# cctvname = ['[경부선]판교1', '[남해선]초전2교']
 data = {}
 latest = [-1,-1,-1,-1,-1]
 count = [-1,-1,-1,-1,-1]
@@ -73,7 +77,6 @@ def get_data(sid, count_result_json, input_img_result, density_result):
     print(count_result)
     current_time = datetime.now(timezone("Asia/Seoul"))
 
-    # if time_tmp.minute != current_time.minute: #테스트를 위한 1분 간격 저장
     if time_tmp.hour != current_time.hour: #1시간 간격 데이터  저저장
         time_tmp = current_time
         save_data = copy.deepcopy(data)
@@ -96,12 +99,6 @@ def get_data(sid, count_result_json, input_img_result, density_result):
     input_img = input_img_tmp
     density = density_tmp
 
-# @sio.on('req_counting')
-# def startCounting(sid, cctvIdx):
-#     global count, input_img, density
-#     # sio.emit('res_counting', str(round(latest[int(cctvIdx)[0]], 3)), sid)
-#     sio.emit('res_counting', str(round(count[int(cctvIdx)])), sid)
-
 @sio.on('req_counting')
 def startCounting(sid, cctvIdx):
     global count, input_img, density
@@ -111,14 +108,18 @@ def startCounting(sid, cctvIdx):
 @app.route('/req_plot', methods=['POST'])
 def res_plot_png():
     global cctvname
-
     params = request.get_json()
-    # print(params)
 
     measure_method = params['measure_method']
     cameraid = params['cameraid']
     start = params['start']
     end = params['end']
+
+    #test
+    # measure_method = 'minute'
+    # cameraid = '1'
+    # start = '2022-05-30_15'
+    # end = '2022-05-30_17'
 
     task = AnalyizeData(measure_method, cctvname[int(cameraid)], start, end)
     result = task.run()
@@ -168,10 +169,8 @@ class SaveCSV(threading.Thread):
 
             df.to_csv(ROOT_PATH+'/'+cctv+'/'+self.year+'/'+self.month+'/'+self.day+'/'+self.hour+'.csv', mode='w')
 
-# class AnalyizeData(threading.Thread):
 class AnalyizeData():
     def __init__(self, measure, cctvname, start_time, end_time):
-        # threading.Thread.__init__(self)
         self.measure = measure
         self.cctvname = cctvname
         self.start_time = start_time
@@ -189,16 +188,29 @@ class AnalyizeData():
         start_path = os.path.join(ROOT_PATH, self.cctvname, start_year, start_month, start_day)
         end_path = os.path.join(ROOT_PATH, self.cctvname, end_year, end_month, end_day)
 
-        for path in os.listdir(start_path):
-            start_hour = int(self.start_hour.split(':')[0])
-            if path.split('.')[-1] == 'csv' and int(path.split('.')[0]) >= start_hour:
-                csv_path_list.append(os.path.join(start_path, path))
+        start_hour = int(self.start_hour.split(':')[0])
+        end_hour = int(self.end_hour.split(':')[0])
 
+        if self.start_date == self.end_date:
+            for path in os.listdir(start_path):
+                path_hour = int(path.split('.')[0])
+                if path.split('.')[-1] == 'csv' and path_hour >= start_hour and path_hour <= end_hour:
+                    csv_path_list.append(os.path.join(start_path, path))
+        else:
+            for path in os.listdir(start_path):
+                path_hour = int(path.split('.')[0])
+                if path.split('.')[-1] == 'csv' and path_hour >= start_hour:
+                    csv_path_list.append(os.path.join(start_path, path))
 
-        for path in os.listdir(end_path):
-            end_hour = int(self.end_hour.split(':')[0])
-            if path.split('.')[-1] == 'csv' and int(path.split('.')[0]) < end_hour:
-                csv_path_list.append(os.path.join(end_path, path))
+            for inc in range(int(end_day)-int(start_day)):
+                mid_path = os.path.join(ROOT_PATH, self.cctvname, start_year, start_month, str(int(start_day)+inc+1))
+                for path in os.listdir(mid_path):
+                    if path.split('.')[-1] == 'csv': csv_path_list.append(os.path.join(mid_path, path))
+
+            for path in os.listdir(end_path):
+                path_hour = int(path.split('.')[0])
+                if path.split('.')[-1] == 'csv' and path_hour <= end_hour:
+                    csv_path_list.append(os.path.join(end_path, path))
 
         csv_path_list.sort()
         return csv_path_list
@@ -213,8 +225,8 @@ class AnalyizeData():
         df['Time'] = df['Time'].apply(lambda x: year + '-' + month + '-' + day + ' ' + hour + ':' + x.split('-')[0] + ':' + x.split('-')[1])
         # df['Count'] = df['Count'].apply(lambda x: round(float(str(x).replace('[','').replace(']','')),3))
         df['Count'] = df['Count'].apply(lambda x: round(float(x),3))
-        return df
 
+        return df
 
     # concat all csv file from csv_path into one dataframe by using csv_preprocess
     def get_dataframe(self, csv_path_list):
@@ -226,17 +238,57 @@ class AnalyizeData():
         return df
 
     def make_x_y(self, df):
-        y=[]
-        x = []
+        y = []
         if self.measure == 'minute':
-            x_tmp = df['Time'].values[0].split['-'][1][:11]
-            min_tmp = int(df['Time'].values[0].split[':'][1].split[':'][0])
+            x = []
+            x_tmp = df['Time'].values[0].split('-', maxsplit=1)[1].split(':')[0]+':'+df['Time'].values[0].split(":")[1]
             count_tmp = 0
-            for idx in range(df['Time'].values):
-                if int(df['Time'].values[idx].split[':'][1].split[':'][0]) < min_tmp+10:
-                    count_tmp += round(float(df['Count'][idx]))
-        elif self.measure == 'hour': x = list(set(x[5:13] for x in df['Time'].values))
-        else: x = x = list(set(x[5:10] for x in df['Time'].values))
+            count_tmp_len = 0
+            for idx, time_value in enumerate(df['Time'].values):
+                if int(time_value.split(":")[1]) % 10 != 0 or x_tmp == time_value.split('-', maxsplit=1)[1].split(':')[0]+':'+time_value.split(":")[1]:
+                    count_tmp += round(float(df['Count'].values[idx]))
+                    count_tmp_len += 1
+                else:
+                    x.append(x_tmp)
+                    y.append(round(count_tmp/count_tmp_len, 2))
+                    x_tmp = time_value.split('-', maxsplit=1)[1].split(':')[0]+':'+time_value.split(":")[1]
+                    count_tmp = round(float(df['Count'].values[idx]))
+                    count_tmp_len = 1
+            x.append(x_tmp)
+        elif self.measure == 'hour':
+            x = list(set(x.split('-', maxsplit=1)[1].split(':')[0] for x in df['Time'].values))
+            x.sort()
+
+            x_tmp = df['Time'].values[0].split('-', maxsplit=1)[1].split(':')[0]
+            count_tmp = 0
+            count_tmp_len = 0
+            for idx, time_value in enumerate(df['Time'].values):
+                if x_tmp == time_value.split('-', maxsplit=1)[1].split(':')[0]:
+                    count_tmp += round(float(df['Count'].values[idx]))
+                    count_tmp_len += 1
+                else:
+                    y.append(round(count_tmp/count_tmp_len, 2))
+                    x_tmp = time_value.split('-', maxsplit=1)[1].split(':')[0]
+                    count_tmp = round(float(df['Count'].values[idx]))
+                    count_tmp_len = 1
+        else:
+            x = (list(set(x.split('-', maxsplit=1)[1].split(' ')[0] for x in df['Time'].values)))
+            x.sort()
+
+            x_tmp = df['Time'].values[0].split('-', maxsplit=1)[1].split(' ')[0]
+            count_tmp = 0
+            count_tmp_len = 0
+            for idx, time_value in enumerate(df['Time'].values):
+                if x_tmp == time_value.split('-', maxsplit=1)[1].split(' ')[0]:
+                    count_tmp += round(float(df['Count'].values[idx]))
+                    count_tmp_len += 1
+                else:
+                    y.append(round(count_tmp/count_tmp_len, 2))
+                    x_tmp = time_value.split('-', maxsplit=1)[1].split(' ')[0]
+                    count_tmp = round(float(df['Count'].values[idx]))
+                    count_tmp_len = 1
+
+        y.append(round(count_tmp/count_tmp_len, 2))
 
         return x, y
 
@@ -247,10 +299,17 @@ class AnalyizeData():
         df = df.drop(['Unnamed: 0'], axis=1)
 
         x, y = self.make_x_y(df)
+
+        if self.measure=='minute': my_label = 'Traffic per 10 Minutes'
+        elif self.measure=='hour': my_label = 'Traffic per 1 Hour'
+        else: my_label = 'Traffic per 1 Day'
         
         plt.figure(figsize=(15,5))
-        plt.plot(df['Count'])
-        plt.xticks(rotation=45)
+        plt.plot(x, y, color='C1', label=my_label)
+        plt.scatter(x, y, color = 'C1', s = 50)
+        plt.legend(loc='upper right', ncol=1)
+        plt.xticks(rotation=20)
+        plt.grid()
         
         img_buf = io.BytesIO()
         plt.savefig(img_buf, format='png')
