@@ -54,9 +54,12 @@ class ThreadedCamera(threading.Thread):
         self.frame = None
         self.status = None
         self.th_name = th_name
-        self.src = src
         self.url_idx = url_idx
         self.flag = 2
+        self.origin_src = src
+
+        response=requests.get(self.origin_src)
+        self.src = response.url
 
         self.capture = cv2.VideoCapture(self.src)
         self.FPS = 1/self.capture.get(cv2.CAP_PROP_FPS)
@@ -122,10 +125,14 @@ class ThreadedCamera(threading.Thread):
         return self.frame
 
     def reset_src(self):
-        response = requests.get('http://'+conf['HOST']+':'+conf['MAIN_PORT']+'/reset_info')
-        total_info = eval(json.loads(response.text))
+        # response = requests.get('http://'+conf['HOST']+':'+conf['MAIN_PORT']+'/reset_info')
+        # total_info = eval(json.loads(response.text))
 
-        self.src = total_info['cctvurl'][self.url_idx]
+        # self.src = total_info['cctvurl'][self.url_idx]
+
+        response=requests.get(self.origin_src)
+        self.src = response.url
+        print(self.src)
 
         self.capture = cv2.VideoCapture(self.src)
         self.FPS = 1/self.capture.get(cv2.CAP_PROP_FPS)
@@ -146,7 +153,8 @@ def setmodel():
 def setInfo():
     global TOTAL_CCTV_NUM
 
-    response = requests.get('http://'+conf['HOST']+':'+conf['MAIN_PORT']+'/getUrl')
+    # response = requests.get('http://'+conf['HOST']+':'+conf['MAIN_PORT']+'/getUrl')
+    response = requests.get('http://'+conf['HOST']+':'+conf['MAIN_PORT']+'/getUrl_web')
     total_info = eval(json.loads(response.text))
     for name in total_info['cctvname']:
         cctvname.append(name)
