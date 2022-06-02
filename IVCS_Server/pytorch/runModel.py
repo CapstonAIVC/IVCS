@@ -4,18 +4,23 @@ import torch
 import requests
 import json
 import cv2
-from threading import Thread
 import threading
 import torchvision
 from torchvision import transforms
 import numpy as np
 from PIL import Image
+
 import io
+import os
+import sys
 
 import socketio
 
+sys.path.append(os.path.dirname( os.path.dirname( os.path.abspath(__file__) ) ))
+from config.py_config import conf
+
 sio_saveData = socketio.Client()
-sio_saveData.connect('http://localhost:4000', wait_timeout = 10)
+sio_saveData.connect('http://'+conf['HOST']+':'+conf['DATA_PORT'], wait_timeout = 10)
 
 @sio_saveData.event
 def connect():
@@ -34,31 +39,31 @@ cctvname = []
 cctvurl = []
 streamingList = []
 TOTAL_CCTV_NUM = 1
-MAX_LEN = 5
+MAX_LEN = conf['MAX_LEN']
 
 ## tesorList의 각 원소는 tensor를 가지는 list이다.
 tensorList = []
-trans = transforms.Compose([transforms.Resize((120,160)), 
+trans = transforms.Compose([transforms.Resize(conf['IMAGE_SIZE']), 
                         transforms.ToTensor(),
                         ])
 
 
 class ThreadedCamera(threading.Thread):
-    def __init__(self, src, th_name):
+    def __init__(self, src, th_name, url_idx):
         threading.Thread.__init__(self)
         self.frame = None
         self.status = None
-        self.tmp = None
         self.th_name = th_name
         self.src = src
-        self.tmp = None
+        self.url_idx = url_idx
+        self.flag = 2
 
         self.capture = cv2.VideoCapture(self.src)
         self.FPS = 1/self.capture.get(cv2.CAP_PROP_FPS)
         self.FPS_MS = int(self.FPS * 1000)
 
         self.capture.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-        # self.capture.set(cv2.CAP_PROP_FPS, self.FPS)
+        self.capture.set(cv2.CAP_PROP_FPS, self.FPS)
 
     # def run(self):
     #     (self.status, tmp) = self.capture.read()
@@ -95,10 +100,12 @@ class ThreadedCamera(threading.Thread):
         self.frame = tmp
         q = []
         for _ in range(5): q.append(self.frame)
-        tmp2 = None
         while True:
+            if self.flag >= 2:
+                self.reset_src()
+                self.flag = 0
+            
             count = 100
-            print(self.th_name)
             while count > 0:
                 (self.status, f) = self.capture.read()
                 if self.status:
@@ -108,41 +115,50 @@ class ThreadedCamera(threading.Thread):
                 count -= 1
             self.frame = q.pop(0)
             q.append(tmp2)
+            if np.array_equal(self.frame, tmp2): self.flag += 1
             time.sleep(1)
 
     def get_frame(self):
         return self.frame
 
+    def reset_src(self):
+        response = requests.get('http://'+conf['HOST']+':'+conf['MAIN_PORT']+'/reset_info')
+        total_info = eval(json.loads(response.text))
+
+        self.src = total_info['cctvurl'][self.url_idx]
+
+        self.capture = cv2.VideoCapture(self.src)
+        self.FPS = 1/self.capture.get(cv2.CAP_PROP_FPS)
+        self.FPS_MS = int(self.FPS * 1000)
+
+        self.capture.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+        self.capture.set(cv2.CAP_PROP_FPS, self.FPS)
+
 
 def setmodel():
     # model = FCN_rLSTM(temporal=True, image_dim=(torch.zeros([120,160], dtype=torch.int32).shape))
-    model = FCN_BLA(FCN, Encoder, Decoder, image_dim=[120,160])
+    model = FCN_BLA(FCN, Encoder, Decoder, image_dim=conf['IMAGE_SIZE'])
     model.load_state_dict(torch.load('./model.pth', map_location=torch.device('cpu')))
     print("model loaded")
-
-    # model.eval()  # set model to evaluation mode
 
     return model
 
 def setInfo():
     global TOTAL_CCTV_NUM
 
-    response = requests.get('http://localhost:3000/getUrl')
+    response = requests.get('http://'+conf['HOST']+':'+conf['MAIN_PORT']+'/getUrl')
     total_info = eval(json.loads(response.text))
     for name in total_info['cctvname']:
         cctvname.append(name)
     for url in total_info['cctvurl']:
         cctvurl.append(url)
         tensorList.append([])
-    # set TOTAL_CCTV_NUM (실제 구동할땐 주석풀기)
     TOTAL_CCTV_NUM = len(cctvurl)
     
 def setStreaming():
     global cctvurl, cctvname
-    # for url in cctvurl:
-    #     streamingList.append(ThreadedCamera(url))
     for idx, url in enumerate(cctvurl):
-        streamingList.append(ThreadedCamera(url, cctvname[idx]))
+        streamingList.append(ThreadedCamera(url, cctvname[idx], idx))
 
         # Start frame retrieval thread
         streamingList[idx].setDaemon(True)
@@ -155,7 +171,7 @@ def addFramesByTensor(index):
         frame = streamingList[i].get_frame()
         pil = Image.fromarray(frame)
         ten = trans(pil)
-        ten = torch.reshape(ten,(3,120,160))
+        ten = torch.reshape(ten,(3,conf['IMAGE_SIZE'][0],conf['IMAGE_SIZE'][1]))
         ten.unsqueeze(0)
         if index == -1:
             for _ in range(MAX_LEN): tensorList[i].append(ten)
@@ -184,7 +200,7 @@ if __name__ == '__main__':
         else:
             for _ in range(MAX_LEN): mask = torch.cat((mask, mask_tmp), 0)
 
-    mask = torch.reshape(mask, (TOTAL_CCTV_NUM, MAX_LEN, 1, 120, 160))
+    mask = torch.reshape(mask, (TOTAL_CCTV_NUM, MAX_LEN, 1, conf['IMAGE_SIZE'][0], conf['IMAGE_SIZE'][1]))
     print(mask.shape)
 
     for i in range(MAX_LEN):
@@ -218,7 +234,7 @@ if __name__ == '__main__':
                 for j in range(0, index+1): ## 0부터 index까지
                     X = torch.cat((X,tensorList[i][j]), 0)
 
-        X = torch.reshape(X, (TOTAL_CCTV_NUM, MAX_LEN, 3, 120, 160))
+        X = torch.reshape(X, (TOTAL_CCTV_NUM, MAX_LEN, 3, conf['IMAGE_SIZE'][0], conf['IMAGE_SIZE'][1]))
 
         with torch.no_grad():
             density_pred, count_pred = model(X, mask=mask)

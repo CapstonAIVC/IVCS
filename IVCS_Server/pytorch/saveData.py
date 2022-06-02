@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-from time import time
 from pytz import timezone
+
 import os
+import sys
 import copy
 
 import requests
@@ -22,16 +23,18 @@ import io
 import matplotlib.pyplot as plt
 import matplotlib
 
+sys.path.append(os.path.dirname( os.path.dirname( os.path.abspath(__file__) ) ))
+from config.py_config import conf
 
 sio = socketio.Server(cors_allowed_origins='*')
 app = Flask(__name__)
 CORS(app, resource={r"/req_plot":{"origins":"*"}})
 
-HOST = 'localhost'
-PORT = 4000
-ROOT_PATH = './DATA'
+HOST = conf['HOST']
+PORT = int(conf['DATA_PORT'])
+ROOT_PATH = conf['DATA_PATH']
 
-response = requests.get('http://localhost:3000/getUrl')
+response = requests.get('http://'+HOST+':'+conf['MAIN_PORT']+'/getUrl')
 total_info = eval(json.loads(response.text))
 cctvname = total_info['cctvname']
 # test
@@ -43,14 +46,14 @@ input_img = [-1,-1,-1,-1,-1]
 density = [-1,-1,-1,-1,-1]
 
 # time_tmp = -1 # 이전 시간 정보 저장
-time_tmp = datetime.now(timezone("Asia/Seoul"))
+time_tmp = datetime.now(timezone(conf['AREA']))
 
 # @sio.on('model_output')
 # def get_data(sid, output):
 #     global time_tmp, data, latest, cctvname
 #     output = json.loads(output)
 #     print(output)
-#     current_time = datetime.now(timezone("Asia/Seoul"))
+#     current_time = datetime.now(timezone(conf['AREA']))
 
 #     # if time_tmp.minute != current_time.minute: #테스트를 위한 1분 간격 저장
 #     if time_tmp.hour != current_time.hour: #1시간 간격 데이터  저저장
@@ -72,10 +75,8 @@ time_tmp = datetime.now(timezone("Asia/Seoul"))
 def get_data(sid, count_result_json, input_img_result, density_result):
     global time_tmp, data, count, input_img, density
     count_result = json.loads(count_result_json)
-    # input_img_result = json.loads(input_img_result_json)
-    # density_result = json.loads(density_result_json)
     print(count_result)
-    current_time = datetime.now(timezone("Asia/Seoul"))
+    current_time = datetime.now(timezone(conf['AREA']))
 
     if time_tmp.hour != current_time.hour: #1시간 간격 데이터  저저장
         time_tmp = current_time
@@ -330,4 +331,3 @@ if __name__ == "__main__":
 
     # deploy as an eventlet WSGI server
     eventlet.wsgi.server(eventlet.listen(('', PORT)), app)
-

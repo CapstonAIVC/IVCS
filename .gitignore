@@ -451,5 +451,12 @@ dist
 __pycache__/
 ./IVCS_Server/pytorch/__pycache__/model.cpython-38.pyc
 
-# model file
+# Model
 *.pth
+
+# Config File
+config/
+
+# PyCache
+__pycache__/
+*.py[cod]

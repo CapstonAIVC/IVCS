@@ -1,14 +1,14 @@
-const socket = io.connect('http://localhost:3000');
+// const socket = io.connect('http://localhost:3000');
 const socket_data = io('http://localhost:4000');
 
 let xhr = new XMLHttpRequest();
 
-const play_camera = document.getElementsByName('play_button')[0];
-const selected_camera = document.getElementsByName('count-camera-id')[0];
+// const play_camera = document.getElementsByName('play_button')[0];
+// const selected_camera = document.getElementsByName('count-camera-id')[0];
 
 const count_text = document.getElementsByClassName('counting_text')[0];
 
-var analysis_camera = document.getElementById('analysis_camera_id');
+// var analysis_camera = document.getElementById('analysis_camera_id');
 var measure_unit = document.getElementById('measure_unit');
 var start_date = document.getElementById('start_date');
 var end_date = document.getElementById('end_date');

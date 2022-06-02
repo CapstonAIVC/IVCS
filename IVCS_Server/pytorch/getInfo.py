@@ -21,38 +21,17 @@ if __name__ == '__main__':
     with urlopen(url) as url:
         data = json.loads(url.read().decode())
 
-    cctvinfo_dict = {"cctvname":[], "cctvurl":[]}
+    cctvinfo_dict = {"cctvname":['[남해선]초전2교', '[경부선]판교1'], "cctvurl":[]}
+    cctvinfo_no_request_dict = {"cctvname":['[남해선]초전2교', '[경부선]판교1'], "cctvurl":[]}
 
-    flag=0 #for demo
-
-    # for json_data in data['response']['data']:
-    #     cctvinfo_dict['cctvname'].append(json_data['cctvname'])
-    #     # print(json_data['cctvname'])
-    #     response=requests.get(json_data['cctvurl'])
-    #     cctvinfo_dict['cctvurl'].append(response.url)
-    #     flag+=1 #for demo
-
-    #     if flag==5: break #for demo
-
-    ####################################
-    # [경부선] 공세육교 24시간 데이터 수집을 위한 코드
     # [남해선]초전2교 & [경부선]판교1
-    cctvinfo_dict['cctvname'].append('[남해선]초전2교')
-    cctvinfo_dict['cctvname'].append('[경부선]판교1')
+    # cctvinfo_dict['cctvname'].append('[남해선]초전2교')
+    # cctvinfo_dict['cctvname'].append('[경부선]판교1')
     for json_data in data['response']['data']:
         if json_data['cctvname']=='[남해선] 초전2교' or json_data['cctvname']=='[경부선] 판교1':
             response=requests.get(json_data['cctvurl'])
             cctvinfo_dict['cctvurl'].append(response.url)
+            cctvinfo_no_request_dict['cctvurl'].append(json_data['cctvurl'])
         if len(cctvinfo_dict['cctvurl']) == 2: break
-    # i = 4
-    # for json_data in data['response']['data']:
-    #     response=requests.get(json_data['cctvurl'])
-    #     cctvinfo_dict['cctvname'].append(json_data['cctvname'])
-    #     cctvinfo_dict['cctvurl'].append(response.url)
-    #     if i < 0 : break
-    #     i -= 1
-    ####################################
 
-    print(str(cctvinfo_dict))
-
-    # cctvinfo_json = json.dumps(cctvinfo_dict, ensure_ascii=False)
+    print(str(cctvinfo_dict)+"-"+str(cctvinfo_no_request_dict))
