@@ -1,14 +1,11 @@
-const socket = io.connect('http://119.207.210.53:7008');
+// const socket = io.connect('http://119.207.210.53:7008');
 const socket_data = io('http://119.207.210.53:7009');
 
 let xhr = new XMLHttpRequest();
 
-const play_camera = document.getElementsByName('play_button')[0];
-const selected_camera = document.getElementsByName('count-camera-id')[0];
 
 const count_text = document.getElementsByClassName('counting_text')[0];
 
-var analysis_camera = document.getElementById('analysis_camera_id');
 var measure_unit = document.getElementById('measure_unit');
 var start_date = document.getElementById('start_date');
 var end_date = document.getElementById('end_date');

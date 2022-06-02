@@ -76,20 +76,54 @@ trans = transforms.Compose([transforms.Resize((120,160)),
 #         return self.frame
 
 class ThreadedCamera(threading.Thread):
-    def __init__(self, src, th_name):
+    def __init__(self, src, th_name, url_idx):
         threading.Thread.__init__(self)
-        self.tmp = None
+        self.frame = None
+        self.status = None
         self.th_name = th_name
-        self.src = src
-        self.tmp = None
+        self.url_idx = url_idx
+        self.flag = 2
+        self.origin_src = src
+
+        response=requests.get(self.origin_src)
+        self.src = response.url
 
         self.capture = cv2.VideoCapture(self.src)
         self.FPS = 1/self.capture.get(cv2.CAP_PROP_FPS)
         self.FPS_MS = int(self.FPS * 1000)
 
-        self.capture.set(cv2.CAP_PROP_BUFFERSIZE, 0)
-        self.capture.set(cv2.CAP_PROP_FPS, self.FPS)
         self.capture.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+        self.capture.set(cv2.CAP_PROP_FPS, self.FPS)
+
+    # def run(self):
+    #     (self.status, tmp) = self.capture.read()
+    #     count = 4
+    #     while count > 0:
+    #         self.q.put(tmp)
+    #         count -= 1
+    #     while True:
+    #         # self.cap = cv2.VideoCapture(self.src)
+    #         # if self.cap.isOpened():
+    #         #     (self.status, tmp) = self.cap.read()
+    #         #     if self.status:
+    #         #         self.frame = tmp
+    #         # time.sleep(1)
+    #         # if self.capture.isOpened():
+    #         #     (self.status, tmp) = self.capture.read()
+    #         #     if self.status:
+    #         #         self.frame = tmp
+    #         # time.sleep(0.5)
+    #         while True:
+    #             (self.status, tmp) = self.capture.read()
+    #             if self.status:
+    #                 self.frame = tmp
+    #             else:
+    #                 break
+    #         time.sleep(1)
+
+    # def get_frame(self):
+    #     self.q.put(self.frame)
+    #     return self.q.get()
 
     def run(self):
         (self.status, tmp) = self.capture.read()
@@ -97,10 +131,11 @@ class ThreadedCamera(threading.Thread):
         q = []
         for _ in range(5): q.append(self.frame)
         while True:
-            if self.capture.isOpened():
-                self.status, tmp = self.capture.read()
+            if self.flag >= 2:
+                self.reset_src()
+                self.flag = 0
+            
             count = 100
-            print(self.th_name)
             while count > 0:
                 (self.status, f) = self.capture.read()
                 if self.status:
@@ -110,10 +145,29 @@ class ThreadedCamera(threading.Thread):
                 count -= 1
             self.frame = q.pop(0)
             q.append(tmp2)
+            if np.array_equal(self.frame, tmp2): self.flag += 1
             time.sleep(1)
 
     def get_frame(self):
         return self.frame
+
+    def reset_src(self):
+        # response = requests.get('http://'+conf['HOST']+':'+conf['MAIN_PORT']+'/reset_info')
+        # total_info = eval(json.loads(response.text))
+
+        # self.src = total_info['cctvurl'][self.url_idx]
+
+        response=requests.get(self.origin_src)
+        self.src = response.url
+        print(self.src)
+
+        self.capture = cv2.VideoCapture(self.src)
+        self.FPS = 1/self.capture.get(cv2.CAP_PROP_FPS)
+        self.FPS_MS = int(self.FPS * 1000)
+
+        self.capture.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+        self.capture.set(cv2.CAP_PROP_FPS, self.FPS)
+
 
 def setmodel():
     # model = FCN_rLSTM(temporal=True, image_dim=(torch.zeros([120,160], dtype=torch.int32).shape))
@@ -128,7 +182,7 @@ def setmodel():
 def setInfo():
     global TOTAL_CCTV_NUM
 
-    response = requests.get('http://localhost:3000/getUrl')
+    response = requests.get('http://localhost:3000/getUrl_web')
     total_info = eval(json.loads(response.text))
     for name in total_info['cctvname']:
         cctvname.append(name)
@@ -143,7 +197,7 @@ def setStreaming():
     # for url in cctvurl:
     #     streamingList.append(ThreadedCamera(url))
     for idx, url in enumerate(cctvurl):
-        streamingList.append(ThreadedCamera(url, cctvname[idx]))
+        streamingList.append(ThreadedCamera(url, cctvname[idx], idx))
 
         # Start frame retrieval thread
         streamingList[idx].setDaemon(True)
