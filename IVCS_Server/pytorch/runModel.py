@@ -157,7 +157,19 @@ class ThreadedCamera(threading.Thread):
 
         # self.src = total_info['cctvurl'][self.url_idx]
 
-        response=requests.get(self.origin_src)
+        try:
+            response = requests.get(self.origin_src)
+        except (TimeoutError, requests.exceptions.ConnectionError) as e:
+            try:
+                time.sleep(1)
+                response = requests.get(self.origin_src)
+            except (TimeoutError, requests.exceptions.ConnectionError) as e:
+                response = requests.get('http://localhost:3000/getUrl_web')
+                total_info = eval(json.loads(response.text))
+
+                self.origin_src = total_info['cctvurl'][self.url_idx]
+                response = requests.get(self.origin_src)
+
         self.src = response.url
         print(self.src)
 

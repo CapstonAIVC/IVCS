@@ -206,10 +206,14 @@ class AnalyizeData():
             for path in os.listdir(start_path):
                 path_hour = int(path.split('.')[0])
                 if path.split('.')[-1] == 'csv' and path_hour >= start_hour:
+
                     csv_path_list.append(os.path.join(start_path, path))
 
             for inc in range(int(end_day)-int(start_day)):
-                mid_path = os.path.join(ROOT_PATH, self.cctvname, start_year, start_month, str(int(start_day)+inc+1))
+                tmp_day = int(start_day)+inc+1
+                if tmp_day < 10: tmp_day = "0"+str(tmp_day)
+                else: tmp_day = str(tmp_day)
+                mid_path = os.path.join(ROOT_PATH, self.cctvname, start_year, start_month, tmp_day)
                 for path in os.listdir(mid_path):
                     if path.split('.')[-1] == 'csv': csv_path_list.append(os.path.join(mid_path, path))
 
