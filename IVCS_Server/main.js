@@ -11,8 +11,6 @@ const api_key = config.API_KEY;
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 app.use(express.static(__dirname + "/"));
-// console.log(__dirname)
-// app.use("/", express.static('./'));
 
 information = ""
 

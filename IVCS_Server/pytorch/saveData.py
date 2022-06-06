@@ -10,7 +10,6 @@ import requests
 import json
 import threading
 
-# from flask import Flask
 import socketio
 import eventlet
 import eventlet.wsgi
@@ -37,39 +36,13 @@ ROOT_PATH = conf['DATA_PATH']
 response = requests.get('http://'+HOST+':'+conf['MAIN_PORT']+'/getUrl')
 total_info = eval(json.loads(response.text))
 cctvname = total_info['cctvname']
-# test
-# cctvname = ['[경부선]판교1', '[남해선]초전2교']
 data = {}
 latest = [-1,-1,-1,-1,-1]
 count = [-1,-1,-1,-1,-1]
 input_img = [-1,-1,-1,-1,-1]
 density = [-1,-1,-1,-1,-1]
 
-# time_tmp = -1 # 이전 시간 정보 저장
 time_tmp = datetime.now(timezone(conf['AREA']))
-
-# @sio.on('model_output')
-# def get_data(sid, output):
-#     global time_tmp, data, latest, cctvname
-#     output = json.loads(output)
-#     print(output)
-#     current_time = datetime.now(timezone(conf['AREA']))
-
-#     # if time_tmp.minute != current_time.minute: #테스트를 위한 1분 간격 저장
-#     if time_tmp.hour != current_time.hour: #1시간 간격 데이터  저저장
-#         time_tmp = current_time
-#         save_data = copy.deepcopy(data)
-#         for cctv in data.keys(): data[cctv]=[]
-#         saveThread=SaveCSV(save_data, time_tmp)
-#         saveThread.start()
-    
-#     time_info = str(current_time.minute) + '-' + str(current_time.second)
-
-#     tmp = []
-#     for idx, cctv in enumerate(cctvname):
-#         data[cctv].append([time_info, output[idx]])
-#         tmp.append(output[idx])
-#     latest = tmp
 
 @sio.on('model_output')
 def get_data(sid, count_result_json, input_img_result, density_result):
@@ -103,7 +76,6 @@ def get_data(sid, count_result_json, input_img_result, density_result):
 @sio.on('req_counting')
 def startCounting(sid, cctvIdx):
     global count, input_img, density
-    # sio.emit('res_counting', str(round(latest[int(cctvIdx)[0]], 3)), sid)
     sio.emit('res_counting', data=(str(round(count[int(cctvIdx)])), input_img[int(cctvIdx)], density[int(cctvIdx)]), room=sid)
     
 @app.route('/req_plot', methods=['POST'])
@@ -116,16 +88,9 @@ def res_plot_png():
     start = params['start']
     end = params['end']
 
-    #test
-    # measure_method = 'minute'
-    # cameraid = '1'
-    # start = '2022-05-30_15'
-    # end = '2022-05-30_17'
-
     task = AnalyizeData(measure_method, cctvname[int(cameraid)], start, end)
     result = task.run()
 
-    # move to beginning of file so `send_file()` it will read from start 
     result.seek(0)
 
     return send_file(result, mimetype='image/png')
@@ -147,7 +112,6 @@ class SaveCSV(threading.Thread):
         self.data = data
         self.time = time_info
 
-        # 2자리 폴더명 & 파일명 생성을 위한 코드
         self.year = str(self.time.year)
         if int(self.time.month) < 10: self.month = '0'+str(self.time.month)
         else: self.month = str(self.time.month)
@@ -224,7 +188,6 @@ class AnalyizeData():
 
         # 'Time' column value 중 'min-sec' 을 'year-month-day hour:min:sec'으로 바꾸기
         df['Time'] = df['Time'].apply(lambda x: year + '-' + month + '-' + day + ' ' + hour + ':' + x.split('-')[0] + ':' + x.split('-')[1])
-        # df['Count'] = df['Count'].apply(lambda x: round(float(str(x).replace('[','').replace(']','')),3))
         df['Count'] = df['Count'].apply(lambda x: round(float(x),3))
 
         return df
@@ -326,8 +289,6 @@ if __name__ == "__main__":
 
     matplotlib.use('agg')
 
-    # wrap Flask application with engineio's middleware
     app = socketio.Middleware(sio, app)
 
-    # deploy as an eventlet WSGI server
     eventlet.wsgi.server(eventlet.listen(('', PORT)), app)
