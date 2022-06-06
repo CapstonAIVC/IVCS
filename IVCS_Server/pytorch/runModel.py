@@ -137,7 +137,8 @@ class ThreadedCamera(threading.Thread):
             
             count = 100
             while count > 0:
-                (self.status, f) = self.capture.read()
+                try: (self.status, f) = self.capture.read()
+                except ZeroDivisionError: self.reset_src()
                 if self.status:
                     tmp2 = f
                 else:
