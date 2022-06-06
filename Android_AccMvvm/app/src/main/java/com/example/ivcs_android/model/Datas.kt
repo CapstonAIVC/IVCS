@@ -1,6 +1,7 @@
 package com.example.ivcs_android.model
 
 import android.graphics.Bitmap
+import android.graphics.Color
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
@@ -34,6 +35,9 @@ class DataStreaming(){
 
     var densityImage: MutableLiveData<Bitmap> = MutableLiveData()
     var inputImage: MutableLiveData<Bitmap> = MutableLiveData()
+
+    var maskImage: MutableLiveData<Bitmap> = MutableLiveData(Bitmap.createBitmap(1,1,Bitmap.Config.ARGB_8888).apply { setPixel(0,0,
+        Color.alpha(255)) })
 
 }
 

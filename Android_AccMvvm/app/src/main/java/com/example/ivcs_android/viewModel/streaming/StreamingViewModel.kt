@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.util.Log
 import android.view.View
 import android.widget.Switch
@@ -45,28 +46,28 @@ class StreamingViewModel(application: Application) : AndroidViewModel(applicatio
             .subscribeOn(Schedulers.io())
             .map {
                 val bmp = BitmapFactory.decodeByteArray(it, 0, it.size)
-                Bitmap.createScaledBitmap(bmp,400,300,true)
+                Bitmap.createScaledBitmap(bmp, 400, 300, true)
             }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 {
                     dataStreaming.inputImage.value = it
                 },
-                { Log.e("changeInputErr",it.message.toString()) }
+                { Log.e("changeInputErr", it.message.toString()) }
             )
 
         dataStreaming.changeDensity
             .subscribeOn(Schedulers.io())
             .map {
                 val bmp = BitmapFactory.decodeByteArray(it, 0, it.size)
-                Bitmap.createScaledBitmap(bmp,400,300,true)
+                Bitmap.createScaledBitmap(bmp, 400, 300, true)
             }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 {
                     dataStreaming.densityImage.value = it
                 },
-                { Log.e("changeDensityErr",it.message.toString()) }
+                { Log.e("changeDensityErr", it.message.toString()) }
             )
     }
 
@@ -90,6 +91,7 @@ class StreamingViewModel(application: Application) : AndroidViewModel(applicatio
                     } else {
                         countData.dispose()
                         dataStreaming.textCountShow.value = false
+                        dataStreaming.debugImageShow.value = false
                     }
                 },
                 { Log.e("countSubjectErr", it.message.toString()) }
@@ -125,11 +127,23 @@ class StreamingViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun clickDensitySwitch(view: View) {
-        if(dataStreaming.countSwitchSubject.value) {
+        if (dataStreaming.countSwitchSubject.value) {
             dataStreaming.debugSwitchSubject.onNext((view as Switch).isChecked)
+        } else {
+            (view as Switch).isChecked = false
+        }
+    }
+
+    fun clickMaskSwitch(view: View) {
+        if( (view as Switch).isChecked ){
+            // model의 마스크 설정
+            dataStreaming.maskImage.value = Bitmap.createBitmap(100,100,Bitmap.Config.ARGB_8888).apply { setPixel(0,0,
+                Color.GREEN) }
         }
         else{
-            (view as Switch).isChecked = false
+            //모델의 마스크 투명하게
+            dataStreaming.maskImage.value = Bitmap.createBitmap(1,1,Bitmap.Config.ARGB_8888).apply { setPixel(0,0,
+                Color.alpha(255)) }
         }
     }
 

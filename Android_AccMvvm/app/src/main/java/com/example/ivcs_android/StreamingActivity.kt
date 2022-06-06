@@ -30,7 +30,8 @@ class StreamingActivity : AppCompatActivity() {
         mBinding.lifecycleOwner = this
         setContentView(mBinding.root)
 
-        mBinding.textureView.layoutParams.height = resources.displayMetrics.heightPixels/4
+//        mBinding.textureView.layoutParams.height = resources.displayMetrics.heightPixels/4
+        mBinding.streamingFrameLayout.layoutParams.height = resources.displayMetrics.heightPixels/4
         mBinding.cctvList.layoutParams.height = resources.displayMetrics.heightPixels/4
 
         setAdapter()

@@ -5,7 +5,7 @@ class Consts {
         //// url
         const val serverMainUrl = "http://119.207.210.53:7008"
         const val serverDataUrl = "http://119.207.210.53:7009"
-        const val getUrl = "/getUrl_client"
+        const val getUrl = "/getUrl_mobile"
         const val plotUrl = "/req_plot"
         const val localhost = "http://10.0.2.2:3000"
         const val localhost_DataServer = "http://10.0.2.2:4000"
