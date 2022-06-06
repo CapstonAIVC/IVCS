@@ -178,7 +178,6 @@ class SaveCSV(threading.Thread):
 # class AnalyizeData(threading.Thread):
 class AnalyizeData():
     def __init__(self, measure, cctvname, start_time, end_time):
-        # threading.Thread.__init__(self)
         self.measure = measure
         self.cctvname = cctvname
         self.start_time = start_time
@@ -186,7 +185,6 @@ class AnalyizeData():
         #split time with date and hour
         self.start_date, self.start_hour = self.start_time.split('_')
         self.end_date, self.end_hour = self.end_time.split('_')
-
 
     # csv 파일 경로 리스트 반환
     def get_csv_path_list(self):
@@ -196,16 +194,33 @@ class AnalyizeData():
         start_path = os.path.join(ROOT_PATH, self.cctvname, start_year, start_month, start_day)
         end_path = os.path.join(ROOT_PATH, self.cctvname, end_year, end_month, end_day)
 
-        for path in os.listdir(start_path):
-            start_hour = int(self.start_hour.split(':')[0])
-            if path.split('.')[-1] == 'csv' and int(path.split('.')[0]) >= start_hour:
-                csv_path_list.append(os.path.join(start_path, path))
+        start_hour = int(self.start_hour.split(':')[0])
+        end_hour = int(self.end_hour.split(':')[0])
 
+        if self.start_date == self.end_date:
+            for path in os.listdir(start_path):
+                path_hour = int(path.split('.')[0])
+                if path.split('.')[-1] == 'csv' and path_hour >= start_hour and path_hour <= end_hour:
+                    csv_path_list.append(os.path.join(start_path, path))
+        else:
+            for path in os.listdir(start_path):
+                path_hour = int(path.split('.')[0])
+                if path.split('.')[-1] == 'csv' and path_hour >= start_hour:
 
-        for path in os.listdir(end_path):
-            end_hour = int(self.end_hour.split(':')[0])
-            if path.split('.')[-1] == 'csv' and int(path.split('.')[0]) < end_hour:
-                csv_path_list.append(os.path.join(end_path, path))
+                    csv_path_list.append(os.path.join(start_path, path))
+
+            for inc in range(int(end_day)-int(start_day)):
+                tmp_day = int(start_day)+inc+1
+                if tmp_day < 10: tmp_day = "0"+str(tmp_day)
+                else: tmp_day = str(tmp_day)
+                mid_path = os.path.join(ROOT_PATH, self.cctvname, start_year, start_month, tmp_day)
+                for path in os.listdir(mid_path):
+                    if path.split('.')[-1] == 'csv': csv_path_list.append(os.path.join(mid_path, path))
+
+            for path in os.listdir(end_path):
+                path_hour = int(path.split('.')[0])
+                if path.split('.')[-1] == 'csv' and path_hour <= end_hour:
+                    csv_path_list.append(os.path.join(end_path, path))
 
         csv_path_list.sort()
         return csv_path_list
@@ -218,9 +233,10 @@ class AnalyizeData():
 
         # 'Time' column value 중 'min-sec' 을 'year-month-day hour:min:sec'으로 바꾸기
         df['Time'] = df['Time'].apply(lambda x: year + '-' + month + '-' + day + ' ' + hour + ':' + x.split('-')[0] + ':' + x.split('-')[1])
-        df['Count'] = df['Count'].apply(lambda x: round(float(str(x).replace('[','').replace(']','')),3))
-        return df
+        # df['Count'] = df['Count'].apply(lambda x: round(float(str(x).replace('[','').replace(']','')),3))
+        df['Count'] = df['Count'].apply(lambda x: round(float(x),3))
 
+        return df
 
     # concat all csv file from csv_path into one dataframe by using csv_preprocess
     def get_dataframe(self, csv_path_list):
@@ -231,21 +247,83 @@ class AnalyizeData():
         df = pd.concat(df_list)
         return df
 
+    def make_x_y(self, df):
+        y = []
+        if self.measure == 'minute':
+            x = []
+            x_tmp = df['Time'].values[0].split('-', maxsplit=1)[1].split(':')[0]+':'+df['Time'].values[0].split(":")[1]
+            count_tmp = 0
+            count_tmp_len = 0
+            for idx, time_value in enumerate(df['Time'].values):
+                if int(time_value.split(":")[1]) % 10 != 0 or x_tmp == time_value.split('-', maxsplit=1)[1].split(':')[0]+':'+time_value.split(":")[1]:
+                    count_tmp += round(float(df['Count'].values[idx]))
+                    count_tmp_len += 1
+                else:
+                    x.append(x_tmp)
+                    y.append(round(count_tmp/count_tmp_len, 2))
+                    x_tmp = time_value.split('-', maxsplit=1)[1].split(':')[0]+':'+time_value.split(":")[1]
+                    count_tmp = round(float(df['Count'].values[idx]))
+                    count_tmp_len = 1
+            x.append(x_tmp)
+        elif self.measure == 'hour':
+            x = list(set(x.split('-', maxsplit=1)[1].split(':')[0] for x in df['Time'].values))
+            x.sort()
+
+            x_tmp = df['Time'].values[0].split('-', maxsplit=1)[1].split(':')[0]
+            count_tmp = 0
+            count_tmp_len = 0
+            for idx, time_value in enumerate(df['Time'].values):
+                if x_tmp == time_value.split('-', maxsplit=1)[1].split(':')[0]:
+                    count_tmp += round(float(df['Count'].values[idx]))
+                    count_tmp_len += 1
+                else:
+                    y.append(round(count_tmp/count_tmp_len, 2))
+                    x_tmp = time_value.split('-', maxsplit=1)[1].split(':')[0]
+                    count_tmp = round(float(df['Count'].values[idx]))
+                    count_tmp_len = 1
+        else:
+            x = (list(set(x.split('-', maxsplit=1)[1].split(' ')[0] for x in df['Time'].values)))
+            x.sort()
+
+            x_tmp = df['Time'].values[0].split('-', maxsplit=1)[1].split(' ')[0]
+            count_tmp = 0
+            count_tmp_len = 0
+            for idx, time_value in enumerate(df['Time'].values):
+                if x_tmp == time_value.split('-', maxsplit=1)[1].split(' ')[0]:
+                    count_tmp += round(float(df['Count'].values[idx]))
+                    count_tmp_len += 1
+                else:
+                    y.append(round(count_tmp/count_tmp_len, 2))
+                    x_tmp = time_value.split('-', maxsplit=1)[1].split(' ')[0]
+                    count_tmp = round(float(df['Count'].values[idx]))
+                    count_tmp_len = 1
+
+        y.append(round(count_tmp/count_tmp_len, 2))
+
+        return x, y
 
     def run(self):
         csv_path_list = self.get_csv_path_list()
         df = self.get_dataframe(csv_path_list)
         df = df.drop(['Unnamed: 0'], axis=1)
+
+        x, y = self.make_x_y(df)
+
+        if self.measure=='minute': my_label = 'Traffic per 10 Minutes'
+        elif self.measure=='hour': my_label = 'Traffic per 1 Hour'
+        else: my_label = 'Traffic per 1 Day'
         
         plt.figure(figsize=(15,5))
-        plt.plot(df['Count'])
+        plt.plot(x, y, color='C1', label=my_label)
+        plt.scatter(x, y, color = 'C1', s = 50)
+        plt.legend(loc='upper right', ncol=1)
+        plt.xticks(rotation=20)
+        plt.grid()
         
         img_buf = io.BytesIO()
         plt.savefig(img_buf, format='png')
 
         return img_buf
-
-        
 
 if __name__ == "__main__":
     if not os.path.isdir(ROOT_PATH):

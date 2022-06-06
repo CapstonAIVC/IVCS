@@ -33,6 +33,7 @@
       <!-- partial:partials/_navbar.html -->
       <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
         <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+          <a class="navbar-brand brand-logo" href="index.html"><img src="/views/assets/images/AiVC_logo.svg" alt="logo" style="padding-top:1rem; height:100%"/></a>
         </div>
         <div class="navbar-menu-wrapper d-flex align-items-stretch">
           <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
@@ -52,7 +53,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/main">
                 <span class="icon-bg"><i class="mdi mdi-cube menu-icon"></i></span>
-                <span class="menu-title">Counting</span>
+                <span class="menu-title">Main</span>
               </a>
             </li>
           </ul>
@@ -64,7 +65,7 @@
               <div class="col-12">
                 <span class="d-flex align-items-center purchase-popup">
                   <p>CCTV 영상이 궁금하다면? ITS 국가 교통 정보 센터 가기</p>
-                  <a href="https://github.com/BootstrapDash/ConnectPlusAdmin-Free-Bootstrap-Admin-Template" target="_blank" class="ml-auto download-button btn purchase-button">ITS 국가교통 정보 센터</a>
+                  <a href="https://www.its.go.kr/" target="_blank" class="ml-auto download-button btn purchase-button">ITS 국가교통 정보 센터</a>
                 </span>
               </div>
             </div>
@@ -84,15 +85,16 @@
                     <button type="button" class="btn btn-link py-1" name="count-camera-id" onclick="req_counting_flag()">분석 시작</button>
                   </div>
                   <div class="col-md-auto">
-                    <h6>분석 단위</h6>
+                    <h6 style="color:#000000; font-weight:900; margin-bottom:0.5rem">분석 단위</h6>
                     <select id="measure_unit">
-                        <option value="period">기간별</option>
+                        <option value="minute">분당별</option>
                         <option value="hour">시간별</option>
+                        <option value="day">일별</option>
                     </select>
                   </div>
                   <div class="input-daterange input-group col-sm-3">
 
-                      <h6>분석 시작 날짜 & 시간</h6>
+                      <h6 style="margin-right:0.5rem; color:#000000; font-weight:900; margin-top:0.5rem">분석 시작 날짜 & 시간</h6>
                       <input class="datepicker", id="start_date" name="start_date">
                       <script>
                         $(function () {
@@ -118,7 +120,7 @@
                         </script>
                       </select>
 
-                      <h6>분석 끝 날짜 & 시간</h6>
+                      <h6 style="margin-right:0.5rem; color:#000000; font-weight:900; margin-top:0.5rem">분석 종료 날짜 & 시간</h6>
                       <input class="datepicker" id="end_date" name="end_date">
                       <script>
                         $(function () {
@@ -174,23 +176,23 @@
                       <div class="col">
 
                         <div class="col-sm-12 grid-margin">
-                          <div class="card" style="height:225px">
+                          <div class="card" style="height:100%">
                             <div class="card-header" style="text-align:center">
                               <h2 class="card-title" style="margin-bottom:0px; font-size:1.3rem">Screen Shot</h2>
                             </div>
                             <div class="" id="screen_shot_div" style="text-align:center">
-                              <img id="screen_shot_result" src="" width="40%" style="margin-top:0.3rem">
+                              <img id="screen_shot_result" src="" width="40%" style="margin-top:0.7rem; margin-bottom:0.7rem">
                             </div>
                           </div>
                         </div>
 
                         <div class="col-sm-12 grid-margin">
-                          <div class="card" style="height:225px">
+                          <div class="card" style="height:100%">
                             <div class="card-header" style="text-align:center">
                               <h2 class="card-title" style="margin-bottom:0px; font-size:1.3rem">Density Map</h2>
                             </div>
                             <div class="" id="density_map_div" style="text-align:center">
-                              <img id="density_map_result" src="" width="40%" style="margin-top:0.3rem">
+                              <img id="density_map_result" src="" width="40%" style="margin-top:0.7rem; margin-bottom:0.7rem">
                             </div>
                           </div>
                         </div>

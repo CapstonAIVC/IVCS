@@ -14181,7 +14181,7 @@ dl {
 
 .card-danger-gradient {
   background: -webkit-gradient(linear, left top, left bottom, from(#d41459), to(#911a6c));
-  background: linear-gradient(to bottom, #d41459, #911a6c); }
+  background: linear-gradient(to bottom, #ffffff, #b0d3ad); }
 
 .recent-activity .activity-info {
   width: 30px;
@@ -14270,7 +14270,7 @@ dl {
       color: #969292;
       border: 1px solid #d7d7d7; }
     .purchase-popup .btn.purchase-button {
-      background-color: #a461d8;
+      background-color: #44CE49;
       color: #ffffff;
       border: none;
       line-height: 1;

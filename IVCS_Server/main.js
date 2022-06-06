@@ -2,80 +2,49 @@ const { json } = require('express');
 const express = require('express');
 const { url } = require('inspector');
 const app=express();
-const server=require('http').createServer(app);
-const io=require('socket.io')(server);
-const api_key = "94643db94d744a2a850cdf9663965164"
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
+
+const api_key = "57e378a9b63f456da2703c529144b3c1";
 
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
-app.use(express.static(__dirname + "/"))
+app.use(express.static(__dirname + "/"));
 // console.log(__dirname)
 // app.use("/", express.static('./'));
 
 information = ""
-information_client = ""
-information_android = ""
-
-app.get("/client", (req, res) => {
-    res.render("client",{})
-})
 
 app.get("/main", (req, res) => {
-    res.render("index",{})
+    res.render("index",{});
 })
-
 app.get("/getUrl", (req, res) => {
     res.json(information);
 })
 app.get("/getUrl_web", (req, res) => {
     res.json(information_client);
 })
-app.get("/getUrl_client", (req, res) => {
+app.get("/getUrl_mobile", (req, res) => {
     res.send(information_client);
 })
-app.get("/getUrl_android", (req, res) => {
-    res.send(information_android);
+app.get("/reset_info", (req, res) => {
+    const getUrl_spawn = require('child_process').spawn;
+    const getUrl_result = getUrl_spawn('python3', ['./pytorch/getInfo.py', '1', api_key]);
+    getUrl_result.stdout.on('data', async (data) => {
+        getUrl_result.stderr.on('data', function(data) { console.log(data.toString()); });
+        
+        information = data.toString().split("-")[0].split("\n")[0];
+        console.log('Reset HLS Address!\n');
+
+        res.json(information);
+    });
+
 })
 
-//for test
-app.post("/test", (req, res) => {
-    res.send()
-})
-
-// socket
 io.on('connection',function(socket){
     const req = socket.request;
     const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     console.log('새로운 클라이언트 접속', ip, socket.id, req.ip);
-
-    socket.on("req_counting", (data) => {
-        // 임시 기능
-        console.log(data)
-        var random = Math.random()
-        socket.emit("res_counting", random.toString())
-    })
-    socket.on("req_analysis", (data) => {
-        // 임시 기능
-        var obj = JSON.parse(data.toString())
-        var cctvname = obj.cctvname
-        var type = obj.type
-        var testdata = Array()
-        for (i=0;i<12;i++){
-            testdata.push( parseInt(Math.random()*10) )
-        }
-        console.log(testdata)
-        socket.emit("res_analysis", { "data": testdata, "type": type.toString() })
-    })
-    socket.on("modelOutput", (data) => {
-        console.log(data)
-        // socket.emit("live_res", {"cctvname":"test"data});
-        // sio.emit('modelOutput', {"cctvname": "테스트이름", "time":"20xx-0x-xx", "count":str(count_pred[4][0].item())})
-    })
-    socket.on("hls_req", (data) => {
-        // console.log(information_json);
-        socket.emit('hls_res', information_json.cctvurl[data]);
-
-    })
 });
 
 server.listen(3000,()=>{
@@ -84,21 +53,10 @@ server.listen(3000,()=>{
     getUrl_result.stdout.on('data', (data) => {
         getUrl_result.stderr.on('data', function(data) { console.log(data.toString()); });
         
-        information = data.toString().split("\n")[0]
-        information_json = JSON.parse(information.replace(/'/g, '"'))
-	    // console.log(information_json)
-        console.log(' The info is ready!!\n');
-
-        const getUrl_client_spawn = require('child_process').spawn;
-        const getUrl_client_result = getUrl_client_spawn('python3', ['./pytorch/getLinkForClient.py', '1', api_key]);
-        getUrl_client_result.stdout.on('data', (data) => {
-            getUrl_client_result.stderr.on('data', function(data) { console.log(data.toString()); });
-            
-            information_client = data.toString().split("\n")[0]
-            information_android = data.toString().split("\n")[0]
-            information_android.replaceAll("\'","\"")
-            console.log(' The Client info is ready!!\n');
-        });
+        information = data.toString().split("-")[0].split("\n")[0];
+        information_client = data.toString().split("-")[1].split("\n")[0];
+        information_json = JSON.parse(information.replace(/'/g, '"'));
+        console.log('The info is ready!!\n');
     });
 
     console.log('Socket IO server listening on port ');
