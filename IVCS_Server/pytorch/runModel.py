@@ -112,12 +112,16 @@ class ThreadedCamera(threading.Thread):
         self.src = response.url
         print(self.src)
 
-        self.capture = cv2.VideoCapture(self.src)
-        self.FPS = 1/self.capture.get(cv2.CAP_PROP_FPS)
-        self.FPS_MS = int(self.FPS * 1000)
+        try:
+            self.capture = cv2.VideoCapture(self.src)
+        except ZeroDivisionError:
+            response = requests.get('http://localhost:3000/getUrl_web')
+            total_info = eval(json.loads(response.text))
 
-        self.capture.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-        self.capture.set(cv2.CAP_PROP_FPS, self.FPS)
+            self.origin_src = total_info['cctvurl'][self.url_idx]
+            response = requests.get(self.origin_src)
+
+            self.capture = cv2.VideoCapture(self.src)
 
 
 def setmodel():
