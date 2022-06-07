@@ -4,12 +4,13 @@ import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.util.Log
 import android.view.View
 import android.widget.Switch
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import com.example.ivcs_android.model.DataStreaming
+import com.example.ivcs_android.model.Datas
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -111,6 +112,8 @@ class StreamingViewModel(application: Application) : AndroidViewModel(applicatio
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 {
+                    dataStreaming.maskChecked.value = false
+                    dataStreaming.maskImage.value = dataStreaming.noMaskImage
                     myPlayer.setPlayerURL(it)
 //                    myPlayer.setPlayerURL(Consts.hlstest)
                 },
@@ -119,31 +122,38 @@ class StreamingViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun clickCountSwitch(view: View) {
-        if (!mSocket.checkSocket() || dataStreaming.cctvIdx == -1) {
-            (view as Switch).isChecked = false
+        dataStreaming.countingChecked.value = (view as Switch).isChecked
+        if (!dataStreaming.countingChecked.value!! || !mSocket.checkSocket() || dataStreaming.cctvIdx == -1) {
+            dataStreaming.debugChecked.value = false
+            dataStreaming.countingChecked.value = false
+            dataStreaming.countSwitchSubject.onNext(false)
         } else {
-            dataStreaming.countSwitchSubject.onNext((view as Switch).isChecked)
+            dataStreaming.countSwitchSubject.onNext(dataStreaming.countingChecked.value)
         }
     }
 
     fun clickDensitySwitch(view: View) {
-        if (dataStreaming.countSwitchSubject.value) {
-            dataStreaming.debugSwitchSubject.onNext((view as Switch).isChecked)
+        dataStreaming.debugChecked.value = (view as Switch).isChecked
+        if (dataStreaming.countingChecked.value!!) {
+            // 카운팅을 하고 있을떄만 가능
+            dataStreaming.debugSwitchSubject.onNext(dataStreaming.debugChecked.value)
         } else {
-            (view as Switch).isChecked = false
+            dataStreaming.debugChecked.value = false
         }
     }
 
     fun clickMaskSwitch(view: View) {
-        if( (view as Switch).isChecked ){
+        dataStreaming.maskChecked.value = (view as Switch).isChecked
+        if (dataStreaming.cctvIdx == -1) {
+            dataStreaming.maskChecked.value = false
+            Toast.makeText(context, "cctv를 선택해 주세요", Toast.LENGTH_SHORT).show()
+        } else if (dataStreaming.maskChecked.value!!) {
             // model의 마스크 설정
-            dataStreaming.maskImage.value = Bitmap.createBitmap(100,100,Bitmap.Config.ARGB_8888).apply { setPixel(0,0,
-                Color.GREEN) }
-        }
-        else{
+            dataStreaming.maskImage.value = Datas.instance.maskList[dataStreaming.cctvIdx]
+        } else {
             //모델의 마스크 투명하게
-            dataStreaming.maskImage.value = Bitmap.createBitmap(1,1,Bitmap.Config.ARGB_8888).apply { setPixel(0,0,
-                Color.alpha(255)) }
+            dataStreaming.maskImage.value =
+                dataStreaming.noMaskImage
         }
     }
 

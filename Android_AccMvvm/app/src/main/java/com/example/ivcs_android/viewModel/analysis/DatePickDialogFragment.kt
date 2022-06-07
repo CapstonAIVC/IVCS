@@ -43,7 +43,7 @@ class DatePickDialogFragment(dataAnal: DataAnal) : DialogFragment() {
             binding.datePicker.value.toLong(),
             binding.hourPicker.value.toLong())
 
-        if (isStart) { //여기아래 text바꾸는거 데이터바인딩으로 바꾸자
+        if (isStart) {
             dataAnal.startTimeInfo = tmpTimeInfo
             dataAnal.startText.value =
                 (dataAnal.startTimeInfo[0]).toString() + "년 " + (dataAnal.startTimeInfo[1]).toString() + "월 " + (dataAnal.startTimeInfo[2]).toString() + "일 " + (dataAnal.startTimeInfo[3]).toString() + "시"

@@ -2,6 +2,7 @@ package com.example.ivcs_android.viewModel.streaming
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import com.example.ivcs_android.databinding.ActivityStreamingBinding
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.MediaSource
@@ -40,7 +41,7 @@ class MyPlayer(context: Context) {
             override fun onPlayerError(error: PlaybackException) {
                 super.onPlayerError(error)
                 Log.e("player에러",error.message.toString())
-//                Toast.makeText(mContext, "영상 끊김, 잠시 후 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                Toast.makeText(mContext, "인터넷이 불안정합니다.\n 잠시 후 시도해 주세요!", Toast.LENGTH_SHORT).show()
             }
         } )
     }

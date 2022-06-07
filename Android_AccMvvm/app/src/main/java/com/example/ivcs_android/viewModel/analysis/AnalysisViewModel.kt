@@ -37,7 +37,15 @@ class AnalysisViewModel(application: Application, fragmentManager: FragmentManag
 
     init {
         bindAnalysisRequest()
+        setDateText()
 //        bindChangeAnalInfoSubj()
+    }
+
+    fun setDateText() {
+        dataAnal.startText.value =
+            (dataAnal.startTimeInfo[0]).toString() + "년 " + (dataAnal.startTimeInfo[1]).toString() + "월 " + (dataAnal.startTimeInfo[2]).toString() + "일 " + (dataAnal.startTimeInfo[3]).toString() + "시"
+        dataAnal.endText.value =
+            (dataAnal.endTimeInfo[0]).toString() + "년 " + (dataAnal.endTimeInfo[1]).toString() + "월 " + (dataAnal.endTimeInfo[2]).toString() + "일 " + (dataAnal.endTimeInfo[3]).toString() + "시"
     }
 
     fun radioClicked(view: View) {
@@ -50,80 +58,6 @@ class AnalysisViewModel(application: Application, fragmentManager: FragmentManag
         }
     }
 
-    //    fun bindAnalysisRequest() {
-//        analysisDataRequest
-//            .observeOn(Schedulers.io())
-//            .subscribe(
-//                {
-//                    if (!it) {
-//                        disposableSetUI = Disposable.empty()
-//                    } else {
-//                        //json을 만들고 요청을 보낸다.
-//                        // 받은 응답을 mainthread를 이용하는 객체에 넘겨준다.
-//                        // mainthread를 이용하는 객체는 화면을 처리하고 falseㄹ 요청이 끝났음을 subject에 알려준다.
-//                        var startDate =
-//                            dataAnal.startTimeInfo[0].toString() + "-" + String.format("%02d",
-//                                dataAnal.startTimeInfo[1]) + "-" + String.format("%02d",
-//                                dataAnal.startTimeInfo[2]) + "_" + String.format("%02d",
-//                                dataAnal.startTimeInfo[3])
-//                        var endDate =
-//                            dataAnal.endTimeInfo[0].toString() + "-" + String.format("%02d",
-//                                dataAnal.endTimeInfo[1]) + "-" + String.format("%02d",
-//                                dataAnal.endTimeInfo[2]) + "_" + String.format("%02d",
-//                                dataAnal.endTimeInfo[3])
-//
-//                        var jsonObj = JSONObject()
-//                        jsonObj.put("measure_method", dataAnal.analType)
-//                        jsonObj.put("cameraid", dataAnal.analIndex.toString())
-//                        jsonObj.put("start", startDate)
-//                        jsonObj.put("end", endDate)
-//
-//                        var reqBody = RequestBody.create(
-//                            "application/json; charset=utf-8".toMediaTypeOrNull(),
-//                            jsonObj.toString()
-//                        )
-//
-//                        // 그림 요청
-//                        var client = OkHttpClient()
-//                        var request = Request.Builder()
-//                            .url(Consts.plotUrl)
-//                            .post(reqBody)
-//                            .build()
-//                        var response = client.newCall(request).execute()
-//                        var resbody = response.body!!.byteString()
-////
-//                        // response에서 얻은 이미지 가공
-//                        disposableSetUI = Observable
-//                            .just(resbody)
-//                            .observeOn(Schedulers.io())
-//                            .map {
-//                                // 여기서 bitmap으로 변환
-//                                var bArray = it.toByteArray()
-////                                Log.e("bArrSize", bArray.size.toString())
-//                                var bmp = BitmapFactory.decodeByteArray(bArray, 0, bArray.size)
-////                                var bmp: Bitmap = BitmapFactory.decodeResource(context.resources,
-////                                    R.drawable.graph)
-//                                val h = dataAnal.analImageHeight
-//                                val w = h.toFloat() * (bmp.width.toFloat() / bmp.height.toFloat())
-//                                Bitmap.createScaledBitmap(bmp, w.toInt(), h, true)
-//                            }
-//                            .observeOn(AndroidSchedulers.mainThread())
-//                            .subscribe(
-//                                {
-//                                    dataAnal.analImage.value = it
-//                                    analysisDataRequest.onNext(false)
-//                                },
-//                                {
-//                                    Log.e("disposableSetUIErr", it.message.toString())
-//                                    analysisDataRequest.onNext(false)
-//                                }
-//                            )
-//                    }
-//
-//                },
-//                { Log.e("AnalysisRequestBindErr", it.message.toString()) }
-//            )
-//    }
     fun bindAnalysisRequest() {
         analysisDataRequest
             .observeOn(Schedulers.io())
@@ -153,24 +87,28 @@ class AnalysisViewModel(application: Application, fragmentManager: FragmentManag
                     "application/json; charset=utf-8".toMediaTypeOrNull(),
                     jsonObj.toString()
                 )
-
-                // 그림 요청
-                var client = OkHttpClient()
-                var request = Request.Builder()
-                    .url(Consts.serverDataUrl+Consts.plotUrl)
-                    .post(reqBody)
-                    .build()
-                var response = client.newCall(request).execute()
-                var resbody = response.body!!.byteString()
+                var bmp = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+                try {
+                    // 그림 요청
+                    var client = OkHttpClient()
+                    var request = Request.Builder()
+                        .url(Consts.serverDataUrl + Consts.plotUrl)
+                        .post(reqBody)
+                        .build()
+                    var response = client.newCall(request).execute()
+                    var resbody = response.body!!.byteString()
 //
-                // response에서 얻은 이미지 가공
-                // 여기서 bitmap으로 변환
-                var bArray = resbody.toByteArray()
-                var bmp = BitmapFactory.decodeByteArray(bArray, 0, bArray.size)
-                val h = dataAnal.analImageHeight
-                val w = h.toFloat() * (bmp.width.toFloat() / bmp.height.toFloat())
-                Bitmap.createScaledBitmap(bmp, w.toInt(), h, true)
-
+                    // response에서 얻은 이미지 가공
+                    // 여기서 bitmap으로 변환
+                    var bArray = resbody.toByteArray()
+                    bmp = BitmapFactory.decodeByteArray(bArray, 0, bArray.size)
+                    val h = dataAnal.analImageHeight
+                    val w = h.toFloat() * (bmp.width.toFloat() / bmp.height.toFloat())
+                    Bitmap.createScaledBitmap(bmp, w.toInt(), h, true)
+                } catch (e: Exception) {
+                    analysisDataRequest.onNext(false)
+                }
+                bmp
             }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -180,7 +118,9 @@ class AnalysisViewModel(application: Application, fragmentManager: FragmentManag
                 },
                 {
                     Log.e("disposableSetUIErr", it.message.toString())
-                    analysisDataRequest.onNext(false)
+                    // subject Dispose시 다시 생성
+                    analysisDataRequest =  BehaviorSubject.createDefault(false)
+                    bindAnalysisRequest()
                 }
             )
     }
@@ -196,13 +136,19 @@ class AnalysisViewModel(application: Application, fragmentManager: FragmentManag
                 .show()
             return false
         }
+        // 데모를 위한 데이터 구간 예외처리
+        if (start < 2022060315 || start > 2022060622 || end < 2022060315 || end > 2022060622) {
+            Toast.makeText(context, "데이터가 없는 구간입니다", Toast.LENGTH_SHORT).show()
+            return false
+        }
         if (dataAnal.analName == "") {
             Toast.makeText(context, "cctv를 선택해 주세요.", Toast.LENGTH_SHORT).show()
             return false
-        } else if (analysisDataRequest.value) {
-            Toast.makeText(context, "이전 요청이 처리중 입니다.", Toast.LENGTH_SHORT).show()
-            return false
         }
+//        else if (analysisDataRequest.value) {
+//            Toast.makeText(context, "이전 요청이 처리중 입니다.", Toast.LENGTH_SHORT).show()
+//            return false
+//        }
         return true
     }
 

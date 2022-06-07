@@ -26,9 +26,9 @@ class AnalysisActivity : AppCompatActivity() {
     }
 
     fun setRadioBts(){
+        analysisBinding.rBtMinute.tag = Consts.minute
         analysisBinding.rBtHour.tag = Consts.hour
         analysisBinding.rBtDay.tag = Consts.day
-        analysisBinding.rBtMonth.tag = Consts.month
 
         analysisBinding.rBtHour.performClick()
     }
