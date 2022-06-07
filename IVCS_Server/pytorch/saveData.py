@@ -128,9 +128,10 @@ def res_plot_png():
 
     task = AnalyizeData(measure_method, cctvname[int(cameraid)], start, end)
     result = task.run()
-    print(type(result.getvalue()))
 
-    # move to beginning of file so `send_file()` it will read from start 
+    if result == "error":
+        return send_file('error.png', mimetype='image/png')
+
     result.seek(0)
 
     return send_file(result, mimetype='image/png')
@@ -198,29 +199,37 @@ class AnalyizeData():
         end_hour = int(self.end_hour.split(':')[0])
 
         if self.start_date == self.end_date:
-            for path in os.listdir(start_path):
-                path_hour = int(path.split('.')[0])
-                if path.split('.')[-1] == 'csv' and path_hour >= start_hour and path_hour <= end_hour:
-                    csv_path_list.append(os.path.join(start_path, path))
+            try:
+                for path in os.listdir(start_path):
+                    path_hour = int(path.split('.')[0])
+                    if path.split('.')[-1] == 'csv' and path_hour >= start_hour and path_hour <= end_hour:
+                        csv_path_list.append(os.path.join(start_path, path))
+            except FileNotFoundError:
+                return "error"
         else:
-            for path in os.listdir(start_path):
-                path_hour = int(path.split('.')[0])
-                if path.split('.')[-1] == 'csv' and path_hour >= start_hour:
+            try:
+                for path in os.listdir(start_path):
+                    path_hour = int(path.split('.')[0])
+                    if path.split('.')[-1] == 'csv' and path_hour >= start_hour:
+                        csv_path_list.append(os.path.join(start_path, path))
 
-                    csv_path_list.append(os.path.join(start_path, path))
+                gap = int(end_day)-int(start_day)
+                if gap < 0: return "error"
+                if gap > 1:
+                    for inc in range(gap):
+                        tmp_day = int(start_day)+inc+1
+                        if tmp_day<10: tmp_day = "0"+str(tmp_day)
+                        else: tmp_day = str(tmp_day)
+                        mid_path = os.path.join(ROOT_PATH, self.cctvname, start_year, start_month, tmp_day)
+                        for path in os.listdir(mid_path):
+                            if path.split('.')[-1] == 'csv': csv_path_list.append(os.path.join(mid_path, path))
 
-            for inc in range(int(end_day)-int(start_day)):
-                tmp_day = int(start_day)+inc+1
-                if tmp_day < 10: tmp_day = "0"+str(tmp_day)
-                else: tmp_day = str(tmp_day)
-                mid_path = os.path.join(ROOT_PATH, self.cctvname, start_year, start_month, tmp_day)
-                for path in os.listdir(mid_path):
-                    if path.split('.')[-1] == 'csv': csv_path_list.append(os.path.join(mid_path, path))
-
-            for path in os.listdir(end_path):
-                path_hour = int(path.split('.')[0])
-                if path.split('.')[-1] == 'csv' and path_hour <= end_hour:
-                    csv_path_list.append(os.path.join(end_path, path))
+                for path in os.listdir(end_path):
+                    path_hour = int(path.split('.')[0])
+                    if path.split('.')[-1] == 'csv' and path_hour <= end_hour:
+                        csv_path_list.append(os.path.join(end_path, path))
+            except FileNotFoundError:
+                return "error"
 
         csv_path_list.sort()
         return csv_path_list
@@ -304,6 +313,8 @@ class AnalyizeData():
 
     def run(self):
         csv_path_list = self.get_csv_path_list()
+        if csv_path_list == "error": return "error"
+
         df = self.get_dataframe(csv_path_list)
         df = df.drop(['Unnamed: 0'], axis=1)
 
@@ -316,8 +327,9 @@ class AnalyizeData():
         plt.figure(figsize=(15,5))
         plt.plot(x, y, color='C1', label=my_label)
         plt.scatter(x, y, color = 'C1', s = 50)
+        plt.xticks(rotation=40)
+        if self.measure == "minute": plt.locator_params(axis='x', nbins=len(x)/(int(self.start_date.split('-')[-1])-int(self.end_date.split('-')[-1])+1))
         plt.legend(loc='upper right', ncol=1)
-        plt.xticks(rotation=20)
         plt.grid()
         
         img_buf = io.BytesIO()

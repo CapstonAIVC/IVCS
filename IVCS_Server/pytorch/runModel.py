@@ -182,6 +182,7 @@ class ThreadedCamera(threading.Thread):
 
             self.origin_src = total_info['cctvurl'][self.url_idx]
             response = requests.get(self.origin_src)
+            self.src = response.url
 
             self.capture = cv2.VideoCapture(self.src)
         
