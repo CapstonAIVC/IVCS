@@ -22,7 +22,8 @@ class AnalysisActivity : AppCompatActivity() {
         analysisViewModel = AnalysisViewModel(application, supportFragmentManager)
         analysisBinding.viewModel = analysisViewModel
         setRadioBts()
-        analysisViewModel.dataAnal.analImageHeight = resources.displayMetrics.heightPixels/5*2
+        analysisViewModel.dataAnal.analImageHeight = (resources.displayMetrics.heightPixels/5)*2
+//        analysisBinding.imageAnalysis.layoutParams.height = resources.displayMetrics.heightPixels/5*2
     }
 
     fun setRadioBts(){

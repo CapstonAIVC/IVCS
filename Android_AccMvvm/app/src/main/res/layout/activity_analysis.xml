@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="viewModel"
             type="com.example.ivcs_android.viewModel.analysis.AnalysisViewModel" />
@@ -15,138 +16,156 @@
         android:background="#EAEAEA"
         tools:context=".AnalysisActivity">
 
-        <HorizontalScrollView
-            android:id="@+id/scrollHoriz"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:background="#00FFFFFF"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="SpeakableTextPresentCheck">
-
-            <ImageView
-                android:id="@+id/imageAnalysis"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                bindImageBitmap="@{viewModel.dataAnal.analImage}"/>
-        </HorizontalScrollView>
-
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
             android:background="#00FFFFFF"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/scrollHoriz">
+            app:layout_constraintTop_toBottomOf="parent">
 
             <LinearLayout
+                android:id="@+id/scrollChild"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#00FFFFFF"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/textAnalysis"
+                <HorizontalScrollView
+                    android:id="@+id/scrollHoriz"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:background="@drawable/radius_rec"
-                    android:padding="3dp"
-                    android:text=" 2022/06/03 15시 ~ 2022/06/06/22시 까지 가능합니다. "
-                    android:textColor="#000000"
-                    android:textSize="25dp" />
+                    android:background="#00FFFFFF"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="SpeakableTextPresentCheck">
 
-                <TextView
-                    android:id="@+id/textStart"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:background="@drawable/radius_rec"
-                    android:padding="3dp"
-                    android:textColor="#000000"
-                    android:textSize="30dp"
-                    android:text="@{viewModel.dataAnal.startText}"
-                    android:onClick="@{()->viewModel.clickStartText()}"/>
-
-                <TextView
-                    android:id="@+id/textEnd"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:background="@drawable/radius_rec"
-                    android:padding="3dp"
-                    android:textColor="#000000"
-                    android:textSize="30dp"
-                    android:text="@{viewModel.dataAnal.endText}"
-                    android:onClick="@{()->viewModel.clickEndText()}"/>
-
-                <TextView
-                    android:id="@+id/textCctvName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:background="@drawable/radius_rec"
-                    android:padding="3dp"
-                    android:text="@{viewModel.dataAnal.cctvText}"
-                    android:onClick="@{()->viewModel.cctvNameClicked()}"
-                    android:textColor="#000000"
-                    android:textSize="30dp" />
-
-                <RadioGroup
-                    android:id="@+id/rBtGroup"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <RadioButton
-                        android:id="@+id/rBtMinute"
+                    <ImageView
+                        android:id="@+id/imageAnalysis"
+                        bindImageBitmap="@{viewModel.dataAnal.analImage}"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:layout_weight="1"
-                        android:background="@color/white"
-                        android:text="분단위"
-                        android:onClick="@{(view)->viewModel.radioClicked(view)}"
-                        android:textColor="#000000"
-                        android:textSize="20dp" />
+                        android:layout_height="wrap_content"/>
+<!--                        android:layout_margin="10dp" />-->
+                </HorizontalScrollView>
 
-                    <RadioButton
-                        android:id="@+id/rBtHour"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:layout_weight="1"
-                        android:background="@color/white"
-                        android:text="시간단위"
-                        android:onClick="@{(view)->viewModel.radioClicked(view)}"
-                        android:textColor="#000000"
-                        android:textSize="20dp" />
+                <!--        <ScrollView-->
+                <!--            android:layout_width="match_parent"-->
+                <!--            android:layout_height="0dp"-->
+                <!--            android:background="#00FFFFFF"-->
+                <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+                <!--            app:layout_constraintEnd_toEndOf="parent"-->
+                <!--            app:layout_constraintStart_toStartOf="parent"-->
+                <!--            app:layout_constraintTop_toBottomOf="@+id/scrollHoriz">-->
 
-                    <RadioButton
-                        android:id="@+id/rBtDay"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:layout_weight="1"
-                        android:background="@color/white"
-                        android:text="일단위"
-                        android:onClick="@{(view)->viewModel.radioClicked(view)}"
-                        android:textColor="#000000"
-                        android:textSize="20dp" />
-                </RadioGroup>
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btRequest"
-                    android:layout_width="100dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:layout_margin="10dp"
-                    android:background="@drawable/radius_rec"
-                    android:text="분석 요청"
-                    android:onClick="@{()->viewModel.requestBtClicked()}"/>
+                    android:background="#00FFFFFF"
+                    android:orientation="vertical"
+                    app:layout_constraintStart_toStartOf="@+id/scrollHoriz"
+                    app:layout_constraintTop_toTopOf="parent">
 
+                    <TextView
+                        android:id="@+id/textAnalysis"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:background="@drawable/radius_rec"
+                        android:padding="3dp"
+                        android:text=" 2022/06/03 15시 ~ 2022/06/06/22시 까지 가능합니다. "
+                        android:textColor="#000000"
+                        android:textSize="25dp" />
+
+                    <TextView
+                        android:id="@+id/textStart"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:background="@drawable/radius_rec"
+                        android:onClick="@{()->viewModel.clickStartText()}"
+                        android:padding="3dp"
+                        android:text="@{viewModel.dataAnal.startText}"
+                        android:textColor="#000000"
+                        android:textSize="30dp" />
+
+                    <TextView
+                        android:id="@+id/textEnd"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:background="@drawable/radius_rec"
+                        android:onClick="@{()->viewModel.clickEndText()}"
+                        android:padding="3dp"
+                        android:text="@{viewModel.dataAnal.endText}"
+                        android:textColor="#000000"
+                        android:textSize="30dp" />
+
+                    <TextView
+                        android:id="@+id/textCctvName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:background="@drawable/radius_rec"
+                        android:onClick="@{()->viewModel.cctvNameClicked()}"
+                        android:padding="3dp"
+                        android:text="@{viewModel.dataAnal.cctvText}"
+                        android:textColor="#000000"
+                        android:textSize="30dp" />
+
+                    <RadioGroup
+                        android:id="@+id/rBtGroup"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/rBtMinute"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="5dp"
+                            android:layout_weight="1"
+                            android:background="@color/white"
+                            android:onClick="@{(view)->viewModel.radioClicked(view)}"
+                            android:text="분단위"
+                            android:textColor="#000000"
+                            android:textSize="20dp" />
+
+                        <RadioButton
+                            android:id="@+id/rBtHour"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="5dp"
+                            android:layout_weight="1"
+                            android:background="@color/white"
+                            android:onClick="@{(view)->viewModel.radioClicked(view)}"
+                            android:text="시간단위"
+                            android:textColor="#000000"
+                            android:textSize="20dp" />
+
+                        <RadioButton
+                            android:id="@+id/rBtDay"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="5dp"
+                            android:layout_weight="1"
+                            android:background="@color/white"
+                            android:onClick="@{(view)->viewModel.radioClicked(view)}"
+                            android:text="일단위"
+                            android:textColor="#000000"
+                            android:textSize="20dp" />
+                    </RadioGroup>
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btRequest"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_margin="10dp"
+                        android:background="@drawable/radius_rec"
+                        android:onClick="@{()->viewModel.requestBtClicked()}"
+                        android:text="분석 요청" />
+
+                </LinearLayout>
             </LinearLayout>
         </ScrollView>
 

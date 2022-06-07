@@ -104,7 +104,7 @@ class AnalysisViewModel(application: Application, fragmentManager: FragmentManag
                     bmp = BitmapFactory.decodeByteArray(bArray, 0, bArray.size)
                     val h = dataAnal.analImageHeight
                     val w = h.toFloat() * (bmp.width.toFloat() / bmp.height.toFloat())
-                    Bitmap.createScaledBitmap(bmp, w.toInt(), h, true)
+                    bmp = Bitmap.createScaledBitmap(bmp, w.toInt(), h, true)
                 } catch (e: Exception) {
                     analysisDataRequest.onNext(false)
                 }
@@ -118,8 +118,7 @@ class AnalysisViewModel(application: Application, fragmentManager: FragmentManag
                 },
                 {
                     Log.e("disposableSetUIErr", it.message.toString())
-                    // subject Dispose시 다시 생성
-                    analysisDataRequest =  BehaviorSubject.createDefault(false)
+                    // 재구독
                     bindAnalysisRequest()
                 }
             )

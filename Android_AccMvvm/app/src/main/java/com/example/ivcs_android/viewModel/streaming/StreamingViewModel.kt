@@ -15,6 +15,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
 
 class StreamingViewModel(application: Application) : AndroidViewModel(application) {
@@ -112,12 +113,17 @@ class StreamingViewModel(application: Application) : AndroidViewModel(applicatio
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 {
+                    // 마스크 없앤 후 url 적용
                     dataStreaming.maskChecked.value = false
                     dataStreaming.maskImage.value = dataStreaming.noMaskImage
                     myPlayer.setPlayerURL(it)
 //                    myPlayer.setPlayerURL(Consts.hlstest)
                 },
-                { Log.e("bindForUrlErr", it.message.toString()) }
+                {
+                    Log.e("bindForUrlErr", it.message.toString())
+                    // 재구독
+                    bindForUrl()
+                }
             )
     }
 
