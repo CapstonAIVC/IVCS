@@ -98,5 +98,5 @@ class StreamingViewModel(application: Application) : AndroidViewModel(applicatio
     fun clickDensitySwitch(view: View) {
         dataStreaming.densitySwitchSubject.onNext((view as Switch).isChecked)
     }
-
+ 
 }
