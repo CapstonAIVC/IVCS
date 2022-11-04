@@ -8,8 +8,6 @@ import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import com.example.ivcs_android.analysis.AnalysisActivity
 import com.example.ivcs_android.streaming.StreamingActivity
-import com.example.ivcs_android.model.Consts
-import com.example.ivcs_android.model.Datas
 import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
@@ -35,7 +33,7 @@ class StartViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun checkUrlInfo(): Boolean {
-        if (Datas.instance.arrForUrl.isEmpty()) {
+        if (Statics.arrForUrl.isEmpty()) {
             setInfo()
             Toast.makeText(context, "서버 정보 요청중", Toast.LENGTH_SHORT).show()
             return false
@@ -46,7 +44,7 @@ class StartViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setInfo() {
 //        val url = Consts.localhost + Consts.getUrl
-        val url = Consts.serverMainUrl + Consts.getUrl
+        val url = Statics.serverMainUrl + Statics.getUrl
         val client = OkHttpClient()
         val request = Request.Builder().url(url).build()
 
@@ -59,13 +57,13 @@ class StartViewModel(application: Application) : AndroidViewModel(application) {
                 var jsonObj = JSONObject(response.body!!.string())
                 var jsonArrCctvName = jsonObj.getJSONArray("cctvname")
                 var jsonArrUrl = jsonObj.getJSONArray("cctvurl")
-                Datas.instance.arrForListView = Array(jsonArrCctvName.length()) { "" }
-                Datas.instance.arrForUrl = Array(jsonArrCctvName.length()) { "" }
+                Statics.arrForListView = Array(jsonArrCctvName.length()) { "" }
+                Statics.arrForUrl = Array(jsonArrCctvName.length()) { "" }
                 for (i in 0 until jsonArrCctvName.length()) {
-                    Datas.instance.arrForListView[i] = jsonArrCctvName.getString(i)
-                    Datas.instance.arrForUrl[i] = jsonArrUrl.getString(i)
+                    Statics.arrForListView[i] = jsonArrCctvName.getString(i)
+                    Statics.arrForUrl[i] = jsonArrUrl.getString(i)
                 }
-                Log.e("urlTest", Datas.instance.arrForUrl[0])
+                Log.e("urlTest", Statics.arrForUrl[0])
             }
         })
     }

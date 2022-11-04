@@ -2,11 +2,10 @@ package com.example.ivcs_android.streaming
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.example.ivcs_android.model.Consts
+import com.example.ivcs_android.Statics
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.internal.operators.observable.BlockingObservableNext
 import io.socket.client.IO
 import io.socket.client.Socket
 import java.net.URISyntaxException
@@ -23,7 +22,7 @@ class Msocket(val textCount: MutableLiveData<String>) {
 
     private fun setSocket(){
         try {
-            mSocket = IO.socket(Consts.serverDataUrl)
+            mSocket = IO.socket(Statics.serverDataUrl)
             mSocket.connect()
         } catch (e: URISyntaxException) {
             Log.e("ERR_setsocket", e.toString())

@@ -9,7 +9,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.MutableLiveData
 import com.example.ivcs_android.analysis.AnalysisModel
 import com.example.ivcs_android.databinding.CctvPickBinding
-import com.example.ivcs_android.model.Datas
+import com.example.ivcs_android.Statics
 
 class CctvPickDialogFragment(analysisModel : AnalysisModel ) : DialogFragment() {
 
@@ -33,10 +33,10 @@ class CctvPickDialogFragment(analysisModel : AnalysisModel ) : DialogFragment() 
 
         val mAdapter = ArrayAdapter<String>(requireContext(),
             android.R.layout.simple_list_item_1,
-            Datas.instance.arrForListView)
+            Statics.arrForListView)
         binding.listViewCctvName.adapter = mAdapter
         binding.listViewCctvName.setOnItemClickListener { _, _, i, _ ->
-            selectedText.value = Datas.instance.arrForListView[i] + " 가 선택됨"
+            selectedText.value = Statics.arrForListView[i] + " 가 선택됨"
             analysisModel.analIndex = i
         }
 
@@ -44,7 +44,7 @@ class CctvPickDialogFragment(analysisModel : AnalysisModel ) : DialogFragment() 
     }
 
     fun clickConfirm( view : View ){
-        analysisModel.analName = Datas.instance.arrForListView[analysisModel.analIndex]
+        analysisModel.analName = Statics.arrForListView[analysisModel.analIndex]
         analysisModel.cctvText.value = "CCTV : " + analysisModel.analName
         dismiss()
     }

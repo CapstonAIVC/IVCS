@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.example.ivcs_android.model.Consts
+import com.example.ivcs_android.Statics
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
@@ -16,25 +16,39 @@ import org.json.JSONObject
 
 class AnalysisModel() {
 
-    init {
-        bindAnalysisRequest()
-    }
 
     // 처리중인 요청이 있으면 true
-    var analysisDataRequest: BehaviorSubject<Boolean> = BehaviorSubject.createDefault(false)
-
-
+    var analysisDataRequest: BehaviorSubject<Boolean> = BehaviorSubject.createDefault(false).apply {
+        observeOn(Schedulers.io())
+        .filter { it } // false는 작업이 끝났음을 명시하는 역할
+        .map {
+            //json을 만들고 요청을 보낸다.
+            // 받은 응답을 mainthread를 이용하는 객체에 넘겨준다.
+            // mainthread를 이용하는 객체는 화면을 처리하고 falseㄹ 요청이 끝났음을 subject에 알려준다.
+            getAnalysisBitmap()!!
+        }
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(
+            {
+                it.let { analImage.value = it }
+                onNext(false)
+            },
+            {
+                Log.e("disposableSetUIErr", it.message.toString())
+                onNext(false)
+            }
+        )
+    }
     /** analysis 관련 */
-    var analType = Consts.hour
+    var analType = Statics.hour
     var analName = ""
     var analIndex = 0
     var startTimeInfo = arrayOf<Long>(2022,4,24,15)
     var endTimeInfo = arrayOf<Long>(2022,4,24,16)
     var analImageHeight = 100
-//    var changeAnalInfoSubj : PublishSubject<AnalysisEvent> = PublishSubject.create()
 
-    var startText: MutableLiveData<String> = MutableLiveData("시작 날짜 : ")
-    var endText: MutableLiveData<String> = MutableLiveData("종료 날짜 : ")
+    var startText: MutableLiveData<String> = MutableLiveData("시작 날짜 : "+ (startTimeInfo[0]).toString() + "년 " + (startTimeInfo[1]).toString() + "월 " + (startTimeInfo[2]).toString() + "일 " + (startTimeInfo[3]).toString() + "시")
+    var endText: MutableLiveData<String> = MutableLiveData("종료 날짜 : "+(endTimeInfo[0]).toString() + "년 " + (endTimeInfo[1]).toString() + "월 " + (endTimeInfo[2]).toString() + "일 " + (endTimeInfo[3]).toString() + "시")
     var cctvText: MutableLiveData<String> = MutableLiveData("CCTV : ")
     var analImage: MutableLiveData<Bitmap> = MutableLiveData()
 
@@ -62,7 +76,7 @@ class AnalysisModel() {
             jsonObj.toString()
         )
         return Request.Builder()
-            .url(Consts.serverDataUrl+Consts.plotUrl)
+            .url(Statics.serverDataUrl+ Statics.plotUrl)
             .post(reqBody)
             .build()
     }
@@ -99,33 +113,6 @@ class AnalysisModel() {
             return false
         }
         return true
-    }
-
-
-
-
-
-    fun bindAnalysisRequest() {
-        analysisDataRequest
-            .observeOn(Schedulers.io())
-            .filter { it } // false는 작업이 끝났음을 명시하는 역할
-            .map {
-                //json을 만들고 요청을 보낸다.
-                // 받은 응답을 mainthread를 이용하는 객체에 넘겨준다.
-                // mainthread를 이용하는 객체는 화면을 처리하고 falseㄹ 요청이 끝났음을 subject에 알려준다.
-                getAnalysisBitmap()!!
-            }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                {
-                    it.let { analImage.value = it }
-                    analysisDataRequest.onNext(false)
-                },
-                {
-                    Log.e("disposableSetUIErr", it.message.toString())
-                    analysisDataRequest.onNext(false)
-                }
-            )
     }
 
 }

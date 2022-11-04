@@ -3,17 +3,13 @@ package com.example.ivcs_android.streaming
 import android.R
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import android.view.View
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.ivcs_android.databinding.ActivityStreamingBinding
-import com.example.ivcs_android.model.Datas
+import com.example.ivcs_android.Statics
 import com.google.android.exoplayer2.ExoPlayer
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 
 class StreamingActivity : AppCompatActivity() {
 
@@ -45,11 +41,11 @@ class StreamingActivity : AppCompatActivity() {
 
 
     private fun setAdapter(){
-        var mAdapter = ArrayAdapter<String>(this, R.layout.simple_list_item_1, Datas.instance.arrForListView)
+        var mAdapter = ArrayAdapter<String>(this, R.layout.simple_list_item_1, Statics.arrForListView)
         mBinding.cctvList.adapter = mAdapter
         mBinding.cctvList.setOnItemClickListener { _, _, i, _ ->
             streamingViewModel.model.cctvIdx = i
-            myPlayer.setPlayerURL(Datas.instance.arrForUrl[i])
+            myPlayer.setPlayerURL(Statics.arrForUrl[i])
         }
     }
 

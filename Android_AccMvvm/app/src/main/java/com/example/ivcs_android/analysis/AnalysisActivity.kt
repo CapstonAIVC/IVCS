@@ -7,7 +7,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.example.ivcs_android.R
 import com.example.ivcs_android.databinding.ActivityAnalysisBinding
-import com.example.ivcs_android.model.Consts
+import com.example.ivcs_android.Statics
 import io.reactivex.rxjava3.subjects.PublishSubject
 
 class AnalysisActivity : AppCompatActivity() {
@@ -34,9 +34,9 @@ class AnalysisActivity : AppCompatActivity() {
     }
 
     fun setRadioBts(){
-        analysisBinding.rBtHour.tag = Consts.hour
-        analysisBinding.rBtDay.tag = Consts.day
-        analysisBinding.rBtMonth.tag = Consts.month
+        analysisBinding.rBtHour.tag = Statics.hour
+        analysisBinding.rBtDay.tag = Statics.day
+        analysisBinding.rBtMonth.tag = Statics.month
 
         analysisBinding.rBtHour.performClick()
     }
