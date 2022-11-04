@@ -13,7 +13,6 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import com.example.ivcs_android.databinding.ActivityStartBinding
-import com.example.ivcs_android.viewModel.StartViewModel
 
 class StartActivity : AppCompatActivity() {
 

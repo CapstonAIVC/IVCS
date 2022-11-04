@@ -1,4 +1,4 @@
-package com.example.ivcs_android.viewModel.analysis
+package com.example.ivcs_android.analysis.pickDialog
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,14 +7,14 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.MutableLiveData
+import com.example.ivcs_android.analysis.AnalysisModel
 import com.example.ivcs_android.databinding.CctvPickBinding
-import com.example.ivcs_android.model.DataAnal
 import com.example.ivcs_android.model.Datas
 
-class CctvPickDialogFragment( dataAnal : DataAnal ) : DialogFragment() {
+class CctvPickDialogFragment(analysisModel : AnalysisModel ) : DialogFragment() {
 
     private lateinit var binding: CctvPickBinding
-    var dataAnal = dataAnal
+    var analysisModel = analysisModel
     var selectedText : MutableLiveData<String> = MutableLiveData("선택해 주세요. ")
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,15 +37,15 @@ class CctvPickDialogFragment( dataAnal : DataAnal ) : DialogFragment() {
         binding.listViewCctvName.adapter = mAdapter
         binding.listViewCctvName.setOnItemClickListener { _, _, i, _ ->
             selectedText.value = Datas.instance.arrForListView[i] + " 가 선택됨"
-            dataAnal.analIndex = i
+            analysisModel.analIndex = i
         }
 
         return binding.root
     }
 
     fun clickConfirm( view : View ){
-        dataAnal.analName = Datas.instance.arrForListView[dataAnal.analIndex]
-        dataAnal.cctvText.value = "CCTV : " + dataAnal.analName
+        analysisModel.analName = Datas.instance.arrForListView[analysisModel.analIndex]
+        analysisModel.cctvText.value = "CCTV : " + analysisModel.analName
         dismiss()
     }
 

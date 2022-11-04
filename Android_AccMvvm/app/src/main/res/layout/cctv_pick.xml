@@ -6,7 +6,7 @@
     <data>
         <variable
             name="Frag"
-            type="com.example.ivcs_android.viewModel.analysis.CctvPickDialogFragment" />
+            type="com.example.ivcs_android.analysis.pickDialog.CctvPickDialogFragment" />
     </data>
 
     <LinearLayout

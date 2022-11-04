@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.example.ivcs_android.viewModel.StartViewModel" />
+            type="com.example.ivcs_android.StartViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

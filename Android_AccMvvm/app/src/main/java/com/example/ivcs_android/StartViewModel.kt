@@ -1,4 +1,4 @@
-package com.example.ivcs_android.viewModel
+package com.example.ivcs_android
 
 import android.app.Application
 import android.content.Intent
@@ -6,7 +6,7 @@ import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
-import com.example.ivcs_android.AnalysisActivity
+import com.example.ivcs_android.analysis.AnalysisActivity
 import com.example.ivcs_android.streaming.StreamingActivity
 import com.example.ivcs_android.model.Consts
 import com.example.ivcs_android.model.Datas
