@@ -1,18 +1,21 @@
-package com.example.ivcs_android.viewModel.streaming
+package com.example.ivcs_android.streaming
 
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import com.example.ivcs_android.model.Consts
-import com.example.ivcs_android.model.DataStreaming
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.internal.operators.observable.BlockingObservableNext
 import io.socket.client.IO
 import io.socket.client.Socket
 import java.net.URISyntaxException
 
-class Msocket(var dataStreaming: DataStreaming) {
+class Msocket(val textCount: MutableLiveData<String>) {
 
 
     lateinit var mSocket : Socket
+    var dispose = Disposable.empty()
 
     init {
         setSocket()
@@ -20,7 +23,6 @@ class Msocket(var dataStreaming: DataStreaming) {
 
     private fun setSocket(){
         try {
-//            mSocket = IO.socket(Consts.localhost_DataServer)
             mSocket = IO.socket(Consts.serverDataUrl)
             mSocket.connect()
         } catch (e: URISyntaxException) {
@@ -29,7 +31,10 @@ class Msocket(var dataStreaming: DataStreaming) {
 
         mSocket.on("res_counting") {
             Log.e("res_counting",it[0].toString())
-            dataStreaming.changeCountText.onNext( "차량 수: "+it[0].toString() )
+
+            dispose = Observable.just("차량 수: "+it[0].toString())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({textCount.value = it})
         }
     }
 
@@ -39,9 +44,6 @@ class Msocket(var dataStreaming: DataStreaming) {
     }
 
     fun checkSocket() : Boolean{
-//        if(mSocket.connected()){
-//            Toast.makeText(context,"소켓 연결중 입니다.", Toast.LENGTH_SHORT).show()
-//        }
         return mSocket.connected()
     }
 

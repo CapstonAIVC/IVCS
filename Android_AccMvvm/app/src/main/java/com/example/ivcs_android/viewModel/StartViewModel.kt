@@ -7,7 +7,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import com.example.ivcs_android.AnalysisActivity
-import com.example.ivcs_android.StreamingActivity
+import com.example.ivcs_android.streaming.StreamingActivity
 import com.example.ivcs_android.model.Consts
 import com.example.ivcs_android.model.Datas
 import okhttp3.*

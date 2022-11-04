@@ -17,7 +17,7 @@
             android:name=".AnalysisActivity"
             android:exported="false" />
         <activity
-            android:name=".StreamingActivity"
+            android:name=".streaming.StreamingActivity"
             android:exported="false" />
         <activity
             android:name=".StartActivity"

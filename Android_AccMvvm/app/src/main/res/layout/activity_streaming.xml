@@ -7,19 +7,20 @@
         <import type="android.view.View"/>
         <variable
             name="viewModel"
-            type="com.example.ivcs_android.viewModel.streaming.StreamingViewModel" />
+            type="com.example.ivcs_android.streaming.StreamingViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#EAEAEA"
-        tools:context=".StreamingActivity">
+        tools:context=".streaming.StreamingActivity">
 
         <TextureView
             android:id="@+id/textureView"
             android:layout_width="414dp"
-            android:layout_height="323dp"
+            android:layout_height="wrap_content"
+            setLayoutHeight="@{viewModel.myHeight}"
             android:foregroundGravity="fill"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -47,7 +48,7 @@
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
 
-                    <Switch
+                    <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/countingSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="48dp"
@@ -56,7 +57,7 @@
                         android:text="실시간 교통량 측정"
                         android:textColor="#000000" />
 
-                    <Switch
+                    <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/densitySwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="48dp"
@@ -77,10 +78,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@{viewModel.dataStreaming.textCount}"
+                        android:text="@{viewModel.textCount}"
                         android:textAlignment="center"
                         android:textSize="34sp"
-                        android:visibility="@{viewModel.dataStreaming.textCountShow ? View.VISIBLE : View.GONE}"/>
+                        android:visibility="@{viewModel.textCountShow ? View.VISIBLE : View.GONE}"/>
 
                     <ImageView
                         android:id="@+id/imageViewDensity"
@@ -88,15 +89,16 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         app:srcCompat="@drawable/ic_launcher_background"
-                        android:visibility="@{viewModel.dataStreaming.densityImageShow ? View.VISIBLE : View.GONE}"/>
+                        android:visibility="@{viewModel.densityImageShow ? View.VISIBLE : View.GONE}"/>
                 </LinearLayout>
 
                 <ListView
                     android:id="@+id/cctvList"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    setLayoutHeight="@{viewModel.model.myHeight}"
                     android:layout_marginEnd="50dp"
-                    android:background="#FFFFFF" />
+                    android:background="#FFFFFF"/>
 
             </LinearLayout>
         </ScrollView>

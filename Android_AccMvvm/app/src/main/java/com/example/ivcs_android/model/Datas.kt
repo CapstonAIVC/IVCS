@@ -16,20 +16,20 @@ class Datas {
     var arrForUrl : Array<String> = Array<String>(0){""}
 }
 
-class DataStreaming(){
-    /** 스트리밍 관련 */
-    var cctvName = ""
-    var cctvIdx = -1
-    var changeUrlSubject : PublishSubject<String> = PublishSubject.create()
-
-    /** 교통량 측정 관련 */
-    var countSwitchSubject : BehaviorSubject<Boolean> = BehaviorSubject.createDefault(false)
-    var densitySwitchSubject : BehaviorSubject<Boolean> = BehaviorSubject.createDefault(false)
-    var changeCountText : BehaviorSubject<String> = BehaviorSubject.createDefault("차량 수: ")
-    var textCount : MutableLiveData<String> = MutableLiveData("")
-    var textCountShow : MutableLiveData<Boolean> = MutableLiveData(false)
-    var densityImageShow : MutableLiveData<Boolean> = MutableLiveData(false)
-}
+//class DataStreaming(){
+//    /** 스트리밍 관련 */
+//    var cctvName = ""
+//    var cctvIdx = -1
+//    var changeUrlSubject : PublishSubject<String> = PublishSubject.create()
+//
+//    /** 교통량 측정 관련 */
+//    var countSwitchSubject : BehaviorSubject<Boolean> = BehaviorSubject.createDefault(false)
+//    var densitySwitchSubject : BehaviorSubject<Boolean> = BehaviorSubject.createDefault(false)
+//    var changeCountText : BehaviorSubject<String> = BehaviorSubject.createDefault("차량 수: ")
+//    var textCount : MutableLiveData<String> = MutableLiveData("")
+//    var textCountShow : MutableLiveData<Boolean> = MutableLiveData(false)
+//    var densityImageShow : MutableLiveData<Boolean> = MutableLiveData(false)
+//}
 
 class DataAnal(){
     /** analysis 관련 */
