@@ -6,14 +6,14 @@
     <data>
         <variable
             name="viewModel"
-            type="com.example.ivcs_android.viewModel.analysis.AnalysisViewModel" />
+            type="com.example.ivcs_android.analysis.AnalysisViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#EAEAEA"
-        tools:context=".AnalysisActivity">
+        tools:context=".analysis.AnalysisActivity">
 
         <HorizontalScrollView
             android:id="@+id/scrollHoriz"
@@ -29,7 +29,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                bindImageBitmap="@{viewModel.dataAnal.analImage}"/>
+                bindImageBitmap="@{viewModel.analImage}"/>
         </HorizontalScrollView>
 
         <ScrollView
@@ -67,7 +67,7 @@
                     android:padding="3dp"
                     android:textColor="#000000"
                     android:textSize="30dp"
-                    android:text="@{viewModel.dataAnal.startText}"
+                    android:text="@{viewModel.startText}"
                     android:onClick="@{()->viewModel.clickStartText()}"/>
 
                 <TextView
@@ -79,7 +79,7 @@
                     android:padding="3dp"
                     android:textColor="#000000"
                     android:textSize="30dp"
-                    android:text="@{viewModel.dataAnal.endText}"
+                    android:text="@{viewModel.endText}"
                     android:onClick="@{()->viewModel.clickEndText()}"/>
 
                 <TextView
@@ -89,7 +89,7 @@
                     android:layout_margin="10dp"
                     android:background="@drawable/radius_rec"
                     android:padding="3dp"
-                    android:text="@{viewModel.dataAnal.cctvText}"
+                    android:text="@{viewModel.cctvText}"
                     android:onClick="@{()->viewModel.cctvNameClicked()}"
                     android:textColor="#000000"
                     android:textSize="30dp" />

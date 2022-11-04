@@ -14,13 +14,13 @@
         android:theme="@style/Theme.IVCS_Android"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".AnalysisActivity"
+            android:name=".analysis.AnalysisActivity"
             android:exported="false" />
         <activity
-            android:name=".StreamingActivity"
+            android:name=".streaming.StreamingActivity"
             android:exported="false" />
         <activity
-            android:name=".StartActivity"
+            android:name=".start.StartActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

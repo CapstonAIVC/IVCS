@@ -1,4 +1,4 @@
-package com.example.ivcs_android.viewModel.analysis
+package com.example.ivcs_android.analysis.pickDialog
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,12 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.NumberPicker
 import androidx.fragment.app.DialogFragment
+import com.example.ivcs_android.analysis.AnalysisModel
 import com.example.ivcs_android.databinding.DatePickBinding
-import com.example.ivcs_android.model.DataAnal
 
-class DatePickDialogFragment(dataAnal: DataAnal) : DialogFragment() {
+class DatePickDialogFragment(analysisModel: AnalysisModel) : DialogFragment() {
 
-    var dataAnal = dataAnal
+    var analysisModel = analysisModel
     private lateinit var binding: DatePickBinding
     private var isStart: Boolean = true
 
@@ -44,13 +44,13 @@ class DatePickDialogFragment(dataAnal: DataAnal) : DialogFragment() {
             binding.hourPicker.value.toLong())
 
         if (isStart) { //여기아래 text바꾸는거 데이터바인딩으로 바꾸자
-            dataAnal.startTimeInfo = tmpTimeInfo
-            dataAnal.startText.value =
-                (dataAnal.startTimeInfo[0]).toString() + "년 " + (dataAnal.startTimeInfo[1]).toString() + "월 " + (dataAnal.startTimeInfo[2]).toString() + "일 " + (dataAnal.startTimeInfo[3]).toString() + "시"
+            analysisModel.startTimeInfo = tmpTimeInfo
+            analysisModel.startText.value =
+                (analysisModel.startTimeInfo[0]).toString() + "년 " + (analysisModel.startTimeInfo[1]).toString() + "월 " + (analysisModel.startTimeInfo[2]).toString() + "일 " + (analysisModel.startTimeInfo[3]).toString() + "시"
         } else {
-            dataAnal.endTimeInfo = tmpTimeInfo
-            dataAnal.endText.value =
-                (dataAnal.endTimeInfo[0]).toString() + "년 " + (dataAnal.endTimeInfo[1]).toString() + "월 " + (dataAnal.endTimeInfo[2]).toString() + "일 " + (dataAnal.endTimeInfo[3]).toString() + "시"
+            analysisModel.endTimeInfo = tmpTimeInfo
+            analysisModel.endText.value =
+                (analysisModel.endTimeInfo[0]).toString() + "년 " + (analysisModel.endTimeInfo[1]).toString() + "월 " + (analysisModel.endTimeInfo[2]).toString() + "일 " + (analysisModel.endTimeInfo[3]).toString() + "시"
         }
         this.dismiss()
     }
@@ -83,15 +83,15 @@ class DatePickDialogFragment(dataAnal: DataAnal) : DialogFragment() {
 
         // 시작 날짜 설정
         if (isStart) {
-            binding.yearPicker.value = dataAnal.startTimeInfo[0].toInt()
-            binding.monthPicker.value = dataAnal.startTimeInfo[1].toInt()
-            binding.datePicker.value = dataAnal.startTimeInfo[2].toInt()
-            binding.hourPicker.value = dataAnal.startTimeInfo[3].toInt()
+            binding.yearPicker.value = analysisModel.startTimeInfo[0].toInt()
+            binding.monthPicker.value = analysisModel.startTimeInfo[1].toInt()
+            binding.datePicker.value = analysisModel.startTimeInfo[2].toInt()
+            binding.hourPicker.value = analysisModel.startTimeInfo[3].toInt()
         } else {
-            binding.yearPicker.value = dataAnal.endTimeInfo[0].toInt()
-            binding.monthPicker.value = dataAnal.endTimeInfo[1].toInt()
-            binding.datePicker.value = dataAnal.endTimeInfo[2].toInt()
-            binding.hourPicker.value = dataAnal.endTimeInfo[3].toInt()
+            binding.yearPicker.value = analysisModel.endTimeInfo[0].toInt()
+            binding.monthPicker.value = analysisModel.endTimeInfo[1].toInt()
+            binding.datePicker.value = analysisModel.endTimeInfo[2].toInt()
+            binding.hourPicker.value = analysisModel.endTimeInfo[3].toInt()
         }
     }
 
