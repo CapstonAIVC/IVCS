@@ -5,7 +5,7 @@ from urllib.request import urlopen
 import requests
 
 # Global Setting
-api_key = "94643db94d744a2a850cdf9663965164"
+api_key = ""
 
 def getUrl(url, cctv_id):
     with urlopen(url) as url:
